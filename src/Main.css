@@ -1,0 +1,40 @@
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header & Nav */
+.header { background: #fff; }
+.header-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+.logo { border: 1px solid #000; padding: 8px 20px; font-weight: bold; }
+.search-bar input { width: 400px; padding: 10px; border: 1px solid #000; text-align: center; }
+.user-menu button { margin-left: 10px; padding: 8px 15px; border: 1px solid #000; background: none; cursor: pointer; }
+
+.nav-wrapper { display: flex; border: 1px solid black; }
+.nav-item { flex: 1; text-align: center; padding: 15px; border-right: 1px solid #000; cursor: pointer; }
+.nav-item:last-child { border-right: none; }
+
+/* Hero Section */
+.hero { display: flex; gap: 30px; margin: 40px 0; }
+.main-banner { flex: 2; margin-top: 30px; height: 318px; border: 1px solid #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.category-section { flex: 1.2; }
+.category-header { border: 1px solid #000; text-align: center; padding: 10px; margin-top: 30px; margin-bottom: 30px; }
+.grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid-item { border: 1px solid #000; height: 70px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #fff; }
+
+/* Quick Search */
+.quick-search { margin: 50px auto; }
+.quick-title { border: 1px solid #000; border-bottom: none; text-align: center; padding: 8px; }
+.quick-bar { display: flex; border: 1px solid #000; }
+.quick-bar button { flex: 1; padding: 25px; background: none; border: none; border-right: 1px solid #000; cursor: pointer; font-size: 16px; }
+.quick-bar button:last-child { border-right: none; }
+
+/* Bottom Info */
+.info-grid { display: flex; gap: 30px; margin-bottom: 80px; }
+.left-cards { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+.info-card { height: 120px; border: 1px solid #000; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.right-menu { flex: 1; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #000; }
+.menu-box { height: 130px; border: 0.5px solid #000; display: flex; align-items: center; justify-content: center; }
+
+.footer { border-top: 1px solid #000; padding: 60px 0; text-align: center; color: #666; }
