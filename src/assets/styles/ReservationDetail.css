@@ -1,0 +1,148 @@
+/* 화면 전체 어둡게 처리 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 중앙 팝업 박스 컨테이너 */
+.popup {
+  width: 90%;
+  max-width: 800px;
+  min-width: 320px;
+  min-height: 600px; /* PC 세로 길이 */
+  max-height: 90vh; /* 화면 높이 대비 */
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  box-sizing: border-box;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow-y: auto;
+}
+
+/* 상단 탭 메뉴 */
+.tab-menu {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 0;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: bold;
+  color: #555;
+  flex: 1;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+
+.hospital-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.hospital-profile {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.hospital-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  word-break: break-word;
+  text-align: left; /* 왼쪽 정렬 */
+  flex: 1 1 auto; /* 폭 줄어들 수 있게 */
+}
+
+/* 예약 정보 박스 */
+.reservation-box {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;       /* 박스 안쪽 여백 줄임 */
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0;      /* 위/아래 공백 균등 */
+}
+
+.reservation-box h3 {
+  margin: 5px 0;        /* 위/아래 공백 균등 */
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;   /* 예약 상태 가운데 정렬 */
+}
+
+.reservation-box p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 1rem;
+  text-align: left;       /* 좌측 정렬 유지 */
+  padding-left: 10px;     /* 왼쪽 여백 추가 */
+}
+
+/* 공백 채우기 */
+.popup .spacer {
+  flex: 1; /* 예약박스 아래 공간 */
+}
+
+/* 반응형: 화면이 작아질 때도 중앙 박스 유지 */
+@media (max-width: 480px) {
+  .popup {
+    width: 95%;
+    padding: 15px;
+    min-height: 400px;
+    max-height: 80vh;
+  }
+
+  .hospital-profile {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hospital-name {
+    font-size: 0.95rem;   /* 모바일 폰트 작게 */
+  }
+
+  .reservation-box h3 {
+    font-size: 1.05rem;   /* 예약 상태 폰트 작게 */
+  }
+
+  .reservation-box p {
+    font-size: 0.85rem;   /* 예약 일시 / 방문 횟수 폰트 작게 */
+    padding-left: 8px;    /* 왼쪽 여백 약간 줄임 */
+  }
+
+  .tab {
+    font-size: 0.9rem;    /* 탭 메뉴 폰트 작게 */
+    padding: 8px 0;
+  }
+}
+

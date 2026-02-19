@@ -2,7 +2,7 @@ import Main from './Main';
 
 // 예약 현황 조회 불러오기
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import BookingDetail from "./pages/booking/BookingDetail";
+import ReservationDetail from "./pages/ReservationDetail";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
     // </div>
     <Router>
       <Routes>
-        <Route path="/booking-detail" element={<BookingDetail />} />
+        <Route path="/reservation-detail" element={<ReservationDetail />} />
       </Routes>
     </Router>
   );
