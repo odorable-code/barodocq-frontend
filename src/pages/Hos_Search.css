@@ -1,0 +1,135 @@
+.hs {
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* 상단바 자리 */
+.hs__topbar-placeholder {
+  height: 110px;
+  border: 4px solid #111;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* 본문 */
+.hs__content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px 18px 60px;
+}
+
+/* 탭 */
+.hs__tabs {
+  display: flex;
+  gap: 14px;
+  margin: 12px 0 18px;
+}
+
+.hs__tab {
+  border: 1.5px solid #111;
+  background: #fff;
+  padding: 14px 18px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.hs__tab.is-active {
+  background: #111;
+  color: #fff;
+}
+
+/* 필터 영역 */
+.hs__filters {
+  border: 1.5px solid #111;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.hs__filters-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hs__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  justify-content: center;
+}
+
+.hs__chip {
+  border: 1px solid #111;
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.hs__chip.is-active {
+  background: #111;
+  color: #fff;
+}
+
+/* 2열 그리드 */
+.hs__grid {
+  border: 1.5px solid #111;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* 카드 */
+.hs-card {
+  border: 1.5px solid #111;
+  border-radius: 18px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 14px;
+  min-height: 120px;
+}
+
+.hs-card__name {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.hs-card__info {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* 사진 박스 */
+.hs-card__imgbox {
+  border: 1.5px solid #111;
+  height: 100%;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+}
+
+/*마우스 호버 효과*/
+
+.hs-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hs-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* 작은 화면은 1열 */
+@media (max-width: 720px) {
+  .hs__grid {
+    grid-template-columns: 1fr;
+  }
+}
