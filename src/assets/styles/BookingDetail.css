@@ -1,0 +1,35 @@
+/* 화면 전체 어둡게 처리 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4); /* 반투명 검정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 중앙 팝업 박스 */
+.popup {
+  width: 800px;
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+/* 모바일 느낌으로 글자 크기 살짝 조정 */
+.popup h2 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.popup p {
+  font-size: 1rem;
+  color: #555;
+}
