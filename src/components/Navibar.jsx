@@ -1,5 +1,7 @@
 import "../assets/styles/Navibar.css";
 import logo from "../assets/images/logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell } from "@fortawesome/free-regular-svg-icons"
 
 export const Navibar = () => (
   <header className="header">
@@ -11,6 +13,7 @@ export const Navibar = () => (
         <input type="text" placeholder="병원, 진료과, 지역 검색" />
       </div>
       <div className="user-menu">
+        <FontAwesomeIcon icon={faBell} size="xl"/>
         <button>로그인</button>
         <button>회원가입/알림</button>
       </div>
