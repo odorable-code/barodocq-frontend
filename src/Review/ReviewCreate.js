@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authFetch } from "./utils/authFetch";
+import { authFetch } from "../utils/authFetch";
 
 function ReservationAndReview() {
   const [redate, setRedate] = useState("");
