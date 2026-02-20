@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Hos_SearchTest from "./pages/Hos_SearchTest";
-import Hos_Detail from "./pages/Hos_Detail";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Main from "./Main";
+import Hos_Detail from "./pages/Hos_Detail";
+import Hos_SearchTest from "./pages/Hos_SearchTest";
 
 
  function App() {
