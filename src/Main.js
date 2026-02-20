@@ -1,29 +1,5 @@
-import React from 'react';
 import './Main.css';
 
-// 개별 컴포넌트들
-const Header = () => (
-  <header className="header">
-    <div className="header-top container">
-      <div className="logo">바로닥큐</div>
-      <div className="search-bar">
-        <input type="text" placeholder="병원, 진료과, 지역 검색" />
-      </div>
-      <div className="user-menu">
-        <button>로그인</button>
-        <button>회원가입/알림</button>
-      </div>
-    </div>
-    <nav className="main-nav">
-      <div className="container nav-wrapper">
-        <div className="nav-item">약국</div>
-        <div className="nav-item">병원찾기</div>
-        <div className="nav-item">나의 예약 현황</div>
-        <div className="nav-item">커뮤니티</div>
-      </div>
-    </nav>
-  </header>
-);
 
 const CategoryGrid = () => {
   const categories = ["전체", "소아청소년과", "내과", ...Array(5).fill(""), "더 보기"];
@@ -53,7 +29,6 @@ const QuickSearch = () => (
 function Main() {
   return (
     <div>
-      <Header />
       <main className="container main-content">
         {/* 히어로 섹션 */}
         <section className="hero">
