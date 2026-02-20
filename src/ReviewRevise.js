@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { authFetch } from "./utils/authFetch";
 
-function ReviewEdit() {
+function ReviewRevise() {
   const { rvNum } = useParams(); // URL에서 후기번호 가져오기
   const navigate = useNavigate();
 
@@ -9,49 +10,52 @@ function ReviewEdit() {
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(0);
 
+  const token = localStorage.getItem("token");
+  console.log("현재 token:", token);
+
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/reviews/revise/${rvNum}`);
-        if (response.ok) {
-          const data = await response.json();
-          setTitle(data.rv_title);
-          setContent(data.rv_content);
-          setRating(data.rv_rating);
-        } else {
-          alert("후기 불러오기 실패");
-        }
+        const data = await authFetch(
+          `http://localhost:8080/api/v1/reviews/revise/${rvNum}`
+        );
+
+        setTitle(data.rv_title);
+        setContent(data.rv_content);
+        setRating(data.rv_rating);
+
       } catch (err) {
         console.error(err);
+        alert("후기 불러오기 실패");
       }
     };
-
     fetchReview();
   }, [rvNum]);
 
   const updateReview = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/reviews/revise/${rvNum}`, {
+  try {
+    const res = await authFetch(
+      `http://localhost:8080/api/v1/reviews/revise/${rvNum}`,
+      {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rv_title: title,
           rv_content: content,
-          rv_rating: rating
-        })
-      });
-
-      if (response.ok) {
-        alert("후기 수정 완료!");
-        navigate("/reviews");
-      } else {
-        alert("수정 실패");
+          rv_rating: rating,
+        }),
       }
-    } catch (err) {
-      console.error(err);
-      alert("서버 오류");
-    }
-  };
+    );
+
+    // 성공 시 서버 메시지 보여주기
+    alert(res); // 서버에서 "후기 수정 성공" 보내면 그대로 나옴
+    navigate("/reviews");
+
+  } catch (err) {
+    console.error(err);
+    // err.message에는 서버에서 보낸 텍스트 그대로 있음 ("자신의 후기만 수정할 수 있습니다." 등)
+    alert(err.message);
+  }
+};
 
   return (
     <div className="container mt-4" style={{ maxWidth: "600px" }}>
@@ -109,4 +113,4 @@ function ReviewEdit() {
   );
 }
 
-export default ReviewEdit;
+export default ReviewRevise;

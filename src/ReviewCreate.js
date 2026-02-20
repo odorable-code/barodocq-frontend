@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "./utils/authFetch";
 
 function ReservationAndReview() {
   const [redate, setRedate] = useState("");
@@ -20,7 +21,8 @@ function ReservationAndReview() {
 
 const CreateReservation = async () => {
   try {
-    const response = await fetch("http://localhost:8080/api/reservations", {
+    const response = await authFetch("http://localhost:8080/api/v1/reservations",
+      {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -55,7 +57,8 @@ const CreateReservation = async () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/reviews", {
+      const result = await authFetch("http://localhost:8080/api/v1/reviews",
+        {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -69,18 +72,14 @@ const CreateReservation = async () => {
         })
       });
 
-      if (response.ok) {
-        alert("후기 등록 완료!");
-        navigate("/reviews"); 
-      } else {
-        alert("후기 등록 실패");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("서버 오류");
-    }
-  };
+      alert(result); // 서버에서 "후기 등록 성공" 오면 그대로 표시
+    navigate("/reviews");
 
+  } catch (err) {
+    console.error(err);
+    alert(err.message); // 서버가 보낸 에러 메시지 출력
+  }
+};
   return (
     <div>
       <h3>예약 등록</h3>

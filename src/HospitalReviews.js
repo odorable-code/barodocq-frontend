@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authFetch } from "./utils/authFetch";
 
 function HospitalReviews() {
   const [reviews, setReviews] = useState([]);
@@ -9,87 +10,74 @@ function HospitalReviews() {
   const navigate = useNavigate();
 
   //최신순
-  const Last_order = async() =>{
-    try{
-      const response = await fetch("http://localhost:8080/api/reviews?sort=latest");
-      if(response.ok){
-        const data = await response.json();
-        setReviews(data);
-        setCurrentPage(1);
-      }
-    }catch(err){
-      console.error(err);
-    }
-  }
-
-  //인기순
-  const Popular_order = async() =>{
-    try{
-      const response = await fetch("http://localhost:8080/api/reviews?sort=popular");
-      if(response.ok){
-        const data = await response.json();
-        setReviews(data);
-        setCurrentPage(1);
-      }
-    }catch(err){
-      console.error(err);
-    }
-  }
-
-
-  // 후기 삭제
-  const deletePost = (rvNum) => {
-    const isDel = window.confirm("진짜삭제합니까?");
-    if (!isDel) {
-      alert("삭제취소했습니다.");
-      return;
-    }
-    deleteReview(rvNum);
-  };
-
-  const deleteReview = async (rvNum) => {
+  const Last_order = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/reviews/${rvNum}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" }
-      });
-
-      if (response.ok) {
-        console.log("삭제 성공");
-        // 삭제 표시
-        setReviews((prev) =>
-          prev.map((review) =>
-            review.rv_num === rvNum
-              ? { ...review, rv_deleted_yn: 1 }
-              : review
-          )
-        );
-      } else {
-        console.error("삭제 실패");
-      }
+      const data = await authFetch(
+        "http://localhost:8080/api/v1/reviews?sort=latest"
+      );
+      setReviews(data);
+      setCurrentPage(1);
     } catch (err) {
       console.error(err);
     }
   };
 
+  //인기순
+  const Popular_order = async () => {
+    try {
+      const data = await authFetch(
+        "http://localhost:8080/api/v1/reviews?sort=popular"
+      );
+      setReviews(data);
+      setCurrentPage(1);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  // 후기 삭제
+  const deletePost = async (rvNum) => {
+  const isDel = window.confirm("진짜 삭제합니까?");
+  if (!isDel) {
+    alert("삭제취소했습니다.");
+    return;
+  }
+
+  try {
+    const msg = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
+    console.log(msg);
+    alert("삭제 성공!");
+
+    // 삭제 성공 시 바로 화면에서 rv_deleted_yn = 1 처리
+    setReviews(prev =>
+      prev.map(review =>
+        review.rv_num === rvNum ? { ...review, rv_deleted_yn: 1 } : review
+      )
+    );
+  } catch (err) {
+    console.error("삭제 실패:", err);
+    alert(err.message || "삭제 실패했습니다.");
+  }
+};
+
   // 후기 가져오기
   useEffect(() => {
     const getReviews = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return; // 토큰 없으면 호출하지 않음
+
       try {
-        const response = await fetch("http://localhost:8080/api/reviews");
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        } else {
-          console.error("에러:", response.status);
-        }
+        const data = await authFetch("http://localhost:8080/api/v1/reviews");
+        setReviews(data);
       } catch (err) {
         console.error("에러:", err);
       }
     };
 
     getReviews();
-  }, []);
+  }, []); // 토큰이 준비된 후에만 실행
+
 
   // 제목 기준으로 검색된 리뷰만 반환
   const filteredReviews = reviews

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { authFetch } from "./utils/authFetch";
 
 function ReviewDetail() {
   const { rvNum } = useParams();
@@ -10,25 +11,21 @@ function ReviewDetail() {
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/reviews/${rvNum}`
+        const data = await authFetch(
+          `http://localhost:8080/api/v1/reviews/${rvNum}`
         );
 
-        if (response.ok) {
-          const data = await response.json();
-					console.log(data);
-          setReview(data);
-        } else {
-          alert("후기 불러오기 실패");
-        }
+        setReview(data);  // 이미 JSON 객체로 반환됨
+        console.log(data);
       } catch (err) {
         console.error(err);
+        alert("후기 불러오기 실패");
       }
     };
 
     fetchReview();
   }, [rvNum]);
-
+  
   if (!review) return <div className="text-center mt-5">로딩중...</div>;
 
   return (
