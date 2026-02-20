@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import "../assets/styles/ReservationDateSelect.css";
 
-function ReservationDateSelect({ onClose }) {
+function ReservationDateSelect() {
+  const [showPopup, setShowPopup] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+
+  // 팝업 닫기 + 상태 초기화
+  const handleClose = () => {
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setShowPopup(false);
+  };
 
   // 날짜별 예약 가능한 시간 예시 (9:00~21:00)
   const dateTimeMap = Array.from({ length: 30 }, () => {
@@ -52,75 +60,103 @@ function ReservationDateSelect({ onClose }) {
   const timeSlots = selectedDate !== null ? dateTimeMap[selectedDate] : [];
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="popup" onClick={(e) => e.stopPropagation()}>
-        {/* X 버튼 */}
-        <button className="close-btn" onClick={onClose}>
-          ×
-        </button>
+    <div>
+      {/* 팝업 열기 버튼 */}
+      <button onClick={() => setShowPopup(true)}>
+        예약 날짜 선택
+      </button>
 
-        <h2>언제 예약할까요?</h2>
-        <div className="subtitle">예약 가능한 날짜 예: 2026.02.10 ~ 2026.03.10</div>
-        <hr />
-
-        {/* 달력 */}
-        <div className="calendar">
-          <div className="days-of-week">
-            {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
-              <div key={d}>{d}</div>
-            ))}
-          </div>
-          <div className="dates">
-            {Array.from({ length: 30 }, (_, i) => {
-              const dayOfWeek = i % 7;
-              const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-              return (
-                <div
-                  key={i}
-                  className={`date ${selectedDate === i ? "selected" : ""} ${
-                    isWeekend ? "weekend" : ""
-                  }`}
-                  onClick={() => toggleDate(i)}
-                >
-                  {i + 1}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 시간 선택 안내 */}
-        <div className="subtitle time-message">
-          {selectedDate === null
-            ? "날짜를 선택해주세요."
-            : selectedTime === null
-            ? "시간을 선택해주세요."
-            : ""}
-        </div>
-
-        {/* 시간 선택 박스 */}
-        <div className="time-slots">
-          {timeSlots.map((time) => (
-            <div
-              key={time}
-              className={`time-slot ${selectedTime === time ? "selected" : ""}`}
-              onClick={() => toggleTime(time)}
+      {/* 팝업 */}
+      {showPopup && (
+        <div className="overlay" onClick={handleClose}>
+          <div
+            className="popup"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* X 버튼 */}
+            <button
+              className="close-btn"
+              onClick={handleClose}
             >
-              {time}
-            </div>
-          ))}
-        </div>
+              ×
+            </button>
 
-        {/* 하단 버튼 */}
-        <div className="popup-buttons">
-          <button className="reset" onClick={resetSelection}>
-            초기화
-          </button>
-          <button className="confirm" onClick={confirmSelection}>
-            선택 완료
-          </button>
+            <h2>언제 예약할까요?</h2>
+            <div className="subtitle">
+              예약 가능한 날짜 예: 2026.02.10 ~ 2026.03.10
+            </div>
+            <hr />
+
+            {/* 달력 */}
+            <div className="calendar">
+              <div className="days-of-week">
+                {["일", "월", "화", "수", "목", "금", "토"].map(
+                  (d) => (
+                    <div key={d}>{d}</div>
+                  )
+                )}
+              </div>
+
+              <div className="dates">
+                {Array.from({ length: 30 }, (_, i) => {
+                  const dayOfWeek = i % 7;
+                  const isWeekend =
+                    dayOfWeek === 0 || dayOfWeek === 6;
+
+                  return (
+                    <div
+                      key={i}
+                      className={`date ${
+                        selectedDate === i
+                          ? "selected"
+                          : ""
+                      } ${
+                        isWeekend ? "weekend" : ""
+                      }`}
+                      onClick={() => toggleDate(i)}
+                    >
+                      {i + 1}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 시간 선택 */}
+            <div className="time-slots">
+              {timeSlots.map((time) => (
+                <div
+                  key={time}
+                  className={`time-slot ${
+                    selectedTime === time
+                      ? "selected"
+                      : ""
+                  }`}
+                  onClick={() => toggleTime(time)}
+                >
+                  {time}
+                </div>
+              ))}
+            </div>
+
+            {/* 하단 버튼 */}
+            <div className="popup-buttons">
+              <button
+                className="reset"
+                onClick={resetSelection}
+              >
+                초기화
+              </button>
+              <button
+                className="confirm"
+                onClick={confirmSelection}
+              >
+                선택 완료
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

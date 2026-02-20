@@ -1,7 +1,9 @@
 // ReservationDetail.jsx
 import React, { useState } from "react";
 import "../assets/styles/ReservationDetail.css";
-import profileImg from "../assets/images/hospital_profile.png";
+
+// 병원 프로필 이미지 경로, 차후 변경가능
+// import profileImg from "../assets/images/hospital_profile.png";
 
 function ReservationDetail() {
   const [showPopup, setShowPopup] = useState(false);
@@ -50,7 +52,11 @@ function ReservationDetail() {
             {/* 병원 정보 */}
             <div className="hospital-info">
               <img
-                src={profileImg}
+                // 나중에 병원 정보 이미지 쓰려면 이거 사용
+                // src={profileImg}
+
+                // 이건 임시 트스트용 이미지 경로
+                src="https://picsum.photos/200"
                 alt="병원"
                 className="hospital-profile"
               />
