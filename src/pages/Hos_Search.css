@@ -15,7 +15,7 @@
 
 /* 본문 */
 .hs__content {
-  max-width: 900px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 22px 18px 60px;
 }
@@ -89,30 +89,38 @@
   border-radius: 18px;
   padding: 16px;
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 1fr 160px;
   gap: 14px;
-  min-height: 120px;
+
+  height: 160px;        /* 카드 높이 고정 */
+  overflow: hidden;
+  align-items: start;   /* 중요: grid 아이템 위쪽 정렬 */
 }
 
 .hs-card__name {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   margin-bottom: 10px;
 }
 
 .hs-card__info {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.4;
 }
 
 /* 사진 박스 */
 .hs-card__imgbox {
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* 정사각형 */
+  
   border: 1.5px solid #111;
-  height: 100%;
   border-radius: 10px;
+
   display: grid;
   place-items: center;
   font-size: 14px;
+
+  align-self: start;     /* 카드 안에서 위에 붙게 */
 }
 
 /*마우스 호버 효과*/
@@ -132,4 +140,31 @@
   .hs__grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* 선택한 진료과 / 지역별찾기 값 보여주는CSS*/
+.hs__selected-row {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 6px;
+  flex-wrap: wrap;
+}
+
+.hs__selected-pill {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.hs__selected-label {
+  font-weight: 700;
+  color: #374151;
+}
+
+.hs__selected-value {
+  font-weight: 700;
+  color: #111827;
 }

@@ -1,0 +1,1322 @@
+[
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11110",
+        "sigunguname":  "종로구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11140",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11170",
+        "sigunguname":  "용산구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11200",
+        "sigunguname":  "성동구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11215",
+        "sigunguname":  "광진구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11230",
+        "sigunguname":  "동대문구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11260",
+        "sigunguname":  "중랑구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11290",
+        "sigunguname":  "성북구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11305",
+        "sigunguname":  "강북구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11320",
+        "sigunguname":  "도봉구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11350",
+        "sigunguname":  "노원구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11380",
+        "sigunguname":  "은평구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11410",
+        "sigunguname":  "서대문구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11440",
+        "sigunguname":  "마포구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11470",
+        "sigunguname":  "양천구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11500",
+        "sigunguname":  "강서구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11530",
+        "sigunguname":  "구로구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11545",
+        "sigunguname":  "금천구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11560",
+        "sigunguname":  "영등포구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11590",
+        "sigunguname":  "동작구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11620",
+        "sigunguname":  "관악구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11650",
+        "sigunguname":  "서초구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11680",
+        "sigunguname":  "강남구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11710",
+        "sigunguname":  "송파구"
+    },
+    {
+        "sidocode":  "11",
+        "sigungucode":  "11740",
+        "sigunguname":  "강동구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26110",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26140",
+        "sigunguname":  "서구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26170",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26200",
+        "sigunguname":  "영도구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26230",
+        "sigunguname":  "부산진구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26260",
+        "sigunguname":  "동래구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26290",
+        "sigunguname":  "남구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26320",
+        "sigunguname":  "북구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26350",
+        "sigunguname":  "해운대구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26380",
+        "sigunguname":  "사하구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26410",
+        "sigunguname":  "금정구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26440",
+        "sigunguname":  "강서구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26470",
+        "sigunguname":  "연제구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26500",
+        "sigunguname":  "수영구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26530",
+        "sigunguname":  "사상구"
+    },
+    {
+        "sidocode":  "26",
+        "sigungucode":  "26710",
+        "sigunguname":  "기장군"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27110",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27140",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27170",
+        "sigunguname":  "서구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27200",
+        "sigunguname":  "남구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27230",
+        "sigunguname":  "북구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27260",
+        "sigunguname":  "수성구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27290",
+        "sigunguname":  "달서구"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27710",
+        "sigunguname":  "달성군"
+    },
+    {
+        "sidocode":  "27",
+        "sigungucode":  "27720",
+        "sigunguname":  "군위군"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28110",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28140",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28177",
+        "sigunguname":  "미추홀구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28185",
+        "sigunguname":  "연수구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28200",
+        "sigunguname":  "남동구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28237",
+        "sigunguname":  "부평구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28245",
+        "sigunguname":  "계양구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28260",
+        "sigunguname":  "서구"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28710",
+        "sigunguname":  "강화군"
+    },
+    {
+        "sidocode":  "28",
+        "sigungucode":  "28720",
+        "sigunguname":  "옹진군"
+    },
+    {
+        "sidocode":  "29",
+        "sigungucode":  "29110",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "29",
+        "sigungucode":  "29140",
+        "sigunguname":  "서구"
+    },
+    {
+        "sidocode":  "29",
+        "sigungucode":  "29155",
+        "sigunguname":  "남구"
+    },
+    {
+        "sidocode":  "29",
+        "sigungucode":  "29170",
+        "sigunguname":  "북구"
+    },
+    {
+        "sidocode":  "29",
+        "sigungucode":  "29200",
+        "sigunguname":  "광산구"
+    },
+    {
+        "sidocode":  "30",
+        "sigungucode":  "30110",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "30",
+        "sigungucode":  "30140",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "30",
+        "sigungucode":  "30170",
+        "sigunguname":  "서구"
+    },
+    {
+        "sidocode":  "30",
+        "sigungucode":  "30200",
+        "sigunguname":  "유성구"
+    },
+    {
+        "sidocode":  "30",
+        "sigungucode":  "30230",
+        "sigunguname":  "대덕구"
+    },
+    {
+        "sidocode":  "31",
+        "sigungucode":  "31110",
+        "sigunguname":  "중구"
+    },
+    {
+        "sidocode":  "31",
+        "sigungucode":  "31140",
+        "sigunguname":  "남구"
+    },
+    {
+        "sidocode":  "31",
+        "sigungucode":  "31170",
+        "sigunguname":  "동구"
+    },
+    {
+        "sidocode":  "31",
+        "sigungucode":  "31200",
+        "sigunguname":  "북구"
+    },
+    {
+        "sidocode":  "31",
+        "sigungucode":  "31710",
+        "sigunguname":  "울주군"
+    },
+    {
+        "sidocode":  "36",
+        "sigungucode":  "36110",
+        "sigunguname":  "세종시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41110",
+        "sigunguname":  "수원시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41111",
+        "sigunguname":  "수원시장안구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41113",
+        "sigunguname":  "수원시권선구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41115",
+        "sigunguname":  "수원시팔달구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41117",
+        "sigunguname":  "수원시영통구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41130",
+        "sigunguname":  "성남시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41131",
+        "sigunguname":  "성남시수정구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41133",
+        "sigunguname":  "성남시중원구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41135",
+        "sigunguname":  "성남시분당구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41150",
+        "sigunguname":  "의정부시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41170",
+        "sigunguname":  "안양시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41171",
+        "sigunguname":  "안양시만안구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41173",
+        "sigunguname":  "안양시동안구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41190",
+        "sigunguname":  "부천시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41192",
+        "sigunguname":  "부천시원미구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41194",
+        "sigunguname":  "부천시소사구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41196",
+        "sigunguname":  "부천시오정구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41210",
+        "sigunguname":  "광명시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41220",
+        "sigunguname":  "평택시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41250",
+        "sigunguname":  "동두천시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41270",
+        "sigunguname":  "안산시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41271",
+        "sigunguname":  "안산시상록구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41273",
+        "sigunguname":  "안산시단원구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41280",
+        "sigunguname":  "고양시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41281",
+        "sigunguname":  "고양시덕양구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41285",
+        "sigunguname":  "고양시일산동구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41287",
+        "sigunguname":  "고양시일산서구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41290",
+        "sigunguname":  "과천시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41310",
+        "sigunguname":  "구리시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41360",
+        "sigunguname":  "남양주시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41370",
+        "sigunguname":  "오산시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41390",
+        "sigunguname":  "시흥시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41410",
+        "sigunguname":  "군포시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41430",
+        "sigunguname":  "의왕시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41450",
+        "sigunguname":  "하남시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41460",
+        "sigunguname":  "용인시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41461",
+        "sigunguname":  "용인시처인구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41463",
+        "sigunguname":  "용인시기흥구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41465",
+        "sigunguname":  "용인시수지구"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41480",
+        "sigunguname":  "파주시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41500",
+        "sigunguname":  "이천시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41550",
+        "sigunguname":  "안성시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41570",
+        "sigunguname":  "김포시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41590",
+        "sigunguname":  "화성시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41610",
+        "sigunguname":  "광주시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41630",
+        "sigunguname":  "양주시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41650",
+        "sigunguname":  "포천시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41670",
+        "sigunguname":  "여주시"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41800",
+        "sigunguname":  "연천군"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41820",
+        "sigunguname":  "가평군"
+    },
+    {
+        "sidocode":  "41",
+        "sigungucode":  "41830",
+        "sigunguname":  "양평군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43110",
+        "sigunguname":  "청주시"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43111",
+        "sigunguname":  "청주시상당구"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43112",
+        "sigunguname":  "청주시서원구"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43113",
+        "sigunguname":  "청주시흥덕구"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43114",
+        "sigunguname":  "청주시청원구"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43130",
+        "sigunguname":  "충주시"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43150",
+        "sigunguname":  "제천시"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43720",
+        "sigunguname":  "보은군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43730",
+        "sigunguname":  "옥천군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43740",
+        "sigunguname":  "영동군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43745",
+        "sigunguname":  "증평군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43750",
+        "sigunguname":  "진천군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43760",
+        "sigunguname":  "괴산군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43770",
+        "sigunguname":  "음성군"
+    },
+    {
+        "sidocode":  "43",
+        "sigungucode":  "43800",
+        "sigunguname":  "단양군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44130",
+        "sigunguname":  "천안시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44131",
+        "sigunguname":  "천안시동남구"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44133",
+        "sigunguname":  "천안시서북구"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44150",
+        "sigunguname":  "공주시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44180",
+        "sigunguname":  "보령시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44200",
+        "sigunguname":  "아산시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44210",
+        "sigunguname":  "서산시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44230",
+        "sigunguname":  "논산시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44250",
+        "sigunguname":  "계룡시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44270",
+        "sigunguname":  "당진시"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44710",
+        "sigunguname":  "금산군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44760",
+        "sigunguname":  "부여군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44770",
+        "sigunguname":  "서천군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44790",
+        "sigunguname":  "청양군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44800",
+        "sigunguname":  "홍성군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44810",
+        "sigunguname":  "예산군"
+    },
+    {
+        "sidocode":  "44",
+        "sigungucode":  "44825",
+        "sigunguname":  "태안군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46110",
+        "sigunguname":  "목포시"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46130",
+        "sigunguname":  "여수시"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46150",
+        "sigunguname":  "순천시"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46170",
+        "sigunguname":  "나주시"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46230",
+        "sigunguname":  "광양시"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46710",
+        "sigunguname":  "담양군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46720",
+        "sigunguname":  "곡성군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46730",
+        "sigunguname":  "구례군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46770",
+        "sigunguname":  "고흥군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46780",
+        "sigunguname":  "보성군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46790",
+        "sigunguname":  "화순군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46800",
+        "sigunguname":  "장흥군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46810",
+        "sigunguname":  "강진군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46820",
+        "sigunguname":  "해남군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46830",
+        "sigunguname":  "영암군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46840",
+        "sigunguname":  "무안군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46860",
+        "sigunguname":  "함평군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46870",
+        "sigunguname":  "영광군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46880",
+        "sigunguname":  "장성군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46890",
+        "sigunguname":  "완도군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46900",
+        "sigunguname":  "진도군"
+    },
+    {
+        "sidocode":  "46",
+        "sigungucode":  "46910",
+        "sigunguname":  "신안군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47110",
+        "sigunguname":  "포항시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47111",
+        "sigunguname":  "포항시남구"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47113",
+        "sigunguname":  "포항시북구"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47130",
+        "sigunguname":  "경주시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47150",
+        "sigunguname":  "김천시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47170",
+        "sigunguname":  "안동시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47190",
+        "sigunguname":  "구미시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47210",
+        "sigunguname":  "영주시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47230",
+        "sigunguname":  "영천시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47250",
+        "sigunguname":  "상주시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47280",
+        "sigunguname":  "문경시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47290",
+        "sigunguname":  "경산시"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47730",
+        "sigunguname":  "의성군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47750",
+        "sigunguname":  "청송군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47760",
+        "sigunguname":  "영양군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47770",
+        "sigunguname":  "영덕군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47820",
+        "sigunguname":  "청도군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47830",
+        "sigunguname":  "고령군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47840",
+        "sigunguname":  "성주군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47850",
+        "sigunguname":  "칠곡군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47900",
+        "sigunguname":  "예천군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47920",
+        "sigunguname":  "봉화군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47930",
+        "sigunguname":  "울진군"
+    },
+    {
+        "sidocode":  "47",
+        "sigungucode":  "47940",
+        "sigunguname":  "울릉군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48120",
+        "sigunguname":  "창원시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48121",
+        "sigunguname":  "창원시의창구"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48123",
+        "sigunguname":  "창원시성산구"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48125",
+        "sigunguname":  "창원시마산합포구"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48127",
+        "sigunguname":  "창원시마산회원구"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48129",
+        "sigunguname":  "창원시진해구"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48170",
+        "sigunguname":  "진주시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48220",
+        "sigunguname":  "통영시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48240",
+        "sigunguname":  "사천시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48250",
+        "sigunguname":  "김해시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48270",
+        "sigunguname":  "밀양시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48310",
+        "sigunguname":  "거제시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48330",
+        "sigunguname":  "양산시"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48720",
+        "sigunguname":  "의령군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48730",
+        "sigunguname":  "함안군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48740",
+        "sigunguname":  "창녕군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48820",
+        "sigunguname":  "고성군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48840",
+        "sigunguname":  "남해군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48850",
+        "sigunguname":  "하동군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48860",
+        "sigunguname":  "산청군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48870",
+        "sigunguname":  "함양군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48880",
+        "sigunguname":  "거창군"
+    },
+    {
+        "sidocode":  "48",
+        "sigungucode":  "48890",
+        "sigunguname":  "합천군"
+    },
+    {
+        "sidocode":  "50",
+        "sigungucode":  "50110",
+        "sigunguname":  "제주시"
+    },
+    {
+        "sidocode":  "50",
+        "sigungucode":  "50130",
+        "sigunguname":  "서귀포시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51110",
+        "sigunguname":  "춘천시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51130",
+        "sigunguname":  "원주시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51150",
+        "sigunguname":  "강릉시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51170",
+        "sigunguname":  "동해시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51190",
+        "sigunguname":  "태백시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51210",
+        "sigunguname":  "속초시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51230",
+        "sigunguname":  "삼척시"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51720",
+        "sigunguname":  "홍천군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51730",
+        "sigunguname":  "횡성군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51750",
+        "sigunguname":  "영월군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51760",
+        "sigunguname":  "평창군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51770",
+        "sigunguname":  "정선군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51780",
+        "sigunguname":  "철원군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51790",
+        "sigunguname":  "화천군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51800",
+        "sigunguname":  "양구군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51810",
+        "sigunguname":  "인제군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51820",
+        "sigunguname":  "고성군"
+    },
+    {
+        "sidocode":  "51",
+        "sigungucode":  "51830",
+        "sigunguname":  "양양군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52110",
+        "sigunguname":  "전주시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52111",
+        "sigunguname":  "전주시완산구"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52113",
+        "sigunguname":  "전주시덕진구"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52130",
+        "sigunguname":  "군산시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52140",
+        "sigunguname":  "익산시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52180",
+        "sigunguname":  "정읍시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52190",
+        "sigunguname":  "남원시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52210",
+        "sigunguname":  "김제시"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52710",
+        "sigunguname":  "완주군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52720",
+        "sigunguname":  "진안군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52730",
+        "sigunguname":  "무주군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52740",
+        "sigunguname":  "장수군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52750",
+        "sigunguname":  "임실군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52770",
+        "sigunguname":  "순창군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52790",
+        "sigunguname":  "고창군"
+    },
+    {
+        "sidocode":  "52",
+        "sigungucode":  "52800",
+        "sigunguname":  "부안군"
+    }
+]

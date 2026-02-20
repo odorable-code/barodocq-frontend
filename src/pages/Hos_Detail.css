@@ -1,231 +1,203 @@
 /* 전체 */
-.hd {
+.hd2 {
   min-height: 100vh;
   background: #fff;
   color: #111;
 }
 
-/* 상단바 자리만 확보 */
-.hd__topbar-placeholder {
+/* ✅ 상단바 자리(placeholder) */
+.hd2__topbar-placeholder {
   height: 110px;
   border: 4px solid #111;
   display: grid;
   place-items: center;
   font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 18px;
-}
-
-.hd__topbar-inner {
-  max-width: 920px;
-  margin: 0 auto;
-  padding: 12px 14px;
-  display: grid;
-  grid-template-columns: 120px 1fr 180px;
-  gap: 12px;
-  align-items: center;
-}
-
-.hd__brand {
-  border: 1px solid #111;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-weight: 800;
-  text-align: center;
-}
-
-.hd__search input {
-  width: 100%;
-  border: 1px solid #111;
-  border-radius: 6px;
-  padding: 10px 12px;
-  outline: none;
-}
-
-.hd__top-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.hd__btn {
-  border: 1px solid #111;
-  background: #fff;
-  padding: 9px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* 본문 */
-.hd__content {
-  max-width: 920px;
-  margin: 0 auto;
-  padding: 18px 14px 50px;
-}
-
-/* 제목 / 예약 */
-.hd__title-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin: 10px 0 16px;
-}
-
-.hd__name {
-  font-size: 26px;
   font-weight: 900;
-  margin-bottom: 6px;
 }
 
-.hd__dept {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.hd__reserve {
-  border: 1px solid #111;
-  background: #fff;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-/* 사진/길찾기 */
-.hd__hero {
+/* ✅ 화면 폭 1440px */
+.hd2__wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 18px 16px 60px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 18px;
+  grid-template-columns: 380px 1fr; /* 왼쪽이 반절 먹지 않게 고정폭 */
+  gap: 22px;
+  align-items: start;
 }
 
-.hd__hero-box {
-  border: 1.5px solid #111;
-  border-radius: 26px;
-  height: 240px;
+/* 왼쪽 고정 패널 */
+.hd2__left {
+  position: sticky;
+  top: 130px; /* 상단바(110) + 여백 고려 */
+  align-self: start;
   display: grid;
-  place-items: center;
-}
-
-.hd__hero-label {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-/* 정보 */
-.hd__info {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 18px;
-  margin-bottom: 16px;
-}
-
-.hd__info-line {
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.hd__info-cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
-.hd__col-title {
-  font-size: 13px;
-  font-weight: 800;
-  margin-bottom: 6px;
+/* 왼쪽 카드 */
+.hd2__leftCard {
+  border: 1.5px solid #111;
+  border-radius: 22px;
+  padding: 18px;
+  min-height: 220px;
 }
 
-.hd__col-value {
+.hd2__title {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.hd2__summary {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* 태그 */
+.hd2__tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hd2__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #111;
+  border-radius: 8px;
+  padding: 10px 14px;
   font-size: 14px;
 }
 
-/* 옵션 칩 */
-.hd__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 10px 0 18px;
-}
-
-.hd__chip {
-  border: 1px solid #111;
+/* 버튼 */
+.hd2__actionBtn {
+  border: 1.5px solid #111;
+  border-radius: 18px;
   background: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 18px 14px;
+  font-size: 18px;
+  font-weight: 800;
   cursor: pointer;
 }
 
-/* 후기 */
-.hd__review {
+/* 오른쪽 */
+.hd2__right {
+  display: grid;
+  gap: 18px;
+}
+
+/* 공통 패널 */
+.hd2__panel {
+  border: 1.5px solid #111;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.hd2__panelTitle {
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.hd2__panelBody {
+  border-radius: 14px;
+}
+
+/* 병원사진 박스 */
+.hd2__photoBox {
+  height: 320px;
+  border: 1px solid #111;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* 오시는길 */
+.hd2__guideBox {
+  border: 1px solid #111;
+  padding: 14px;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+}
+
+.hd2__guideText {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* 지도 */
+.hd2__mapBox {
+  height: 320px;
+  border: 1px solid #111;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* 리뷰 */
+.hd2__reviews {
+  display: grid;
+  gap: 12px;
   margin-top: 8px;
 }
 
-.hd__review-title {
-  font-size: 18px;
-  font-weight: 900;
-  margin-bottom: 10px;
-  display: flex;
+.hd2__reviewRow {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
   align-items: center;
-  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(0,0,0,0.12);
 }
 
-.hd__star {
-  font-size: 18px;
+.hd2__reviewRow:first-child {
+  border-top: none;
 }
 
-.hd__review-box {
-  border: 1.5px solid #111;
-  border-radius: 26px;
-  min-height: 240px;
+.hd2__reviewImg {
+  height: 70px;
+  border: 1px solid #111;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-}
-
-.hd__review-empty {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 800;
-  opacity: 0.75;
 }
 
-/* 하단 */
-.hd__bottom {
-  margin-top: 18px;
+.hd2__reviewText {
+  font-size: 14px;
+}
+
+/* 리뷰 더보기 */
+.hd2__moreWrap {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
 }
 
-.hd__back {
-  border: 1px solid #111;
+.hd2__moreBtn {
+  border: 1.5px solid #111;
+  border-radius: 14px;
   background: #fff;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 14px 22px;
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
 }
 
-.hd__debug {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* 모바일 */
-@media (max-width: 760px) {
-  .hd__topbar-inner {
+/* 반응형: 화면 좁으면 왼쪽 고정 해제하고 위로 쌓기 */
+@media (max-width: 980px) {
+  .hd2__wrap {
     grid-template-columns: 1fr;
   }
-  .hd__top-actions {
-    justify-content: flex-start;
-  }
-  .hd__hero {
-    grid-template-columns: 1fr;
-  }
-  .hd__info {
-    grid-template-columns: 1fr;
-  }
-  .hd__info-cols {
-    grid-template-columns: 1fr;
+  .hd2__left {
+    position: static;
+    top: auto;
   }
 }
