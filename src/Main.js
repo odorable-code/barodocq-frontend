@@ -1,6 +1,5 @@
 import './Main.css';
 
-
 const CategoryGrid = () => {
   const categories = ["전체", "소아청소년과", "내과", ...Array(5).fill(""), "더 보기"];
   return (
