@@ -1,41 +1,103 @@
 import React, { useState } from "react";
 import "../assets/styles/ReservationDateSelect.css";
 
-function ReservationDateSelect() {
-  const [showPopup, setShowPopup] = useState(false);
+function ReservationDateSelect({ onClose }) {
+  const START_HOUR = 9;
+  const END_HOUR = 21;
+  const INTERVAL_MINUTES = 15;
+
+  const today = new Date();
+  const now = new Date();
+
+  // 오늘이 속한 달 (기준 달)
+  const baseYear = today.getFullYear();
+  const baseMonth = today.getMonth();
+
+  // 현재 보고 있는 달
+  const [viewDate, setViewDate] = useState(
+    new Date(baseYear, baseMonth, 1)
+  );
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
 
-  // 팝업 닫기 + 상태 초기화
-  const handleClose = () => {
-    setSelectedDate(null);
+  const currentYear = viewDate.getFullYear();
+  const currentMonth = viewDate.getMonth();
+
+  const firstDay = new Date(currentYear, currentMonth, 1);
+  const firstDayWeek = firstDay.getDay();
+  const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const calendarDays = [];
+
+  for (let i = 0; i < firstDayWeek; i++) {
+    calendarDays.push(null);
+  }
+
+  for (let i = 1; i <= lastDate; i++) {
+    calendarDays.push(new Date(currentYear, currentMonth, i));
+  }
+
+  // 🔥 이전달 버튼 표시 조건 (보고있는 달이 기준달보다 이후일 때)
+  const canGoPrev =
+    currentYear > baseYear ||
+    (currentYear === baseYear && currentMonth > baseMonth);
+
+  const goToPrevMonth = () => {
+    if (!canGoPrev) return;
+    setViewDate(new Date(currentYear, currentMonth - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth + 1, 1));
+  };
+
+  const generateTimeSlots = () => {
+    const morning = [];
+    const afternoon = [];
+
+    for (
+      let minutes = START_HOUR * 60;
+      minutes <= END_HOUR * 60;
+      minutes += INTERVAL_MINUTES
+    ) {
+      const hour = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+
+      const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+      const label = `${displayHour}:${minute.toString().padStart(2, "0")}`;
+      const value = `${hour}:${minute.toString().padStart(2, "0")}`;
+
+      if (hour < 12) {
+        morning.push({ label, value });
+      } else {
+        afternoon.push({ label, value });
+      }
+    }
+
+    return { morning, afternoon };
+  };
+
+  const timeSlots = selectedDate ? generateTimeSlots() : null;
+
+  const toggleDate = (date) => {
+    if (!date) return;
+
+    const compare = new Date(date);
+    compare.setHours(0, 0, 0, 0);
+
+    const todayCopy = new Date(today);
+    todayCopy.setHours(0, 0, 0, 0);
+
+    if (compare < todayCopy) return;
+
+    setSelectedDate(date);
     setSelectedTime(null);
-    setShowPopup(false);
   };
 
-  // 날짜별 예약 가능한 시간 예시 (9:00~21:00)
-  const dateTimeMap = Array.from({ length: 30 }, () => {
-    const times = [];
-    for (let hour = 9; hour <= 21; hour++) {
-      times.push(`${hour}:00`);
-      if (hour !== 21) times.push(`${hour}:30`);
-    }
-    return times;
-  });
-
-  const toggleDate = (i) => {
-    if (selectedDate === i) {
-      setSelectedDate(null);
-      setSelectedTime(null);
-    } else {
-      setSelectedDate(i);
-      setSelectedTime(null);
-    }
-  };
-
-  const toggleTime = (time) => {
-    if (selectedTime === time) setSelectedTime(null);
-    else setSelectedTime(time);
+  const toggleTime = (value, disabled) => {
+    if (disabled) return;
+    setSelectedTime(value);
   };
 
   const resetSelection = () => {
@@ -44,120 +106,185 @@ function ReservationDateSelect() {
   };
 
   const confirmSelection = () => {
-    if (selectedDate === null) {
-      alert("날짜를 선택해주세요!");
-      return;
-    }
-    if (!selectedTime) {
-      alert("시간을 선택해주세요!");
-      return;
-    }
+    if (!selectedDate || !selectedTime) return;
+
     alert(
-      `선택된 날짜: 2026.02.${selectedDate + 1}, 시간: ${selectedTime}`
+      `${selectedDate.getFullYear()}.${
+        selectedDate.getMonth() + 1
+      }.${selectedDate.getDate()} / ${selectedTime}`
     );
   };
 
-  const timeSlots =
-    selectedDate !== null ? dateTimeMap[selectedDate] : [];
+  const formatDate = (date) => {
+    return `${date.getFullYear()}.${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
+  };
+
+  const isTimeDisabled = (value) => {
+    if (!selectedDate) return false;
+
+    const isToday =
+      selectedDate.toDateString() === today.toDateString();
+
+    if (!isToday) return false;
+
+    const [hour, minute] = value.split(":").map(Number);
+    const slotMinutes = hour * 60 + minute;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    return slotMinutes <= nowMinutes;
+  };
+
+  const isConfirmDisabled = !selectedDate || !selectedTime;
 
   return (
-    <div>
-      {/* 팝업 열기 버튼 */}
-      <button onClick={() => setShowPopup(true)}>
-        예약 날짜 선택
-      </button>
+    <div className="overlay" onClick={onClose}>
+      <div
+        className="popup"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2>언제 예약할까요?</h2>
 
-      {/* 팝업 */}
-      {showPopup && (
-        <div className="overlay" onClick={handleClose}>
-          <div
-            className="popup"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* X 버튼 */}
-            <button
-              className="close-btn"
-              onClick={handleClose}
-            >
-              ×
+        {/* 달 이동 */}
+        <div className="month-header">
+          {canGoPrev && (
+            <button className="month-btn" onClick={goToPrevMonth}>
+              ◀ 이전달
             </button>
+          )}
 
-            <h2>언제 예약할까요?</h2>
-            <div className="subtitle">
-              예약 가능한 날짜 예: 2026.02.10 ~ 2026.03.10
-            </div>
-            <hr />
+          <div className="month-title">
+            {currentYear}년 {currentMonth + 1}월
+          </div>
 
-            {/* 달력 */}
-            <div className="calendar">
-              <div className="days-of-week">
-                {["일", "월", "화", "수", "목", "금", "토"].map(
-                  (d) => (
-                    <div key={d}>{d}</div>
-                  )
-                )}
-              </div>
+          <button className="month-btn" onClick={goToNextMonth}>
+            다음달 ▶
+          </button>
+        </div>
 
-              <div className="dates">
-                {Array.from({ length: 30 }, (_, i) => {
-                  const dayOfWeek = i % 7;
-                  const isWeekend =
-                    dayOfWeek === 0 || dayOfWeek === 6;
+        <div className="subtitle">
+          {formatDate(firstDay)} ~{" "}
+          {formatDate(new Date(currentYear, currentMonth, lastDate))}
+        </div>
 
-                  return (
-                    <div
-                      key={i}
-                      className={`date ${
-                        selectedDate === i
-                          ? "selected"
-                          : ""
-                      } ${
-                        isWeekend ? "weekend" : ""
-                      }`}
-                      onClick={() => toggleDate(i)}
-                    >
-                      {i + 1}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+        {selectedDate && selectedTime && (
+          <div className="selection-summary">
+            선택됨: {formatDate(selectedDate)} / {selectedTime}
+          </div>
+        )}
 
-            {/* 시간 선택 */}
-            <div className="time-slots">
-              {timeSlots.map((time) => (
+        <hr />
+
+        <div className="calendar">
+          <div className="days-of-week">
+            {["일", "월", "화", "수", "목", "금", "토"].map(
+              (d, idx) => (
                 <div
-                  key={time}
-                  className={`time-slot ${
-                    selectedTime === time
-                      ? "selected"
-                      : ""
-                  }`}
-                  onClick={() => toggleTime(time)}
+                  key={d}
+                  className={idx === 0 || idx === 6 ? "weekend" : ""}
                 >
-                  {time}
+                  {d}
                 </div>
-              ))}
-            </div>
+              )
+            )}
+          </div>
 
-            {/* 하단 버튼 */}
-            <div className="popup-buttons">
-              <button
-                className="reset"
-                onClick={resetSelection}
-              >
-                초기화
-              </button>
-              <button
-                className="confirm"
-                onClick={confirmSelection}
-              >
-                선택 완료
-              </button>
-            </div>
+          <div className="dates">
+            {calendarDays.map((date, i) => {
+              if (!date)
+                return <div key={i} className="date empty" />;
+
+              const isPast =
+                date <
+                new Date(
+                  today.getFullYear(),
+                  today.getMonth(),
+                  today.getDate()
+                );
+
+              const isWeekend =
+                date.getDay() === 0 || date.getDay() === 6;
+
+              const isSelected =
+                selectedDate &&
+                date.getTime() === selectedDate.getTime();
+
+              return (
+                <div
+                  key={i}
+                  className={`date
+                    ${isWeekend ? "weekend" : ""}
+                    ${isPast ? "disabled" : ""}
+                    ${isSelected ? "selected" : ""}
+                  `}
+                  onClick={() => toggleDate(date)}
+                >
+                  {date.getDate()}
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        {timeSlots && (
+          <>
+            <div className="time-section-title">오전</div>
+            <div className="time-slots">
+              {timeSlots.morning.map((slot) => {
+                const disabled = isTimeDisabled(slot.value);
+                return (
+                  <div
+                    key={slot.value}
+                    className={`time-slot
+                      ${selectedTime === slot.value ? "selected" : ""}
+                      ${disabled ? "disabled" : ""}
+                    `}
+                    onClick={() => toggleTime(slot.value, disabled)}
+                  >
+                    {slot.label}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="time-section-title">오후</div>
+            <div className="time-slots">
+              {timeSlots.afternoon.map((slot) => {
+                const disabled = isTimeDisabled(slot.value);
+                return (
+                  <div
+                    key={slot.value}
+                    className={`time-slot
+                      ${selectedTime === slot.value ? "selected" : ""}
+                      ${disabled ? "disabled" : ""}
+                    `}
+                    onClick={() => toggleTime(slot.value, disabled)}
+                  >
+                    {slot.label}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        <div className="popup-buttons">
+          <button className="reset" onClick={resetSelection}>
+            초기화
+          </button>
+
+          <button
+            className={`confirm ${
+              isConfirmDisabled ? "confirm-disabled" : ""
+            }`}
+            onClick={confirmSelection}
+            disabled={isConfirmDisabled}
+          >
+            선택 완료
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
