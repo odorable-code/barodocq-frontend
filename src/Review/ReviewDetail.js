@@ -40,6 +40,17 @@ function ReviewDetail() {
       </div>
 
       <hr />
+      <h2>{review.review.rv_title}</h2>
+      <p>{review.review.rv_content}</p>
+
+      {review.files && review.files.map((file) => (
+    <img
+      key={file.rf_num}
+      src={`http://localhost:8080${file.rf_path}`}
+      alt="후기 이미지"
+      style={{ width: "300px", marginBottom: "10px" }}
+    />
+  ))}
 			<h3 className="mb-3">{review.rv_title}</h3>
       <div className="mb-4" style={{ whiteSpace: "pre-line" }}>
         {review.rv_content}
