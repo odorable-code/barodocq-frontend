@@ -1,19 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
-import Papa from "papaparse";
 import { useNavigate } from "react-router-dom";
 import "./Hos_Search.css";
 
-// ✅ 너가 만든 모달 컴포넌트들 (경로는 네 프로젝트에 맞게 수정!)
 import Hos_RegionSelect from "../components/Hos_RegionSelect";
 import Hos_DeptSelect from "../components/Hos_DeptSelect";
 
 const FILTERS = ["영업중", "야간진료", "휴일", "여의사", "예약가능"];
 
+// ✅ 환경변수 있으면 쓰고, 없으면 로컬 기본값
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+
+async function fetchHospitals(params = {}) {
+  const cleaned = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v !== null && v !== undefined && v !== "")
+  );
+
+  const qs = new URLSearchParams(cleaned).toString();
+
+  // ✅ 백엔드 주소랑 맞춰서 통일
+  const url = `${API_BASE_URL}/api/v1/hospitals/cards${qs ? `?${qs}` : ""}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    // credentials: "include", // ✅ 지금은 빼!
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`병원 목록 조회 실패 (status: ${res.status})\n${text.slice(0, 120)}`);
+  }
+
+  return res.json();
+}
+
 export default function Hos_Search() {
   const [tab, setTab] = useState("dept"); // dept | region
   const [activeFilter, setActiveFilter] = useState(null);
 
-  // ✅ CSV 데이터
+  // ✅ 백엔드 데이터
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,7 +46,7 @@ export default function Hos_Search() {
   const [isDeptOpen, setIsDeptOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
 
-  // ✅ 선택값 (Hos_Search가 최종 상태를 들고 있음)
+  // ✅ 선택값
   const [selectedDept, setSelectedDept] = useState(""); // "피부과" 등
   const [region, setRegion] = useState({
     sido: "",
@@ -30,83 +54,106 @@ export default function Hos_Search() {
     eupmyeon: "",
   });
 
-  // ✅ 라벨
+  // ✅ 라벨(필요하면 UI에 쓸 수 있음)
   const deptLabel = selectedDept || "진료과 선택";
   const regionLabel = useMemo(() => {
     const parts = [region.sido, region.sigungu, region.eupmyeon].filter(Boolean);
     return parts.length ? parts.join(" ") : "지역 선택";
   }, [region]);
 
-  // ✅ CSV 불러오기
+  // ✅ 백엔드 요청 파라미터 만들기
+  // (서버가 원하는 키로 맞춰주면 됨)
+  const queryParams = useMemo(() => {
+    const params = {};
+
+    // 탭을 서버가 구분할 필요 없으면 이 줄 삭제해도 됨
+    params.tab = tab;
+
+    // 진료과
+    if (selectedDept) params.dept = selectedDept;
+
+    // 지역
+    if (region.sido) params.sido = region.sido;
+    if (region.sigungu) params.sigungu = region.sigungu;
+    if (region.eupmyeon) params.eupmyeon = region.eupmyeon;
+
+    // 필터(단일 선택 상태라서 activeFilter 하나만 전송)
+    if (activeFilter) params.filter = activeFilter;
+
+    return params;
+  }, [tab, selectedDept, region, activeFilter]);
+
+  // ✅ 백엔드에서 병원 목록 가져오기
   useEffect(() => {
-    const loadCsv = async () => {
+    let ignore = false;
+
+    async function load() {
+      setLoading(true);
+      setError("");
+
       try {
-        setLoading(true);
-        setError("");
+        const data = await fetchHospitals(queryParams);
 
-        const res = await fetch("/hospitals.csv"); // public/hospitals.csv
-        if (!res.ok) throw new Error("CSV 파일을 못 불러왔어. public 폴더 확인!");
+        // 서버 응답이
+        // 1) 배열: [...]
+        // 2) 페이지 객체: { content: [...] }
+        // 둘 다 커버
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
 
-        const csvText = await res.text();
+        // ✅ 프론트에서 쓰기 좋게 매핑 (DTO 키가 뭐든 대응)
+        const mapped = list.map((r, idx) => ({
+          // ✅ 기준은 ho_num (맞음)
+          id: r.ho_num ?? idx + 1,
 
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const rows = results.data;
+          name: r.ho_name ?? "병원이름",
+          addr: r.ho_addr ?? "",
+          phone: r.ho_phone ?? "",
+          photo: r.ho_photo ?? "",
 
-            // ⚠️ 여기 매핑은 너 CSV 컬럼에 맞춰 쓰면 됨
-            const mapped = rows.map((r, idx) => ({
-              id: r.ho_num || r.id || idx + 1,
-              name: r.ho_name || r.name || "병원이름",
-              info: r.ho_addr || r.address || "병원정보",
-              image: Boolean(r.ho_photo || r.photo || r.imageUrl),
+          dept: r.dept_name ?? "",           // ✅ 진료과
+          rating: r.rv_rating ?? null,       // ✅ 별점(평균)
 
-              // 필터용
-              night: String(r.ho_night_yn) === "1" || String(r.ho_night_yn).toLowerCase() === "true",
-              holiday: String(r.ho_holiday_yn) === "1" || String(r.ho_holiday_yn).toLowerCase() === "true",
-              open: String(r.ho_open_yn) === "1" || String(r.ho_open_yn).toLowerCase() === "true",
+          openYn: r.hh_open_yn ?? null,      // ✅ 오늘 운영여부 (true/false/null)
+          openTime: r.hh_open_time ?? null,
+          closeTime: r.hh_close_time ?? null,
+          lunchStart: r.hh_lunch_start ?? null,
+          lunchEnd: r.hh_lunch_end ?? null,
+        }));
 
-              // 진료과/지역 컬럼이 CSV에 없으면 여기 값은 비어있을 수 있음 (괜찮음)
-              dept: r.dept_name || r.ho_dept || "",
-            }));
-
-            setHospitals(mapped);
-          },
-          error: () => setError("CSV 파싱 중 에러가 났어"),
-        });
+        if (!ignore) setHospitals(mapped);
       } catch (e) {
-        setError(e.message || "에러가 발생했어");
+        if (!ignore) {
+          setHospitals([]);
+          setError(e?.message || "에러가 발생했어");
+        }
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
+    }
+
+    load();
+    return () => {
+      ignore = true;
     };
+  }, [queryParams]);
 
-    loadCsv();
-  }, []);
-
-  // ✅ 탭은 “표시용”이고, 모달은 버튼으로 열어 (자동오픈 X)
-  const openDept = () => setIsDeptOpen(true);
-  const openRegion = () => setIsRegionOpen(true);
-
-  // ✅ 필터 적용
+  // ✅ 서버가 필터를 처리해줄 수도 있지만,
+  // 지금은 “프론트에서도 한번 더” 적용하게 유지(원하면 삭제 가능)
   const visibleHospitals = useMemo(() => {
     let list = hospitals;
 
-    // 칩 필터 예시
     if (activeFilter === "야간진료") list = list.filter((h) => h.night);
     if (activeFilter === "휴일") list = list.filter((h) => h.holiday);
-    if (activeFilter === "영업중") list = list.filter((h) => h.open);
+    if (activeFilter === "영업중") list = list.filter((h) => h.openYn === true);
 
-    // ✅ 지역 필터 (CSV에 지역 분리 컬럼이 없으니까 주소(info) 문자열로 매칭)
+    // 지역 문자열 매칭(서버가 안 해주는 경우 대비)
     if (region.sido) list = list.filter((h) => (h.info || "").includes(region.sido));
     if (region.sigungu) list = list.filter((h) => (h.info || "").includes(region.sigungu));
     if (region.eupmyeon) list = list.filter((h) => (h.info || "").includes(region.eupmyeon));
 
-    // ✅ 진료과 필터 (CSV에 dept 컬럼이 있을 때만 동작)
     if (selectedDept) {
       list = list.filter((h) => {
-        if (!h.dept) return true; // CSV에 dept가 없으면 “일단 전체 유지” (테스트 단계)
+        if (!h.dept) return true; // dept 데이터가 없으면 일단 유지(테스트)
         return h.dept === selectedDept;
       });
     }
@@ -124,10 +171,10 @@ export default function Hos_Search() {
             className={`hs__tab ${tab === "dept" ? "is-active" : ""}`}
             onClick={() => {
               setTab("dept");
-              setIsDeptOpen(true);      // ✅ 탭 누르면 진료과 모달 열기
-              setIsRegionOpen(false);   // ✅ 혹시 열려있던 지역 모달 닫기
-           }}
-              type="button"
+              setIsDeptOpen(true);
+              setIsRegionOpen(false);
+            }}
+            type="button"
           >
             진료과별 찾기
           </button>
@@ -136,7 +183,7 @@ export default function Hos_Search() {
             className={`hs__tab ${tab === "region" ? "is-active" : ""}`}
             onClick={() => {
               setTab("region");
-              setIsRegionOpen(true);    // ✅ 탭 누르면 지역 모달 열기
+              setIsRegionOpen(true);
               setIsDeptOpen(false);
             }}
             type="button"
@@ -162,17 +209,21 @@ export default function Hos_Search() {
           </div>
         </div>
 
-        {loading && <div style={{ padding: 12 }}>CSV 불러오는 중...</div>}
+        {loading && <div style={{ padding: 12 }}>병원 불러오는 중...</div>}
         {error && <div style={{ padding: 12, color: "crimson" }}>{error}</div>}
 
         <div className="hs__grid">
+          {!loading && !error && visibleHospitals.length === 0 && (
+            <div style={{ padding: 12 }}>검색 결과가 없어.</div>
+          )}
+
           {visibleHospitals.map((h) => (
             <HospitalCard key={h.id} hospital={h} />
           ))}
         </div>
       </div>
 
-      {/* ✅ 너가 만든 진료과 모달 */}
+      {/* ✅ 진료과 모달 */}
       <Hos_DeptSelect
         isOpen={isDeptOpen}
         onClose={() => setIsDeptOpen(false)}
@@ -183,13 +234,12 @@ export default function Hos_Search() {
         }}
       />
 
-      {/* ✅ 너가 만든 지역 모달 */}
+      {/* ✅ 지역 모달 */}
       <Hos_RegionSelect
         isOpen={isRegionOpen}
         onClose={() => setIsRegionOpen(false)}
-        value={region} // {sido,sigungu,eupmyeon}
+        value={region}
         onConfirm={(nextRegion) => {
-          // nextRegion도 {sido,sigungu,eupmyeon} 형태로 보내주면 제일 편함
           setRegion(nextRegion);
           setIsRegionOpen(false);
         }}
@@ -201,15 +251,44 @@ export default function Hos_Search() {
 function HospitalCard({ hospital }) {
   const navigate = useNavigate();
 
+  const timeText =
+    hospital.openTime && hospital.closeTime
+      ? `${hospital.openTime} ~ ${hospital.closeTime}`
+      : "운영시간 정보 없음";
+
+  const lunchText =
+    hospital.lunchStart && hospital.lunchEnd
+      ? `점심 ${hospital.lunchStart} ~ ${hospital.lunchEnd}`
+      : "";
+
+  const openBadge =
+    hospital.openYn === true ? "영업중" : hospital.openYn === false ? "휴무" : "영업여부 미정";
+
   return (
     <div className="hs-card" onClick={() => navigate(`/hos_detail/${hospital.id}`)}>
       <div className="hs-card__left">
         <div className="hs-card__name">{hospital.name}</div>
-        <div className="hs-card__info">{hospital.info}</div>
+        <div className="hs-card__info">{hospital.addr}</div>
+
+        <div className="hs-card__meta">
+          {hospital.dept ? `진료과: ${hospital.dept}` : "진료과 정보 없음"}
+        </div>
+
+        <div className="hs-card__meta">
+          {hospital.rating != null ? `⭐ ${hospital.rating}` : "⭐ 별점 없음"}
+          {" · "}
+          {openBadge}
+        </div>
+
+        <div className="hs-card__meta">{timeText}</div>
+        {lunchText && <div className="hs-card__meta">{lunchText}</div>}
+        {hospital.phone && <div className="hs-card__meta">☎ {hospital.phone}</div>}
       </div>
 
       <div className="hs-card__right">
-        <div className="hs-card__imgbox">{hospital.image ? "병원사진" : "이미지 없음"}</div>
+        <div className="hs-card__imgbox">
+          {hospital.photo ? "병원사진" : "이미지 없음"}
+        </div>
       </div>
     </div>
   );
