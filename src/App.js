@@ -1,19 +1,16 @@
-import Main from './Main';
-
-// 예약 현황 조회 불러오기
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
+import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
 import MainPage2 from "./pages/MainPage2";
 import MainPage3 from "./pages/MainPage3";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
-import HospitalReviews from "./HospitalReviews";
-import ReviewDetail from "./ReviewDetail";
-import ReviewRevise from "./ReviewRevise";
-import ReviewCreate from "./ReviewCreate";
-import Main from "./Main";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import HospitalReviews from "./Review/HospitalReviews";
+import ReviewDetail from "./Review/ReviewDetail";
+import ReviewRevise from "./Review/ReviewRevise";
+import ReviewCreate from "./Review/ReviewCreate";
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
