@@ -6,8 +6,8 @@ import Layout from "./components/Layout";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
-import QnAPage from "./pages/QnAPage";
-import QnAWritePage from "./pages/QnAWritePage";
+import QnAPage from "./Qna/QnAPage";
+import QnAWritePage from "./Qna/QnAWritePage";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
@@ -26,7 +26,7 @@ function App() {
   fetch("http://localhost:8080/api/v1/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: "test", userPw: "test" }),
+    body: JSON.stringify({ userId: "admintest", userPw: "admintest" }),
   })
     .then((res) => res.json())
     .then((data) => {
