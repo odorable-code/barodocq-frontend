@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Hos_Detail from "./pages/Hos_Detail";
 import Hos_SearchTest from "./pages/Hos_SearchTest";
-
-
 import Layout from "./components/Layout";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
-
 import MainPage from "./pages/MainPage";
 import QnAPage from "./pages/QnAPage";
 import QnAWritePage from "./pages/QnAWritePage";
@@ -19,36 +16,34 @@ import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 
-import "@fortawesome/fontawesome-free/css/all.min.css";
-
 function App() {
   const [showPopup, setShowPopup] = useState(false);
-  // ----------------------------------------------
+// ----------------------------------------------
   const [loading, setLoading] = useState(true); // 자동 로그인 완료 여부
 
   useEffect(() => {
-    // 항상 최신 토큰 발급
-    localStorage.removeItem("accessToken");
+  // 항상 최신 토큰 발급
+  localStorage.removeItem("accessToken");
 
-    fetch("http://localhost:8080/api/v1/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: "test", userPw: "test" }),
+  fetch("http://localhost:8080/api/v1/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: "test", userPw: "test" }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      localStorage.setItem("accessToken", data.accessToken);
+      setLoading(false);
     })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.setItem("accessToken", data.accessToken);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("자동 로그인 실패", err);
-        setLoading(false);
-      });
-  }, []);
+    .catch((err) => {
+      console.error("자동 로그인 실패", err);
+      setLoading(false);
+    });
+}, []);
 
   if (loading) return <p>자동 로그인 중...</p>;
 
-  // -------------------------------
+// -------------------------------
   return (
     <div>
       <button onClick={() => setShowPopup(true)}>예약하기</button>

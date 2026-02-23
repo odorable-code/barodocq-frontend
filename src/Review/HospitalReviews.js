@@ -9,6 +9,21 @@ function HospitalReviews() {
   const reviewsPerPage = 5; // 한 페이지에 보여줄 개수
   const navigate = useNavigate();
 
+  // JWT 토큰에서 현재 사용자(sub) 가져오기
+  const token = localStorage.getItem("accessToken");
+  let currentUser = null;
+  if (token) {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+      currentUser = payload.sub;
+      console.log(currentUser);
+    } catch (err) {
+      console.error("토큰 디코딩 실패", err);
+    }
+  }
+
   //최신순
   const Last_order = async () => {
     try {
@@ -64,17 +79,16 @@ function HospitalReviews() {
   // 후기 가져오기
   useEffect(() => {
     const getReviews = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token) return; // 토큰 없으면 호출하지 않음
-
+      if (!token) return; 
+      
       try {
         const data = await authFetch("http://localhost:8080/api/v1/reviews");
         setReviews(data);
+        console.log(data);
       } catch (err) {
         console.error("에러:", err);
       }
     };
-
     getReviews();
   }, []); // 토큰이 준비된 후에만 실행
 
@@ -143,12 +157,12 @@ function HospitalReviews() {
             onClick={() => navigate(`/reviews/${review.rv_num}`)}
           >
             <div className="d-flex align-items-center">
-              <img
-                src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fyt3.googleusercontent.com%2FnANA8vMWiy7O0o34uR--2qNxOalt8WYT715QmP8LazjIiUDHtauVFTloAjJZx_L-wsJGF623m_I%3Ds900-c-k-c0x00ffffff-no-rj&type=sc960_832"
-                className="img-fluid rounded-start"
-                alt="Profile"
-                style={{ width: "150px", height: "150px", objectFit: "cover", marginRight: "20px" }}
-              />
+              <img src={
+                    review.files && review.files.length > 0
+                      ? `http://localhost:8080${review.files[0].rf_path}`
+                      : "이미지없습"
+                  }
+                />
               <div className="flex-grow-1 align-self-start">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div>
@@ -156,17 +170,27 @@ function HospitalReviews() {
                     <span>평점: {"⭐".repeat(review.rv_rating)}</span>
                   </div>
                   <div className="d-flex align-items-center">
-                    <Link to={`/reviews/revise/${review.rv_num}`} className="btn btn-warning btn-sm me-2" onClick={(e) => e.stopPropagation()}>
-                      수정
-                    </Link>
-                    <a
-                      className="btn btn-danger btn-sm me-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deletePost(review.rv_num);}}
-                    >
-                      삭제
-                    </a>
+                    {/* 작성자만 수정/삭제 버튼 보이기 */}
+                    {review.user_id === currentUser && (
+                      <>
+                        <Link
+                          to={`/reviews/revise/${review.rv_num}`}
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          수정
+                        </Link>
+                        <a
+                          className="btn btn-danger btn-sm me-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deletePost(review.rv_num);
+                          }}
+                        >
+                          삭제
+                        </a>
+                      </>
+                    )}
                     <span className="fw-bold">{review.rv_created_at}</span>
                   </div>
                 </div>
