@@ -116,18 +116,18 @@ const MainPage = () => {
                             <div className="logo-icon-s2">
                                 <i className="fas fa-heartbeat"></i>
                             </div>
-                            <span>medicare</span>
+                            <span>BarodocQ</span>
                         </div>
                         <ul className="nav-menu-s2" ref={navMenuRef}>
-                            <li><a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="active">홈</a></li>
-                            <li><a href="#services" onClick={(e) => handleNavClick(e, '#services')}>서비스</a></li>
-                            <li><a href="#departments" onClick={(e) => handleNavClick(e, '#departments')}>진료과</a></li>
-                            <li><a href="#about" onClick={(e) => handleNavClick(e, '#about')}>소개</a></li>
+                            <li><a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="active">약국</a></li>
+                            <li><a href="#services" onClick={(e) => handleNavClick(e, '#services')}>병원찾기</a></li>
+                            <li><a href="#departments" onClick={(e) => handleNavClick(e, '#departments')}>나의 예약 현황</a></li>
+                            <li><a href="#about" onClick={(e) => handleNavClick(e, '#about')}>커뮤니티</a></li>
                             <li><a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}>문의</a></li>
                         </ul>
                         <div className="nav-buttons-s2" ref={navButtonsRef}>
                             <button className="btn-text-s2">로그인</button>
-                            <button className="btn-primary-s2">시작하기</button>
+                            <button className="btn-primary-s2">회원가입</button>
                         </div>
                         <div className="hamburger-s2" ref={hamburgerRef} onClick={toggleMobileMenu}>
                             <span></span><span></span><span></span>
