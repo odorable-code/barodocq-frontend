@@ -23,7 +23,7 @@
 }
 
 .search-page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 900;
   color: var(--text-primary);
   margin-bottom: 0.75rem;
@@ -35,12 +35,12 @@
 }
 
 .search-page-title i {
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   color: var(--primary-mint);
 }
 
 .search-page-subtitle {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;
 }
@@ -567,7 +567,7 @@
 }
 
 .hospital-name {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text-primary);
   flex: 1;
@@ -576,10 +576,10 @@
 
 .dept-badge {
   display: inline-block;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.65rem;
   background: var(--bg-tertiary);
   color: var(--primary-dark-teal);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
   border-radius: var(--radius-full);
   white-space: nowrap;
