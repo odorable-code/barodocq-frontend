@@ -13,6 +13,7 @@ import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
+import PharmacySearch from "./pages/PharmacySearch"
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -69,6 +70,7 @@ function App() {
             <Route path="/main" element={<Main />} />
             <Route path="/hos_search" element={<Hos_SearchTest />} />
             <Route path="/hos_detail/:hospitalId" element={<Hos_Detail />} />
+            <Route path="/pharmacy" element={<PharmacySearch />} />
 
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
           <Route path="*" element={<Navigate to="/" />} />

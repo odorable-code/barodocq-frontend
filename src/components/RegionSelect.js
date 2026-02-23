@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "./Hos_RegionSelect.css";
+import "./RegionSelect.css";
 
 import SIDO from "../data/sido.json";
 import SIGUNGU from "../data/sigungu.json";

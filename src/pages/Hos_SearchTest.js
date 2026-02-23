@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Hos_Search.css";
 
-import Hos_RegionSelect from "../components/Hos_RegionSelect";
+import Hos_RegionSelect from "../components/RegionSelect";
 import Hos_DeptSelect from "../components/Hos_DeptSelect";
 
 const FILTERS = ["영업중", "야간진료", "휴일", "여의사", "예약가능"];

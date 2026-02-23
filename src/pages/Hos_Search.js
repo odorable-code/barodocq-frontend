@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Hos_RegionSelect from "../components/Hos_RegionSelect";
+import RegionSelect from "../components/RegionSelect";
 import Hos_DeptSelect from "../components/Hos_DeptSelect";
 import "./Hos_Search.css";
 
@@ -127,7 +127,7 @@ export default function HospitalSearchPage() {
       </div>
 
        {/* ✅ 지역 선택 모달 */}
-      <Hos_RegionSelect
+      <RegionSelect
         isOpen={regionOpen}
         onClose={closeRegionModal}
         onConfirm={({ sido, sigungu, emd }) => {
