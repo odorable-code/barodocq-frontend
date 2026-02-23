@@ -4,7 +4,11 @@ import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
+
 import MainPage from "./pages/MainPage";
+import QnAPage from "./pages/QnAPage";
+import QnAWritePage from "./pages/QnAWritePage";
+
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
@@ -59,6 +63,8 @@ function App() {
 
             {/* 기존 경로들 */}
             <Route path="/MainPage" element={<MainPage />} />
+            <Route path="/QnAPage" element={<QnAPage />} />
+            <Route path="/QnAWritePage" element={<QnAWritePage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
