@@ -8,11 +8,15 @@ import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
 import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
+import HospitalSearchPage from "./pages/HospitalSearchPage";
+import ReviewBoard from "./pages/ReviewBoard";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
+
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -62,7 +66,9 @@ function App() {
             <Route path="/MainPage" element={<MainPage />} />
             <Route path="/qna" element={<QnAPage />} />
             <Route path="/qna/write" element={<QnAWritePage />} />
+            <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
+            <Route path="/ReviewBoard" element={<ReviewBoard />} />
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
