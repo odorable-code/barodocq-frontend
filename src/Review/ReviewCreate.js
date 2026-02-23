@@ -50,44 +50,53 @@ const CreateReservation = async () => {
   }
 };
      const CreateReview = async () => {
-        if (!renum) {
-          alert("예약이 먼저 등록되어야 합니다!");
-          return;
-        }
+  if (!renum) {
+    alert("예약이 먼저 등록되어야 합니다!");
+    return;
+  }
 
-        const formData = new FormData();
+  const formData = new FormData();
 
-        formData.append("re_num", renum);
-        formData.append("user_num", usernum);
-        formData.append("ho_num", honum);
-        formData.append("rv_title", title);
-        formData.append("rv_content", content);
-        formData.append("rv_rating", rating);
-        formData.append("rv_deleted_yn", 0);
+  const reviewData = {
+    re_num: renum,
+    user_num: usernum,
+    ho_num: honum,
+    rv_title: title,
+    rv_content: content,
+    rv_rating: rating,
+    rv_deleted_yn: 0
+  };
 
-        // 이미지 여러 개 추가
-        for (let i = 0; i < files.length; i++) {
-          formData.append("files", files[i]);
-        }
+  // 핵심
+  formData.append(
+    "review",
+    new Blob([JSON.stringify(reviewData)], {
+      type: "application/json"
+    })
+  );
 
-        try {
-          const response = await authFetch(
-            "http://localhost:8080/api/v1/reviews",
-            {
-              method: "POST",
-              body: formData, // JSON 대신 formData
-            }
-          );
+  // 파일 추가
+  for (let i = 0; i < files.length; i++) {
+    formData.append("files", files[i]);
+  }
 
-          const text = await response.text();
-          alert(text);
-          navigate("/reviews");
+  try {
+    const result = await authFetch(
+      "http://localhost:8080/api/v1/reviews",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
 
-        } catch (err) {
-          console.error(err);
-          alert("후기 등록 실패");
-        }
-    };
+    alert(result);
+    navigate("/reviews");
+
+  } catch (err) {
+    console.error(err);
+    alert("후기 등록 실패");
+  }
+};
 //   const CreateReview = async () => {
 //     if (!renum) {
 //       alert("예약이 먼저 등록되어야 합니다!");
