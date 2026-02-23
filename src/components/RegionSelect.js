@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "./Hos_RegionSelect.css";
+import "./RegionSelect.css";
 
 import SIDO from "../data/sido.json";
 import SIGUNGU from "../data/sigungu.json";
@@ -26,12 +26,54 @@ export default function Hos_RegionSelect({
     setEmd(null);
   }, [isOpen]);
 
+  // ✅ (B안) 원하는 시/도 표시 순서 (서울/경기/인천 편애 반영)
+  const SIDO_ORDER = useMemo(
+    () => [
+      "서울특별시",
+      "경기도",
+      "인천광역시",
+
+      "강원특별자치도",
+
+      "대전광역시",
+      "세종특별자치시",
+      "충청북도",
+      "충청남도",
+
+      "광주광역시",
+      "전라북도",
+      "전라남도",
+
+      "대구광역시",
+      "경상북도",
+
+      "부산광역시",
+      "울산광역시",
+      "경상남도",
+
+      "제주특별자치도",
+    ],
+    []
+  );
+
   // ✅ 현재 단계 리스트
   const list = useMemo(() => {
     if (!isOpen) return [];
 
     if (step === STEP.SIDO) {
-      return SIDO.map((v) => ({ code: v.sidocode, name: v.sidoname }));
+      const rank = new Map(SIDO_ORDER.map((name, idx) => [name, idx]));
+
+      return SIDO
+        .map((v) => ({ code: v.sidocode, name: v.sidoname }))
+        .sort((a, b) => {
+          const ra = rank.has(a.name) ? rank.get(a.name) : 999;
+          const rb = rank.has(b.name) ? rank.get(b.name) : 999;
+
+          if (ra !== rb) return ra - rb;
+
+          // ✅ 혹시 목록에 없는 시/도가 있으면 가나다순(ko)로 안정 정렬
+          return a.name.localeCompare(b.name, "ko");
+        });
     }
 
     if (step === STEP.SIGUNGU) {
@@ -46,7 +88,7 @@ export default function Hos_RegionSelect({
     return EMD
       .filter((v) => String(v.sigungucode) === String(sigungu.code))
       .map((v) => ({ code: v.eupmyeondongcode, name: v.eupmyeondongname }));
-  }, [isOpen, step, sido?.code, sigungu?.code]);
+  }, [isOpen, step, sido?.code, sigungu?.code, SIDO_ORDER]);
 
   if (!isOpen) return null;
 
@@ -94,7 +136,6 @@ export default function Hos_RegionSelect({
       emd,
     });
 
-    // ✅ UX: 확인하면 닫기 (부모에서도 닫겠지만 안전하게)
     onClose();
   };
 

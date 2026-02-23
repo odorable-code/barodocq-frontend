@@ -68,7 +68,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/hos_search" className="active">
+              <Link to="/hospitals" className="active">
                 <i className="fas fa-hospital" />
                 병원찾기
               </Link>
