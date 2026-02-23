@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../assets/styles/MainPage.css";
 
 const MainPage = () => {
@@ -35,7 +35,7 @@ const MainPage = () => {
     }, observerOptions);
 
     const animatedElements = document.querySelectorAll(
-      ".feature-card, .dept-card, .step, .testimonial-card",
+      ".feature-card, .dept-card, .step, .testimonial-card, .doctor-card, .faq-card",
     );
     animatedElements.forEach((el) => {
       el.style.opacity = "0";
@@ -125,24 +125,28 @@ const MainPage = () => {
               <div className="logo-icon-s2">
                 <i className="fas fa-heartbeat"></i>
               </div>
-              <span>BarodocQ</span>
+              <span>바로닥큐</span>
             </div>
 
             {/* 가운데 검색창 */}
             <div className="nav-search-s2">
-              <input
-                type="text"
-                placeholder="병원명, 진료과, 증상을 검색하세요"
-              />
-              <button className="nav-search-btn-s2">
-                <i className="fas fa-search"></i>
-              </button>
+              <div className="nav-search-wrapper-s2">
+                <i className="fas fa-search search-icon-s2"></i>
+                <input type="text" placeholder="병원, 전문의, 주소 검색" />
+                <button className="nav-search-btn-s2">
+                  검색
+                  <i className="fas fa-arrow-right"></i>
+                </button>
+              </div>
             </div>
-
+            
             {/* 오른쪽 로그인/회원가입 */}
             <div className="nav-buttons-s2">
               <button className="btn-text-s2">로그인</button>
               <button className="btn-primary-s2">회원가입</button>
+              <button className="btn-language-s2">
+                <i className="fas fa-globe"></i>
+              </button>
             </div>
           </div>
 
@@ -153,16 +157,13 @@ const MainPage = () => {
                 <a href="#home">약국</a>
               </li>
               <li>
-                <a href="#services">병원찾기</a>
+                <a href="#doctors">병원찾기</a>
               </li>
               <li>
-                <a href="#departments">나의 예약 현황</a>
+                <a href="#appointments">나의 예약 현황</a>
               </li>
               <li>
-                <a href="#about">커뮤니티</a>
-              </li>
-              <li>
-                <a href="#contact">문의</a>
+                <a href="#community">커뮤니티</a>
               </li>
             </ul>
           </div>
@@ -209,10 +210,10 @@ const MainPage = () => {
                     <i className="fas fa-fire"></i>감기
                   </span>
                   <span className="tag-s2">
-                    <i className="fas fa-fire"></i>치과
+                    <i className="fas fa-fire"></i>소아청소년과
                   </span>
                   <span className="tag-s2">
-                    <i className="fas fa-fire"></i>정형외과
+                    <i className="fas fa-fire"></i>내과
                   </span>
                 </div>
               </div>
@@ -249,12 +250,120 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 3. Features Section */}
+      {/* 3. Quick Search Bar */}
+      <section className="quick-search-s2">
+        <div className="container-s2">
+          <div className="quick-search-wrapper">
+            <QuickSearchItem icon="shield-virus" label="응급실안전" />
+            <QuickSearchItem icon="certificate" label="인증병원찾기" />
+            <QuickSearchItem icon="notes-medical" label="의약정보" />
+            <QuickSearchItem icon="stethoscope" label="여성의" />
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Doctors Section */}
+      <section className="doctors-section-s2" id="doctors">
+        <div className="container-s2">
+          <div className="section-header-with-sidebar">
+            <div className="main-content-area">
+              <div className="section-header-s2">
+                <span className="section-subtitle-s2">전문의 찾기</span>
+                <h2 className="section-title-s2">
+                  나에게 맞는 전문의를 찾아보세요
+                </h2>
+              </div>
+
+              {/* Category Buttons */}
+              <div className="category-buttons-s2">
+                <button className="category-btn active">전체</button>
+                <button className="category-btn">소아청소년과</button>
+                <button className="category-btn">내과</button>
+                <button className="category-btn">정형외과</button>
+                <button className="category-btn">안과</button>
+                <button className="category-btn">치과</button>
+              </div>
+
+              {/* Doctors Grid */}
+              <div className="doctors-grid-s2">
+                <DoctorCard
+                  name="김민수"
+                  specialty="소아청소년과"
+                  hospital="서울아동병원"
+                  experience="15년"
+                  rating={4.9}
+                  reviews={245}
+                />
+                <DoctorCard
+                  name="이서연"
+                  specialty="내과"
+                  hospital="강남메디컬센터"
+                  experience="12년"
+                  rating={4.8}
+                  reviews={198}
+                />
+                <DoctorCard
+                  name="박준호"
+                  specialty="정형외과"
+                  hospital="정형외과의원"
+                  experience="18년"
+                  rating={5.0}
+                  reviews={312}
+                />
+                <DoctorCard
+                  name="최지혜"
+                  specialty="소아청소년과"
+                  hospital="우리아이클리닉"
+                  experience="10년"
+                  rating={4.7}
+                  reviews={156}
+                />
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="sidebar-s2">
+              <SidebarCard
+                title="수급 일정"
+                icon="calendar-check"
+                color="#14b8a6"
+              >
+                <AppointmentItem
+                  date="2026-02-25"
+                  time="14:00"
+                  doctor="김민수 전문의"
+                />
+                <AppointmentItem
+                  date="2026-02-28"
+                  time="10:30"
+                  doctor="이서연 전문의"
+                />
+              </SidebarCard>
+
+              <SidebarCard title="스크랩 일정" icon="bookmark" color="#0d9488">
+                <BookmarkItem name="강남메디컬센터" specialty="내과" />
+                <BookmarkItem name="서울아동병원" specialty="소아청소년과" />
+              </SidebarCard>
+
+              <SidebarCard
+                title="네 명의 기록"
+                icon="clipboard-list"
+                color="#0f766e"
+              >
+                <RecordItem date="2026-02-15" type="건강검진" status="완료" />
+                <RecordItem date="2026-02-10" type="정기진료" status="완료" />
+              </SidebarCard>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Features Section */}
       <section className="features-s2" id="services">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">FEATURES</span>
-            <h2 className="section-title-s2">메디케어만의 특별함</h2>
+            <h2 className="section-title-s2">바로닥큐만의 특별함</h2>
             <p className="section-desc-s2">
               최첨단 기술로 더 나은 의료 경험을 제공합니다
             </p>
@@ -300,7 +409,7 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 4. Departments Section */}
+      {/* 6. Departments Section */}
       <section className="departments-s2" id="departments">
         <div className="container-s2">
           <div className="section-header-s2">
@@ -363,7 +472,79 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 5. How It Works */}
+      {/* 7. FAQ Section */}
+      <section className="faq-section-s2">
+        <div className="container-s2">
+          <div className="section-header-s2">
+            <span className="section-subtitle-s2">FAQ</span>
+            <h2 className="section-title-s2">자주 묻는 질문 답변하기</h2>
+            <p className="section-desc-s2">궁금하신 점을 빠르게 확인해보세요</p>
+          </div>
+          <div className="faq-grid-s2">
+            <FAQCard
+              question="예약은 어떻게 하나요?"
+              answer="검색 후 원하는 병원과 시간을 선택하여 간편하게 예약할 수 있습니다."
+            />
+            <FAQCard
+              question="예약 취소는 가능한가요?"
+              answer="예약 관리 페이지에서 24시간 전까지 무료로 취소 가능합니다."
+            />
+            <FAQCard
+              question="리뷰는 신뢰할 수 있나요?"
+              answer="실제 진료를 받은 환자만 리뷰 작성이 가능하며, 검증된 후기만 게시됩니다."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 8. Visit History Section */}
+      <section className="visit-history-s2">
+        <div className="container-s2">
+          <div className="section-header-s2">
+            <span className="section-subtitle-s2">HISTORY</span>
+            <h2 className="section-title-s2">방문 이력보 보드</h2>
+          </div>
+          <div className="history-table-wrapper">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>병원명</th>
+                  <th>진료과</th>
+                  <th>담당의</th>
+                  <th>상태</th>
+                  <th>액션</th>
+                </tr>
+              </thead>
+              <tbody>
+                <HistoryRow
+                  date="2026-02-20"
+                  hospital="서울아동병원"
+                  dept="소아청소년과"
+                  doctor="김민수"
+                  status="완료"
+                />
+                <HistoryRow
+                  date="2026-02-15"
+                  hospital="강남메디컬센터"
+                  dept="내과"
+                  doctor="이서연"
+                  status="완료"
+                />
+                <HistoryRow
+                  date="2026-02-10"
+                  hospital="정형외과의원"
+                  dept="정형외과"
+                  doctor="박준호"
+                  status="완료"
+                />
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. How It Works */}
       <section className="how-it-works-s2">
         <div className="container-s2">
           <div className="section-header-s2">
@@ -405,14 +586,14 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 6. Testimonials */}
+      {/* 10. Testimonials */}
       <section className="testimonials-s2">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">REVIEWS</span>
             <h2 className="section-title-s2">사용자 후기</h2>
             <p className="section-desc-s2">
-              메디케어를 이용한 분들의 생생한 후기입니다
+              바로닥큐를 이용한 분들의 생생한 후기입니다
             </p>
           </div>
           <div className="testimonials-grid-s2">
@@ -441,13 +622,13 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 7. CTA */}
+      {/* 11. CTA */}
       <section className="cta-s2">
         <div className="container-s2">
           <div className="cta-box-s2">
             <div className="cta-content-s2">
               <h2>지금 바로 시작해보세요</h2>
-              <p>메디케어와 함께 더 건강한 내일을 만들어가세요</p>
+              <p>바로닥큐와 함께 더 건강한 내일을 만들어가세요</p>
             </div>
             <div className="cta-actions-s2">
               <button className="btn-cta-primary-s2">
@@ -463,7 +644,7 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* 8. Footer */}
+      {/* 12. Footer */}
       <footer className="footer-s2">
         <div className="container-s2">
           <div className="footer-top-s2">
@@ -472,7 +653,7 @@ const MainPage = () => {
                 <div className="logo-icon-s2">
                   <i className="fas fa-heartbeat"></i>
                 </div>
-                <span>medicare</span>
+                <span>바로닥큐</span>
               </div>
               <p>
                 스마트한 병원 예약으로
@@ -507,7 +688,7 @@ const MainPage = () => {
             />
           </div>
           <div className="footer-bottom-s2">
-            <p>&copy; 2026 Medicare. All rights reserved.</p>
+            <p>&copy; 2026 바로닥큐. All rights reserved.</p>
             <div className="footer-links-s2">
               <a href="#">개인정보처리방침</a>
               <a href="#">이용약관</a>
@@ -531,6 +712,127 @@ const StatItem = ({ icon, number, label, color }) => (
       <div className="stat-label">{label}</div>
     </div>
   </div>
+);
+
+const QuickSearchItem = ({ icon, label }) => (
+  <div className="quick-search-item">
+    <div className="quick-icon">
+      <i className={`fas fa-${icon}`}></i>
+    </div>
+    <span>{label}</span>
+  </div>
+);
+
+const DoctorCard = ({
+  name,
+  specialty,
+  hospital,
+  experience,
+  rating,
+  reviews,
+}) => (
+  <div className="doctor-card">
+    <div className="doctor-avatar">
+      <i className="fas fa-user-md"></i>
+    </div>
+    <div className="doctor-info">
+      <h3>{name}</h3>
+      <p className="doctor-specialty">{specialty}</p>
+      <p className="doctor-hospital">
+        <i className="fas fa-hospital"></i> {hospital}
+      </p>
+      <p className="doctor-experience">
+        <i className="fas fa-briefcase-medical"></i> 경력 {experience}
+      </p>
+    </div>
+    <div className="doctor-footer">
+      <div className="doctor-rating">
+        <i className="fas fa-star"></i>
+        <span>{rating}</span>
+        <span className="reviews-count">({reviews})</span>
+      </div>
+      <button className="btn-book-doctor">예약하기</button>
+    </div>
+  </div>
+);
+
+const SidebarCard = ({ title, icon, color, children }) => (
+  <div className="sidebar-card" style={{ "--card-color": color }}>
+    <div className="sidebar-card-header">
+      <i className={`fas fa-${icon}`}></i>
+      <h3>{title}</h3>
+    </div>
+    <div className="sidebar-card-content">{children}</div>
+  </div>
+);
+
+const AppointmentItem = ({ date, time, doctor }) => (
+  <div className="appointment-item">
+    <div className="appointment-date">
+      <i className="fas fa-calendar"></i>
+      <span>{date}</span>
+    </div>
+    <div className="appointment-details">
+      <span className="appointment-time">{time}</span>
+      <span className="appointment-doctor">{doctor}</span>
+    </div>
+  </div>
+);
+
+const BookmarkItem = ({ name, specialty }) => (
+  <div className="bookmark-item">
+    <i className="fas fa-hospital"></i>
+    <div>
+      <div className="bookmark-name">{name}</div>
+      <div className="bookmark-specialty">{specialty}</div>
+    </div>
+  </div>
+);
+
+const RecordItem = ({ date, type, status }) => (
+  <div className="record-item">
+    <div className="record-date">{date}</div>
+    <div className="record-type">{type}</div>
+    <span className="record-status">{status}</span>
+  </div>
+);
+
+const FAQCard = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <div
+      className={`faq-card ${isOpen ? "open" : ""}`}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="faq-question">
+        <h4>{question}</h4>
+        <i className={`fas fa-chevron-${isOpen ? "up" : "down"}`}></i>
+      </div>
+      {isOpen && (
+        <div className="faq-answer">
+          <p>{answer}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const HistoryRow = ({ date, hospital, dept, doctor, status }) => (
+  <tr className="history-row">
+    <td>{date}</td>
+    <td>{hospital}</td>
+    <td>{dept}</td>
+    <td>{doctor}</td>
+    <td>
+      <span className="status-badge">{status}</span>
+    </td>
+    <td>
+      <button className="btn-view-details">
+        <i className="fas fa-eye"></i>
+      </button>
+    </td>
+  </tr>
 );
 
 const FeatureCard = ({ icon, title, desc, color }) => (
