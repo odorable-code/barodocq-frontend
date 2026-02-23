@@ -11,6 +11,7 @@ import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
 import QnAPage from "./pages/QnAPage";
 import QnAWritePage from "./pages/QnAWritePage";
+import HospitalSearchPage from "./pages/HospitalSearchPage";
 
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
@@ -68,6 +69,7 @@ function App() {
             <Route path="/MainPage" element={<MainPage />} />
             <Route path="/qna" element={<QnAPage />} />
             <Route path="/qna/write" element={<QnAWritePage />} />
+            <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
