@@ -46,13 +46,32 @@
 .hd2__title {
   font-size: 22px;
   font-weight: 900;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .hd2__summary {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   margin-bottom: 16px;
+}
+
+.hd2__sub {
+  font-size: 14px;
+  font-weight: 800;
+  color: #374151;
+  margin-bottom: 20px;
+}
+
+.hd2__dot {
+  margin: 0 8px;
+  color: rgba(0,0,0,0.25);
+}
+
+.hd2__infoLine {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 6px 0;
+  color: #111;
 }
 
 /* 태그 */
