@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Hos_Detail from "./pages/Hos_Detail";
-import Hos_SearchTest from "./pages/Hos_SearchTest";
+import Hos_Search from "./pages/Hos_Search";
 import Layout from "./components/Layout";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
@@ -68,7 +68,7 @@ function App() {
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
             <Route path="/main" element={<Main />} />
-            <Route path="/hos_search" element={<Hos_SearchTest />} />
+            <Route path="/hospitals" element={<Hos_Search />} />
             <Route path="/hos_detail/:hospitalId" element={<Hos_Detail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
 
