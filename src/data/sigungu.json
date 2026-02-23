@@ -387,22 +387,22 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41111",
-        "sigunguname":  "수원시장안구"
+        "sigunguname":  "수원시 장안구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41113",
-        "sigunguname":  "수원시권선구"
+        "sigunguname":  "수원시 권선구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41115",
-        "sigunguname":  "수원시팔달구"
+        "sigunguname":  "수원시 팔달구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41117",
-        "sigunguname":  "수원시영통구"
+        "sigunguname":  "수원시 영통구"
     },
     {
         "sidocode":  "41",
@@ -412,17 +412,17 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41131",
-        "sigunguname":  "성남시수정구"
+        "sigunguname":  "성남시 수정구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41133",
-        "sigunguname":  "성남시중원구"
+        "sigunguname":  "성남시 중원구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41135",
-        "sigunguname":  "성남시분당구"
+        "sigunguname":  "성남시 분당구"
     },
     {
         "sidocode":  "41",
@@ -437,12 +437,12 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41171",
-        "sigunguname":  "안양시만안구"
+        "sigunguname":  "안양시 만안구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41173",
-        "sigunguname":  "안양시동안구"
+        "sigunguname":  "안양시 동안구"
     },
     {
         "sidocode":  "41",
@@ -452,17 +452,17 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41192",
-        "sigunguname":  "부천시원미구"
+        "sigunguname":  "부천시 원미구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41194",
-        "sigunguname":  "부천시소사구"
+        "sigunguname":  "부천시 소사구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41196",
-        "sigunguname":  "부천시오정구"
+        "sigunguname":  "부천시 오정구"
     },
     {
         "sidocode":  "41",
@@ -487,12 +487,12 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41271",
-        "sigunguname":  "안산시상록구"
+        "sigunguname":  "안산시 상록구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41273",
-        "sigunguname":  "안산시단원구"
+        "sigunguname":  "안산시 단원구"
     },
     {
         "sidocode":  "41",
@@ -502,17 +502,17 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41281",
-        "sigunguname":  "고양시덕양구"
+        "sigunguname":  "고양시 덕양구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41285",
-        "sigunguname":  "고양시일산동구"
+        "sigunguname":  "고양시 일산동구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41287",
-        "sigunguname":  "고양시일산서구"
+        "sigunguname":  "고양시 일산서구"
     },
     {
         "sidocode":  "41",
@@ -562,17 +562,17 @@
     {
         "sidocode":  "41",
         "sigungucode":  "41461",
-        "sigunguname":  "용인시처인구"
+        "sigunguname":  "용인시 처인구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41463",
-        "sigunguname":  "용인시기흥구"
+        "sigunguname":  "용인시 기흥구"
     },
     {
         "sidocode":  "41",
         "sigungucode":  "41465",
-        "sigunguname":  "용인시수지구"
+        "sigunguname":  "용인시 수지구"
     },
     {
         "sidocode":  "41",
@@ -642,22 +642,22 @@
     {
         "sidocode":  "43",
         "sigungucode":  "43111",
-        "sigunguname":  "청주시상당구"
+        "sigunguname":  "청주시 상당구"
     },
     {
         "sidocode":  "43",
         "sigungucode":  "43112",
-        "sigunguname":  "청주시서원구"
+        "sigunguname":  "청주시 서원구"
     },
     {
         "sidocode":  "43",
         "sigungucode":  "43113",
-        "sigunguname":  "청주시흥덕구"
+        "sigunguname":  "청주시 흥덕구"
     },
     {
         "sidocode":  "43",
         "sigungucode":  "43114",
-        "sigunguname":  "청주시청원구"
+        "sigunguname":  "청주시 청원구"
     },
     {
         "sidocode":  "43",
@@ -717,12 +717,12 @@
     {
         "sidocode":  "44",
         "sigungucode":  "44131",
-        "sigunguname":  "천안시동남구"
+        "sigunguname":  "천안시 동남구"
     },
     {
         "sidocode":  "44",
         "sigungucode":  "44133",
-        "sigunguname":  "천안시서북구"
+        "sigunguname":  "천안시 서북구"
     },
     {
         "sidocode":  "44",
@@ -912,12 +912,12 @@
     {
         "sidocode":  "47",
         "sigungucode":  "47111",
-        "sigunguname":  "포항시남구"
+        "sigunguname":  "포항시 남구"
     },
     {
         "sidocode":  "47",
         "sigungucode":  "47113",
-        "sigunguname":  "포항시북구"
+        "sigunguname":  "포항시 북구"
     },
     {
         "sidocode":  "47",
@@ -1032,27 +1032,27 @@
     {
         "sidocode":  "48",
         "sigungucode":  "48121",
-        "sigunguname":  "창원시의창구"
+        "sigunguname":  "창원시 의창구"
     },
     {
         "sidocode":  "48",
         "sigungucode":  "48123",
-        "sigunguname":  "창원시성산구"
+        "sigunguname":  "창원시 성산구"
     },
     {
         "sidocode":  "48",
         "sigungucode":  "48125",
-        "sigunguname":  "창원시마산합포구"
+        "sigunguname":  "창원시 마산합포구"
     },
     {
         "sidocode":  "48",
         "sigungucode":  "48127",
-        "sigunguname":  "창원시마산회원구"
+        "sigunguname":  "창원시 마산회원구"
     },
     {
         "sidocode":  "48",
         "sigungucode":  "48129",
-        "sigunguname":  "창원시진해구"
+        "sigunguname":  "창원시 진해구"
     },
     {
         "sidocode":  "48",
@@ -1247,12 +1247,12 @@
     {
         "sidocode":  "52",
         "sigungucode":  "52111",
-        "sigunguname":  "전주시완산구"
+        "sigunguname":  "전주시 완산구"
     },
     {
         "sidocode":  "52",
         "sigungucode":  "52113",
-        "sigunguname":  "전주시덕진구"
+        "sigunguname":  "전주시 덕진구"
     },
     {
         "sidocode":  "52",
