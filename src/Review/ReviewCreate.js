@@ -16,7 +16,7 @@ function ReservationAndReview() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(0);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState([null, null, null]);
   const navigate = useNavigate();
 
 const CreateReservation = async () => {
@@ -77,8 +77,10 @@ const CreateReservation = async () => {
 
   // 파일 추가
   for (let i = 0; i < files.length; i++) {
+  if (files[i]) {
     formData.append("files", files[i]);
   }
+}
 
   try {
     const result = await authFetch(
@@ -163,8 +165,35 @@ const CreateReservation = async () => {
       <input value={renum} onChange={(e) => setRenum(e.target.value)} placeholder="예약고유번호" />
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="제목" />
       <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="내용" />
-      <input type="file" multiple accept="image/*" onChange={(e) => setFiles(e.target.files)}
-/>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[0] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[1] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[2] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
       <button type="button" onClick={CreateReview}>후기 등록</button>
     </div>
   );
