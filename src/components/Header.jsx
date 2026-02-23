@@ -54,6 +54,7 @@ const Header = () => {
             <li><Link to="/appointments"><i className="fas fa-calendar-check" />나의 예약</Link></li>
             <li><Link to="/dashboard"><i className="fas fa-chart-pie" />내 건강 대시보드</Link></li>
             <li><Link to="/community"><i className="fas fa-comments" />커뮤니티</Link></li>
+						<li><Link to="/qna"><i className="fas fa-question-circle" />문의하기</Link></li>
           </ul>
         </div>
       </div>

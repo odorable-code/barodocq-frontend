@@ -63,7 +63,7 @@ function App() {
 
             {/* 기존 경로들 */}
             <Route path="/MainPage" element={<MainPage />} />
-            <Route path="/QnAPage" element={<QnAPage />} />
+            <Route path="/qna" element={<QnAPage />} />
             <Route path="/qna/write" element={<QnAWritePage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
             <Route path="/reviews/create" element={<ReviewCreate />} />
