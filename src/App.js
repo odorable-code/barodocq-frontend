@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
+import Navibar from "./components/Navibar";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
-import MainPage2 from "./pages/MainPage2";
-import MainPage3 from "./pages/MainPage3";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
@@ -52,8 +51,6 @@ function App() {
       <Routes>
         <Route path="/" element={<UserLogin />} />
         <Route path="/MainPage" element={<MainPage />} />
-        <Route path="/MainPage2" element={<MainPage2 />} />
-        <Route path="/MainPage3" element={<MainPage3 />} />
         <Route path="/reviews" element={<HospitalReviews />} />
         <Route path="/reviews/create" element={<ReviewCreate />} />
         <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
