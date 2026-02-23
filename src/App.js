@@ -9,6 +9,7 @@ import MainPage from "./pages/MainPage";
 import QnAPage from "./pages/QnAPage";
 import QnAWritePage from "./pages/QnAWritePage";
 import HospitalSearchPage from "./pages/HospitalSearchPage";
+import ReviewBoard from "./pages/ReviewBoard";
 
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
@@ -68,6 +69,7 @@ function App() {
             <Route path="/qna/write" element={<QnAWritePage />} />
             <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
+            <Route path="/ReviewBoard" element={<ReviewBoard />} />
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
