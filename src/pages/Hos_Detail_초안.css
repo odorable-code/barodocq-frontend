@@ -1,0 +1,231 @@
+/* 전체 */
+.hd {
+  min-height: 100vh;
+  background: #fff;
+  color: #111;
+}
+
+/* 상단바 자리만 확보 */
+.hd__topbar-placeholder {
+  height: 110px;
+  border: 4px solid #111;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.hd__topbar-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 120px 1fr 180px;
+  gap: 12px;
+  align-items: center;
+}
+
+.hd__brand {
+  border: 1px solid #111;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.hd__search input {
+  width: 100%;
+  border: 1px solid #111;
+  border-radius: 6px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.hd__top-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.hd__btn {
+  border: 1px solid #111;
+  background: #fff;
+  padding: 9px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* 본문 */
+.hd__content {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 18px 14px 50px;
+}
+
+/* 제목 / 예약 */
+.hd__title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 10px 0 16px;
+}
+
+.hd__name {
+  font-size: 26px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.hd__dept {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hd__reserve {
+  border: 1px solid #111;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* 사진/길찾기 */
+.hd__hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.hd__hero-box {
+  border: 1.5px solid #111;
+  border-radius: 26px;
+  height: 240px;
+  display: grid;
+  place-items: center;
+}
+
+.hd__hero-label {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* 정보 */
+.hd__info {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.hd__info-line {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.hd__info-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.hd__col-title {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.hd__col-value {
+  font-size: 14px;
+}
+
+/* 옵션 칩 */
+.hd__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+
+.hd__chip {
+  border: 1px solid #111;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 후기 */
+.hd__review {
+  margin-top: 8px;
+}
+
+.hd__review-title {
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hd__star {
+  font-size: 18px;
+}
+
+.hd__review-box {
+  border: 1.5px solid #111;
+  border-radius: 26px;
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+}
+
+.hd__review-empty {
+  font-size: 18px;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+/* 하단 */
+.hd__bottom {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hd__back {
+  border: 1px solid #111;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hd__debug {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* 모바일 */
+@media (max-width: 760px) {
+  .hd__topbar-inner {
+    grid-template-columns: 1fr;
+  }
+  .hd__top-actions {
+    justify-content: flex-start;
+  }
+  .hd__hero {
+    grid-template-columns: 1fr;
+  }
+  .hd__info {
+    grid-template-columns: 1fr;
+  }
+  .hd__info-cols {
+    grid-template-columns: 1fr;
+  }
+}
