@@ -16,6 +16,8 @@ import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 function App() {
   const [showPopup, setShowPopup] = useState(false);
 // ----------------------------------------------
