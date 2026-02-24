@@ -7,8 +7,10 @@ import Layout from "./components/Layout";
 import Main from "./Main";
 import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
-import QnAPage from "./pages/QnAPage";
-import QnAWritePage from "./pages/QnAWritePage";
+import QnAPage from "./Qna/QnAPage";
+import QnAWritePage from "./Qna/QnAWritePage";
+import HospitalSearchPage from "./pages/HospitalSearchPage";
+import ReviewBoard from "./pages/ReviewBoard";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
@@ -21,6 +23,8 @@ import PharmacySearch from "./pages/PharmacySearch";
 import ClaimPage from "./adminComponents/ClaimPage";
 import AdminLayout from "./adminComponents/AdminLayout";
 
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 function App() {
   const [showPopup, setShowPopup] = useState(false);
 
@@ -31,10 +35,15 @@ function App() {
     // 항상 최신 토큰 발급
     localStorage.removeItem("accessToken");
 
-    fetch("http://localhost:8080/api/v1/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: "test", userPw: "test" }),
+  fetch("http://localhost:8080/api/v1/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: "admintest", userPw: "admintest" }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      localStorage.setItem("accessToken", data.accessToken);
+      setLoading(false);
     })
       .then((res) => res.json())
       .then((data) => {
@@ -69,17 +78,22 @@ function App() {
             <Route index element={<MainPage />} />
 
             {/* 기존 경로들 */}
-            <Route path="MainPage" element={<MainPage />} />
-            <Route path="qna" element={<QnAPage />} />
-            <Route path="qna/write" element={<QnAWritePage />} />
-            <Route path="reviews" element={<HospitalReviews />} />
-            <Route path="reviews/create" element={<ReviewCreate />} />
-            <Route path="reviews/revise/:rvNum" element={<ReviewRevise />} />
-            <Route path="reviews/:rvNum" element={<ReviewDetail />} />
-            <Route path="main" element={<Main />} />
-            <Route path="hospitals" element={<HospitalSearch />} />
-            <Route path="hos_detail/:hospitalId" element={<HospitalDetail />} />
-            <Route path="pharmacy" element={<PharmacySearch />} />
+            <Route path="/MainPage" element={<MainPage />} />
+            <Route path="/qna" element={<QnAPage />} />
+            <Route path="/qna/write" element={<QnAWritePage />} />
+            <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
+            <Route path="/reviews" element={<HospitalReviews />} />
+            <Route path="/ReviewBoard" element={<ReviewBoard />} />
+            <Route path="/reviews/create" element={<ReviewCreate />} />
+            <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
+            <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
+            <Route path="/main" element={<Main />} />
+            <Route path="/hospitals" element={<Hos_Search />} />
+            <Route path="/hos_detail/:hospitalId" element={<Hos_Detail />} />
+            <Route path="/pharmacy" element={<PharmacySearch />} />
+
+            {/* 잘못된 경로는 메인으로 리다이렉트 */}
+          <Route path="*" element={<Navigate to="/" />} />
 
             {/* 잘못된 경로는 메인으로 */}
             <Route path="*" element={<Navigate to="/" />} />
