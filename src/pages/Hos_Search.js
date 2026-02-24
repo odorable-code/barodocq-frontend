@@ -1,4 +1,3 @@
-// Hos_Search.js (API 연동 + 검색창 + 필터 + 2열/10개 페이지네이션 + Region/Dept 모달)
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RegionSelect from "../components/RegionSelect";

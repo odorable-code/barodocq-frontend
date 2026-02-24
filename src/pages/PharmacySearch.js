@@ -1,4 +1,3 @@
-// HoAndPhar.js (DB 연동 + 지역모달필터 + 검색 + 2열/10개 페이지네이션 + 운영시간 없으면 "운영시간 정보 없음")
 import { useEffect, useMemo, useState } from "react";
 import RegionSelect from "../components/RegionSelect";
 import "./PharmacySearch.css";
