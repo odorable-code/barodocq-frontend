@@ -63,19 +63,18 @@ function App() {
             {/* 시작할 때 메인페이지가 보이도록 */}
             <Route index element={<MainPage />} />
 
-            {/* 기존 경로들 */}
-            <Route path="/MainPage" element={<MainPage />} />
+            {/* 소문자로 통일한 경로 */}
+            <Route path="/mainpage" element={<MainPage />} />
             <Route path="/qna" element={<QnAPage />} />
             <Route path="/qna/write" element={<QnAWritePage />} />
-            <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
+            <Route path="/hospitalsearchpage" element={<HospitalSearchPage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
-            {/* <Route path="/ReviewBoard" element={<ReviewRevise />} /> */}
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
             <Route path="/main" element={<Main />} />
             <Route path="/hospitals" element={<Hos_Search />} />
-            <Route path="/hos_detail/:hospitalId" element={<Hos_Detail />} />
+            <Route path="/hos_detail/:hospitalid" element={<Hos_Detail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
 
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
