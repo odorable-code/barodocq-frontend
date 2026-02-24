@@ -69,7 +69,7 @@ function App() {
             <Route path="/qna/write" element={<QnAWritePage />} />
             <Route path="/HospitalSearchPage" element={<HospitalSearchPage />} />
             <Route path="/reviews" element={<HospitalReviews />} />
-            <Route path="/ReviewBoard" element={<ReviewBoard />} />
+            {/* <Route path="/ReviewBoard" element={<ReviewRevise />} /> */}
             <Route path="/reviews/create" element={<ReviewCreate />} />
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />

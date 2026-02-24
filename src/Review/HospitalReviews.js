@@ -1,260 +1,385 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authFetch } from "../utils/authFetch";
+import "../assets/styles/HospitalReviews.css";
 
-function HospitalReviews() {
-  const [reviews, setReviews] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-  const [currentPage, setCurrentPage] = useState(1);
-  const reviewsPerPage = 5; // 한 페이지에 보여줄 개수
+/* ─────────────────────────────────────────
+   데이터 상수
+───────────────────────────────────────── */
+const REVIEW_CATEGORIES = [
+  { id: "all", label: "전체", icon: "th-large" },
+  { id: "pediatrics", label: "소아청소년과", icon: "baby" },
+  { id: "internal", label: "내과", icon: "heartbeat" },
+  { id: "surgery", label: "외과", icon: "cut" },
+  { id: "orthopedics", label: "정형외과", icon: "bone" },
+  { id: "ophthalmology", label: "안과", icon: "eye" },
+  { id: "dental", label: "치과", icon: "tooth" },
+  { id: "dermatology", label: "피부과", icon: "spa" },
+];
+
+const SORT_OPTIONS = [
+  { value: "latest", label: "최신순" },
+  { value: "rating", label: "평점높은순" },
+  { value: "likes", label: "좋아요순" },
+  { value: "views", label: "조회수순" },
+];
+
+const REVIEWS_DATA = [
+  {
+    id: 1,
+    hospital: "서울아동병원",
+    dept: "소아청소년과",
+    deptId: "pediatrics",
+    author: "박민지",
+    avatar: "박",
+    rating: 5,
+    title: "아이가 무서워하지 않도록 세심하게 배려해주셨어요",
+    content:
+      "3살 아이가 병원을 무서워해서 걱정했는데, 선생님께서 아이 눈높이에 맞춰 천천히 설명해주시고 스티커도 주시면서 진료해주셨어요. 덕분에 아이도 울지 않고 잘 받았습니다.",
+    likes: 47,
+    views: 892,
+    comments: 12,
+    date: "2026-02-23",
+    images: 2,
+    verified: true,
+  },
+  {
+    id: 2,
+    hospital: "강남메디컬센터",
+    dept: "내과",
+    deptId: "internal",
+    author: "이준호",
+    avatar: "이",
+    rating: 5,
+    title: "대기시간 짧고 진료도 꼼꼼하게 봐주셨어요",
+    content:
+      "AI 추천으로 처음 방문했는데 예약 시스템이 잘 되어 있어서 대기 거의 없이 진료 받았습니다. 의사 선생님도 증상에 대해 자세히 설명해주시고 궁금한 점도 친절하게 답변해주셔서 만족스러웠습니다.",
+    likes: 38,
+    views: 1243,
+    comments: 8,
+    date: "2026-02-22",
+    images: 1,
+    verified: true,
+  },
+  {
+    id: 3,
+    hospital: "스마일치과의원",
+    dept: "치과",
+    deptId: "dental",
+    author: "김서연",
+    avatar: "김",
+    rating: 5,
+    title: "치료 과정 설명이 정말 상세하고 통증도 거의 없었어요",
+    content:
+      "스케일링과 충치 치료를 받았는데, 치료 전에 어떤 과정으로 진행되는지 모니터로 보여주시면서 설명해주셨어요. 마취도 잘 해주셔서 통증이 거의 없었고, 치료 후 관리 방법도 꼼꼼하게 알려주셨습니다.",
+    likes: 29,
+    views: 756,
+    comments: 15,
+    date: "2026-02-21",
+    images: 3,
+    verified: false,
+  },
+  {
+    id: 4,
+    hospital: "한강정형외과의원",
+    dept: "정형외과",
+    deptId: "orthopedics",
+    author: "최민수",
+    avatar: "최",
+    rating: 4,
+    title: "물리치료 시설이 잘 갖춰져 있어요",
+    content:
+      "허리 통증으로 방문했는데 물리치료실 시설이 깨끗하고 최신 장비들이 많았습니다. 치료사 분들도 친절하시고 운동법도 자세히 가르쳐주셔서 좋았어요.",
+    likes: 22,
+    views: 634,
+    comments: 6,
+    date: "2026-02-20",
+    images: 0,
+    verified: true,
+  },
+  {
+    id: 5,
+    hospital: "밝은눈안과",
+    dept: "안과",
+    deptId: "ophthalmology",
+    author: "정하윤",
+    avatar: "정",
+    rating: 5,
+    title: "라식 상담 정말 솔직하게 해주셨어요",
+    content:
+      "라식 수술 상담을 받으러 갔는데, 무조건 수술을 권하는게 아니라 제 눈 상태를 정확히 검사하고 장단점을 솔직하게 말씀해주셨어요. 과장 광고 없이 신뢰가 갔습니다.",
+    likes: 35,
+    views: 1089,
+    comments: 19,
+    date: "2026-02-19",
+    images: 1,
+    verified: true,
+  },
+  {
+    id: 6,
+    hospital: "맑은피부과",
+    dept: "피부과",
+    deptId: "dermatology",
+    author: "송지우",
+    avatar: "송",
+    rating: 4,
+    title: "여드름 치료 효과 좋았어요",
+    content:
+      "여드름이 심해서 방문했는데 피부 타입에 맞는 치료를 제안해주시고, 생활습관 개선 방법도 알려주셨어요. 2주 정도 지나니까 확실히 좋아졌습니다.",
+    likes: 18,
+    views: 523,
+    comments: 7,
+    date: "2026-02-18",
+    images: 2,
+    verified: false,
+  },
+];
+
+const HospitalReviews = () => {
   const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("latest");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
-  // JWT 토큰에서 현재 사용자(sub) 가져오기
-  const token = localStorage.getItem("accessToken");
-  let currentUser = null;
-  if (token) {
-    try {
-      const payloadBase64 = token.split('.')[1];
-      const payloadJson = atob(payloadBase64);
-      const payload = JSON.parse(payloadJson);
-      currentUser = payload.sub;
-      console.log(currentUser);
-    } catch (err) {
-      console.error("토큰 디코딩 실패", err);
-    }
-  }
-
-  //최신순
-  const Last_order = async () => {
-    try {
-      const data = await authFetch(
-        "http://localhost:8080/api/v1/reviews?sort=latest"
-      );
-      setReviews(data);
-      setCurrentPage(1);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  //인기순
-  const Popular_order = async () => {
-    try {
-      const data = await authFetch(
-        "http://localhost:8080/api/v1/reviews?sort=popular"
-      );
-      setReviews(data);
-      setCurrentPage(1);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-
-  // 후기 삭제
-  const deletePost = async (rvNum) => {
-  const isDel = window.confirm("진짜 삭제합니까?");
-  if (!isDel) {
-    alert("삭제취소했습니다.");
-    return;
-  }
-
-  try {
-    const msg = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
-    console.log(msg);
-    alert("삭제 성공!");
-
-    // 삭제 성공 시 바로 화면에서 rv_deleted_yn = 1 처리
-    setReviews(prev =>
-      prev.map(review =>
-        review.rv_num === rvNum ? { ...review, rv_deleted_yn: 1 } : review
-      )
-    );
-  } catch (err) {
-    console.error("삭제 실패:", err);
-    alert(err.message || "삭제 실패했습니다.");
-  }
-};
-
-  // 후기 가져오기
-  useEffect(() => {
-    const getReviews = async () => {
-      if (!token) return; 
-      
-      try {
-        const data = await authFetch("http://localhost:8080/api/v1/reviews");
-        setReviews(data);
-        console.log(data);
-      } catch (err) {
-        console.error("에러:", err);
-      }
-    };
-    getReviews();
-  }, []); // 토큰이 준비된 후에만 실행
-
-
-  // 제목 기준으로 검색된 리뷰만 반환
-  const filteredReviews = reviews
-    .filter((review) => review.rv_deleted_yn === 0)
-    .filter((review) =>
-      review.rv_title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-  // 전체 페이지 수 계산
-  const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
-
-  // 현재 페이지에 보여줄 데이터만 자르기
-  const indexOfLast = currentPage * reviewsPerPage;
-  const indexOfFirst = indexOfLast - reviewsPerPage;
-  const currentReviews = filteredReviews.slice(indexOfFirst, indexOfLast);
-
+  const filteredReviews = REVIEWS_DATA.filter((review) => {
+    const matchCategory =
+      activeCategory === "all" || review.deptId === activeCategory;
+    const matchSearch =
+      review.title.includes(searchKeyword) ||
+      review.hospital.includes(searchKeyword);
+    return matchCategory && matchSearch;
+  });
 
   return (
-    <>
-      <h3 className="ms-4">전체후기</h3>
+    
+    <div className="reviews-page">
+      {/* ══════════════════════════════
+          HEADER
+      ══════════════════════════════ */}
+      <section className="reviews-header">
+        <div className="reviews-header-blob blob-1" />
+        <div className="reviews-header-blob blob-2" />
+        <div className="container-s2">
+          <div className="reviews-header-content">
+            <span className="reviews-label">
+              <span className="label-icon">💬</span>HOSPITAL REVIEWS
+            </span>
+            <h1 className="reviews-title">
+              진료 후기 <span className="gradient-text-s2">게시판</span>
+            </h1>
+            <p className="reviews-subtitle">
+              실제 방문 환자들의 생생한 후기를 확인하고
+              <br />
+              나에게 맞는 병원을 찾아보세요
+            </p>
 
-      <div className="bg-dark py-3 px-4 mb-3">
-        <div className="container d-flex justify-content-center">
-          <input
-            type="text"
-            className="form-control me-2"
-            placeholder="검색어를 입력하세요"
-            style={{ maxWidth: "500px" }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button
-            className="btn btn-warning ms-3"
-            onClick={() => {}} // 필터링은 렌더링 시 처리됨
-          >
-            검색
-          </button>
-          <Link to="/reviews/create" className="btn btn-primary me-2">
-            후기추가
-          </Link>
-        </div>
-      </div>
-
-      <div className="container">
-        <div className="d-flex justify-content-end mt-1 mb-3">
-          <a
-            href="#"
-            className="btn btn-primary btn-sm me-2"
-            onClick={() => Last_order()}
-          >최신순</a>
-          <a
-            href="#"
-            className="btn btn-primary btn-sm me-2"
-            onClick={() => Popular_order()}
-          >인기순</a>
-        </div>
-
-        {currentReviews.map((review, index) => (
-          <div
-            key={review.rv_num} // rv_num 없으면 index fallback
-            className="px-4 py-3 mb-3 mx-auto"
-            style={{ maxWidth: "1500px", border: "1px solid black", borderRadius: "5px" }}
-            onClick={() => navigate(`/reviews/${review.rv_num}`)}
-          >
-            <div className="d-flex align-items-center">
-              <img src={
-                    review.files && review.files.length > 0
-                      ? `http://localhost:8080${review.files[0].rf_path}`
-                      : "이미지없습"
-                  }
+            {/* 검색바 */}
+            <div className="reviews-search-bar">
+              <div className="search-input-wrapper">
+                <i className="fas fa-search" />
+                <input
+                  type="text"
+                  placeholder="병원명, 증상, 후기 내용으로 검색"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
                 />
-              <div className="flex-grow-1 align-self-start">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <div>
-                    <span className="fw-bold me-2">{review.user_name}</span>
-                    <span>평점: {"⭐".repeat(review.rv_rating)}</span>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    {/* 작성자만 수정/삭제 버튼 보이기 */}
-                    {review.user_id === currentUser && (
-                      <>
-                        <Link
-                          to={`/reviews/revise/${review.rv_num}`}
-                          className="btn btn-warning btn-sm me-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          수정
-                        </Link>
-                        <a
-                          className="btn btn-danger btn-sm me-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deletePost(review.rv_num);
-                          }}
-                        >
-                          삭제
-                        </a>
-                      </>
-                    )}
-                    <span className="fw-bold">{review.rv_created_at}</span>
-                  </div>
+              </div>
+              <button
+                className="btn-write-review"
+                onClick={() => navigate("/reviews/create")}
+              >
+                <i className="fas fa-pen" />
+                후기 작성하기
+              </button>
+            </div>
+
+            {/* 통계 */}
+            <div className="reviews-stats">
+              <div className="stat-box">
+                <i className="fas fa-file-alt" />
+                <div>
+                  <strong>2,847</strong>
+                  <span>전체 후기</span>
                 </div>
-
-                <h5 className="fw-bold">{review.rv_title}</h5>
-                <div className="fs-5">{review.rv_content}</div>
-
-                <div className="d-flex justify-content-between mt-2">
-                  <div>
-                    조회수: {review.rv_view_count} &nbsp;&nbsp; 댓글수: {review.rv_comment_count}
-                  </div>
-                  <div>
-                    <a href="#" onClick={(e) => e.stopPropagation()}>{review.ho_name}</a>
-                  </div>
+              </div>
+              <div className="stat-box">
+                <i className="fas fa-star" />
+                <div>
+                  <strong>4.8</strong>
+                  <span>평균 평점</span>
+                </div>
+              </div>
+              <div className="stat-box">
+                <i className="fas fa-check-circle" />
+                <div>
+                  <strong>89%</strong>
+                  <span>인증 후기</span>
                 </div>
               </div>
             </div>
           </div>
-        ))}
-
-        <div className="d-flex justify-content-center mt-3">
-          <ul className="pagination">
-    
-            {/* Previous */}
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button
-                className="page-link"
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                Previous
-              </button>
-            </li>
-
-            {/* 페이지 번호 */}
-            {[...Array(totalPages)].map((_, index) => (
-              <li
-                key={index}
-                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-
-            {/* Next */}
-              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  Next
-                </button>
-              </li>
-
-          </ul>
         </div>
+      </section>
 
-      </div>
-    </>
+      {/* ══════════════════════════════
+          FILTERS & LIST
+      ══════════════════════════════ */}
+      <section className="reviews-content">
+        <div className="container-s2">
+          {/* 카테고리 필터 */}
+          <div className="category-filter-scroll">
+            <div className="category-filter">
+              {REVIEW_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`category-btn ${activeCategory === cat.id ? "active" : ""}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  <i className={`fas fa-${cat.icon}`} />
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 정렬 & 결과 수 */}
+          <div className="reviews-toolbar">
+            <div className="result-count">
+              총 <strong>{filteredReviews.length}</strong>개의 후기
+            </div>
+            <div className="sort-dropdown">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <i className="fas fa-chevron-down" />
+            </div>
+          </div>
+
+          {/* 후기 리스트 */}
+          <div className="reviews-grid">
+            {filteredReviews.map((review) => (
+              <ReviewCard key={review.id} {...review} />
+            ))}
+            {filteredReviews.length === 0 && (
+              <div className="no-reviews">
+                <i className="fas fa-inbox" />
+                <p>검색 결과가 없습니다</p>
+              </div>
+            )}
+          </div>
+
+          {/* 페이지네이션 */}
+          <div className="pagination">
+            <button className="page-btn prev">
+              <i className="fas fa-chevron-left" />
+            </button>
+            <button className="page-btn active">1</button>
+            <button className="page-btn">2</button>
+            <button className="page-btn">3</button>
+            <button className="page-btn">4</button>
+            <button className="page-btn">5</button>
+            <button className="page-btn next">
+              <i className="fas fa-chevron-right" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
-}
+};
+
+/* ─────────────────────────────────────────
+   ReviewCard Component
+───────────────────────────────────────── */
+const ReviewCard = ({
+  hospital,
+  dept,
+  author,
+  avatar,
+  rating,
+  title,
+  content,
+  likes,
+  views,
+  comments,
+  date,
+  images,
+  verified,
+}) => {
+  return (
+    <div className="review-card">
+      {/* 상단: 병원정보 */}
+      <div className="review-card-header">
+        <div className="hospital-info">
+          <div className="hospital-badge-mini">
+            <i className="fas fa-hospital" />
+          </div>
+          <div>
+            <strong>{hospital}</strong>
+            <span className="dept-tag-mini">{dept}</span>
+          </div>
+        </div>
+        {verified && (
+          <span className="verified-badge">
+            <i className="fas fa-check-circle" />
+            인증
+          </span>
+        )}
+      </div>
+
+      {/* 평점 */}
+      <div className="review-rating">
+        {[...Array(5)].map((_, i) => (
+          <i key={i} className={`fas fa-star ${i < rating ? "filled" : ""}`} />
+        ))}
+        <span className="rating-text">{rating}.0</span>
+      </div>
+
+      {/* 제목 & 내용 */}
+      <h3 className="review-title">{title}</h3>
+      <p className="review-content">{content}</p>
+
+      {/* 이미지 표시 */}
+      {images > 0 && (
+        <div className="review-images-indicator">
+          <i className="fas fa-image" />
+          <span>사진 {images}장</span>
+        </div>
+      )}
+
+      {/* 하단: 작성자 & 메타 */}
+      <div className="review-card-footer">
+        <div className="author-info">
+          <div className="author-avatar">{avatar}</div>
+          <div>
+            <span className="author-name">{author}</span>
+            <span className="review-date">{date}</span>
+          </div>
+        </div>
+        <div className="review-meta">
+          <span>
+            <i className="fas fa-heart" />
+            {likes}
+          </span>
+          <span>
+            <i className="fas fa-comment" />
+            {comments}
+          </span>
+          <span>
+            <i className="fas fa-eye" />
+            {views}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default HospitalReviews;

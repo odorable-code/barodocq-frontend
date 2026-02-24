@@ -1,0 +1,677 @@
+/* ================================
+   Hospital Reviews - Style
+================================ */
+
+.reviews-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding-top: 112px;
+}
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+.reviews-header {
+  padding: 5rem 0 4rem;
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.reviews-header-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float-blob-s2 20s ease-in-out infinite;
+}
+
+.reviews-header-blob.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--primary-mint);
+  top: -10%;
+  right: 5%;
+}
+
+.reviews-header-blob.blob-2 {
+  width: 320px;
+  height: 320px;
+  background: var(--primary-teal);
+  bottom: -10%;
+  left: 5%;
+  animation-delay: 2s;
+}
+
+.reviews-header-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.reviews-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.label-icon {
+  font-size: 1.1rem;
+}
+
+.reviews-title {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.reviews-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  line-height: 1.8;
+}
+
+/* 검색바 */
+.reviews-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--primary-mint);
+  box-shadow: var(--shadow-mint);
+}
+
+.search-input-wrapper i {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.search-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.search-input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-write-review {
+  padding: 0.875rem 1.5rem;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-write-review:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+/* 통계 */
+.reviews-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
+}
+
+.stat-box:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-box i {
+  font-size: 1.75rem;
+  color: var(--primary-mint);
+}
+
+.stat-box div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stat-box strong {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.stat-box span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════
+   CONTENT
+══════════════════════════════ */
+.reviews-content {
+  padding: 3rem 0 5rem;
+}
+
+/* 카테고리 필터 */
+.category-filter-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.category-filter-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-filter-scroll::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.category-filter-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary-mint);
+  border-radius: 4px;
+}
+
+.category-filter {
+  display: flex;
+  gap: 0.75rem;
+  min-width: max-content;
+  padding: 0.25rem;
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+}
+
+.category-btn i {
+  font-size: 0.85rem;
+}
+
+.category-btn:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+  transform: translateY(-2px);
+}
+
+.category-btn.active {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3);
+}
+
+/* 툴바 */
+.reviews-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.result-count {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.result-count strong {
+  color: var(--primary-teal);
+  font-weight: 700;
+}
+
+.sort-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.sort-dropdown select {
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  appearance: none;
+  transition: var(--transition-base);
+}
+
+.sort-dropdown select:hover {
+  border-color: var(--primary-mint);
+}
+
+.sort-dropdown i {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 0.75rem;
+}
+
+/* ══════════════════════════════
+   REVIEW CARDS
+══════════════════════════════ */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.review-card {
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  transition: var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-mint), var(--primary-teal));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: var(--transition-base);
+}
+
+.review-card:hover {
+  border-color: var(--primary-mint);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.review-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* 헤더 */
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.hospital-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.hospital-badge-mini {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--accent-lighter));
+  color: var(--primary-teal);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.hospital-info strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.dept-tag-mini {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.625rem;
+  background: #d1fae5;
+  color: #059669;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.verified-badge i {
+  font-size: 0.7rem;
+}
+
+/* 평점 */
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.review-rating i {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+
+.review-rating i.filled {
+  color: #fbbf24;
+}
+
+.rating-text {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* 제목 & 내용 */
+.review-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.625rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-content {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 이미지 인디케이터 */
+.review-images-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--bg-secondary);
+  color: var(--primary-teal);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  margin-bottom: 1rem;
+}
+
+.review-images-indicator i {
+  font-size: 0.75rem;
+}
+
+/* 푸터 */
+.review-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.author-name {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.review-date {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.review-meta {
+  display: flex;
+  gap: 1rem;
+}
+
+.review-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.review-meta i {
+  font-size: 0.75rem;
+}
+
+/* 결과 없음 */
+.no-reviews {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+.no-reviews i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-reviews p {
+  font-size: 1rem;
+}
+
+/* ══════════════════════════════
+   PAGINATION
+══════════════════════════════ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.page-btn:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+  transform: translateY(-2px);
+}
+
+.page-btn.active {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
+}
+
+.page-btn.prev,
+.page-btn.next {
+  width: auto;
+  padding: 0 1rem;
+}
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 1024px) {
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .reviews-title {
+    font-size: 2rem;
+  }
+
+  .reviews-search-bar {
+    flex-direction: column;
+  }
+
+  .btn-write-review {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .reviews-stats {
+    gap: 1rem;
+  }
+
+  .reviews-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-header {
+    padding: 3rem 0 2.5rem;
+  }
+
+  .reviews-title {
+    font-size: 1.75rem;
+  }
+
+  .reviews-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .stat-box {
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-box i {
+    font-size: 1.3rem;
+  }
+
+  .stat-box strong {
+    font-size: 1.25rem;
+  }
+}

@@ -2,6 +2,9 @@
    QnA 작성 페이지 스타일
    Mint Green + Teal Blue Theme
 ================================ */
+.qna-write-page {
+  padding-top: 45px; /* 네비 높이만큼 */
+}
 
 /* ══════════════════════════════
    HERO SECTION
