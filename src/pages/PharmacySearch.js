@@ -1,21 +1,6 @@
-// HoAndPhar.js - 완전 통합 버전
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPhone,
-  faClock,
-  faMagnifyingGlass,
-  faAngleDoubleLeft,
-  faAngleLeft,
-  faAngleRight,
-  faAngleDoubleRight,
-  faSun,
-  faMoon,
-  faCalendarDay,
-  faMapMarkerAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useMemo, useState } from "react";
 import RegionSelect from "../components/RegionSelect";
-import "./PharmacySearch.css";
+import "../assets/styles/PharmacySearch.css";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
