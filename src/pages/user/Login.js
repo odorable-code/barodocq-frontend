@@ -1,7 +1,8 @@
 import "../../assets/styles/Login.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { authFetch } from "../../utils/authFetch";
+import { Link, useNavigate } from "react-router-dom";
+import FindId from "./FindId";
+
 
 function Login(){
 
@@ -74,9 +75,9 @@ function Login(){
             <button type="submit" className="go" onClick={handleLogin}>로그인</button>
         </div>
         <div className="divBox">
-            <a className="findId" onClick={() => handleNavigate("/find/id")}>아이디 찾기</a>
-            <a className="resetPw" onClick={() => handleNavigate("/resetPassword")}>비밀번호 재설정</a>
-            <a className="signup" onClick={() => handleNavigate("/signup")}>회원가입</a>
+            <Link to="/find/id" className="findId">아이디 찾기</Link>
+            <Link to="/resetPw" className="resetPw" onClick={() => handleNavigate("/resetPassword")}>비밀번호 재설정</Link>
+            <Link to="/signup" className="signup" onClick={() => handleNavigate("/signup")}>회원가입</Link>
         </div>
         <div className="social">
             <a className="kakao" onClick={() => handleNavigate("/api/kakao")}></a>

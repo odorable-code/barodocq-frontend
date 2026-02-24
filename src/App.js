@@ -22,6 +22,10 @@ import Login from "./pages/user/Login";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
 import AdminSignup from "./pages/user/AdminSignup";
+import FindId from "./pages/user/FindId";
+import FoundId from "./pages/user/FoundId";
+import ResetPassword from "./pages/user/ResetPassword";
+
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -87,10 +91,18 @@ function App() {
 
             {/* 로그인 */}
             <Route path="/login" element={<Login />} />
+
             {/* 회원가입 */}
             <Route path="/signup" element={<Signup />} />
             <Route path="/user/signup" element={<UserSignup />} />
             <Route path="/admin/signup" element={<AdminSignup />} />
+
+            {/* 아이디 찾기 */}
+            <Route path="/find/id" element={<FindId />} />
+            <Route path="/found/id" element={<FoundId />} />
+
+            {/* 비밀번호 재설정 */}
+            <Route path="/resetPw" element={<ResetPassword />} />
           </Route>
         
         </Routes>
