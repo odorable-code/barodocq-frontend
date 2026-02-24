@@ -1,0 +1,348 @@
+/* PharmacySearch.css (완성본 - DB연동 화면용 + 2열 + 페이지네이션 + 썸네일 img) */
+
+.browser {
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+}
+
+/* 메인 컨테이너 (1440px 고정) */
+.container {
+  width: 1440px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* ✅ 검색/필터 영역 */
+.middleContainser {
+  margin-top: 50px;
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fff;
+}
+
+.regionSearch {
+  display: flex;
+  align-items: center;
+  border: 2px solid #333;
+  border-radius: 40px;
+  padding: 12px 30px;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 25px;
+  background-color: #fff;
+}
+
+.regionSearch1 {
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #333;
+  white-space: nowrap;
+}
+
+.searchLine {
+  width: 1px;
+  height: 20px;
+  background-color: #ddd;
+  margin: 0 20px;
+}
+
+.regionSearch2 {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.searchBtn {
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  padding-left: 10px;
+}
+
+/* 필터 버튼 */
+.filter-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.filter1.filter2 {
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 10px 25px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filter1.filter2:hover {
+  border-color: #333;
+  background-color: #f9f9f9;
+}
+
+/* ✅ 활성 필터 버튼 표시 */
+.filter1.filter2.is-active {
+  border-color: #333;
+  background-color: #333;
+  color: #fff;
+}
+
+/* ✅ 지도 + 결과 영역 */
+.container2 {
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background-color: #fff;
+}
+
+/* 지도 영역 */
+.map {
+  height: 360px;
+  border: 2px solid #2f5bff;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f5bff;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+/* 결과 영역 */
+.resultWrap {
+  border: 2px solid #f2c200;
+  border-radius: 10px;
+  background: #fff;
+  padding: 18px;
+}
+
+/* 결과 헤더 */
+.resultHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.resultTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #333;
+}
+
+.resultCount {
+  font-size: 13px;
+  color: #666;
+}
+
+/* 로딩/에러 텍스트 */
+.stateText {
+  padding: 10px 0 14px;
+  font-size: 13px;
+  color: #666;
+}
+
+.stateText.error {
+  color: crimson;
+}
+
+/* ✅ 카드 2열 */
+.pharmacyContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* 카드 1개 */
+.pharmacyCard {
+  display: flex;
+  gap: 14px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+  min-height: 130px;
+}
+
+/* 왼쪽 썸네일 */
+.cardThumb {
+  width: 110px;
+  height: 110px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 실제 이미지 */
+.cardThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 이미지 없을 때 */
+.noImage {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* 오른쪽 정보 */
+.cardBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pharName {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111;
+}
+
+/* 주소 */
+.pharAddr {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* 메타(전화/시간) */
+.pharMeta {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.4;
+}
+
+.metaLabel {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* 뱃지 */
+.badgeRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  color: #333;
+  background: #fafafa;
+}
+
+/* 빈 상태 */
+.emptyState {
+  padding: 18px;
+  text-align: center;
+  color: #777;
+  border: 1px dashed #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+  grid-column: 1 / -1; /* ✅ 그리드 2열에서도 가운데 전체 차지 */
+}
+
+/* ✅ 페이지네이션 */
+.pagination {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pageBtn {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pageBtn:hover {
+  border-color: #333;
+}
+
+.pageBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pageNums {
+  display: flex;
+  gap: 6px;
+}
+
+.pageNum {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.pageNum:hover {
+  border-color: #333;
+}
+
+.pageNum.active {
+  border-color: #333;
+  background: #333;
+  color: #fff;
+}
+
+/* ✅ 화면이 좁아지면 1열 */
+@media (max-width: 900px) {
+  .container {
+    width: 100%;
+  }
+
+  .pharmacyContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .emptyState {
+    grid-column: auto;
+  }
+}

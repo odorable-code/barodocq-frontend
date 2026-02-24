@@ -16,7 +16,7 @@ function ReservationAndReview() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(0);
-
+  const [files, setFiles] = useState([null, null, null]);
   const navigate = useNavigate();
 
 const CreateReservation = async () => {
@@ -49,37 +49,88 @@ const CreateReservation = async () => {
     alert("서버 오류");
   }
 };
+     const CreateReview = async () => {
+  if (!renum) {
+    alert("예약이 먼저 등록되어야 합니다!");
+    return;
+  }
 
-  const CreateReview = async () => {
-    if (!renum) {
-      alert("예약이 먼저 등록되어야 합니다!");
-      return;
-    }
+  const formData = new FormData();
 
-    try {
-      const result = await authFetch("http://localhost:8080/api/v1/reviews",
-        {
+  const reviewData = {
+    re_num: renum,
+    user_num: usernum,
+    ho_num: honum,
+    rv_title: title,
+    rv_content: content,
+    rv_rating: rating,
+    rv_deleted_yn: 0
+  };
+
+  // 핵심
+  formData.append(
+    "review",
+    new Blob([JSON.stringify(reviewData)], {
+      type: "application/json"
+    })
+  );
+
+  // 파일 추가
+  for (let i = 0; i < files.length; i++) {
+  if (files[i]) {
+    formData.append("files", files[i]);
+  }
+}
+
+  try {
+    const result = await authFetch(
+      "http://localhost:8080/api/v1/reviews",
+      {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          re_num: renum,
-          user_num: usernum,
-          ho_num: honum,
-          rv_title: title,
-          rv_content: content,
-          rv_rating: rating,
-          rv_deleted_yn: 0
-        })
-      });
+        body: formData
+      }
+    );
 
-      alert(result); // 서버에서 "후기 등록 성공" 오면 그대로 표시
+    alert(result);
     navigate("/reviews");
 
   } catch (err) {
     console.error(err);
-    alert(err.message); // 서버가 보낸 에러 메시지 출력
+    alert("후기 등록 실패");
   }
 };
+//   const CreateReview = async () => {
+//     if (!renum) {
+//       alert("예약이 먼저 등록되어야 합니다!");
+//       return;
+//     }
+
+//     try {
+//       const result = await authFetch("http://localhost:8080/api/v1/reviews",
+//         {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           re_num: renum,
+//           user_num: usernum,
+//           ho_num: honum,
+//           rv_title: title,
+//           rv_content: content,
+//           rv_rating: rating,
+//           rv_deleted_yn: 0
+//         })
+//       });
+
+//       alert(result); // 서버에서 "후기 등록 성공" 오면 그대로 표시
+//     navigate("/reviews");
+
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.message); // 서버가 보낸 에러 메시지 출력
+//   }
+// };
+
+
   return (
     <div>
       <h3>예약 등록</h3>
@@ -114,7 +165,35 @@ const CreateReservation = async () => {
       <input value={renum} onChange={(e) => setRenum(e.target.value)} placeholder="예약고유번호" />
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="제목" />
       <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="내용" />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[0] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
 
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[1] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const newFiles = [...files];
+          newFiles[2] = e.target.files[0];
+          setFiles(newFiles);
+        }}
+      />
       <button type="button" onClick={CreateReview}>후기 등록</button>
     </div>
   );

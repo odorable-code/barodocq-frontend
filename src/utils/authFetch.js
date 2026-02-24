@@ -2,13 +2,19 @@ export const authFetch = async (url, options = {}) => {
   const token = localStorage.getItem("accessToken");
   if (!token) throw new Error("토큰이 없습니다. 로그인 필요");
 
+  const headers = {
+    ...(options.headers || {}),
+    "Authorization": `Bearer ${token}`,
+  };
+
+  //body가 FormData면 Content-Type 설정하지 않음
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(url, {
     ...options,
-    headers: {
-      ...(options.headers || {}),
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
+    headers,
   });
 
   const responseText = await res.text(); // 한 번만 읽음
