@@ -66,7 +66,7 @@ function App() {
 
       <BrowserRouter>
         {/* 🔸 이 Link들은 관리자에서도 보이니까
-            나중에 Layout 안으로 옮기는걸 추천! (일단은 그대로 둠) */}
+            나중에 Layout 안으로 옮기는걸 추천!*/}
         <Link to="/reviews">{"후기"}</Link>{" "}
         <Link to="/main">{"메인"}</Link>{" "}
         <Link to="/admin">{"관리자"}</Link>
@@ -88,9 +88,10 @@ function App() {
             <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
             <Route path="/main" element={<Main />} />
-            <Route path="/hospitals" element={<Hos_Search />} />
-            <Route path="/hos_detail/:hospitalId" element={<Hos_Detail />} />
+            <Route path="/hospitals" element={<HospitalSearch />} />
+            <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
+
 
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
           <Route path="*" element={<Navigate to="/" />} />
@@ -99,7 +100,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
 
-          {/* ✅ 로그인만 레이아웃 없이 */}
+          {/* 로그인만 레이아웃 없이 */}
           <Route path="/login" element={<UserLogin />} />
 
           {/* ✅ 관리자 영역 (사용자 Layout과 완전 분리) */}
