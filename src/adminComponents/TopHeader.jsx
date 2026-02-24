@@ -1,7 +1,7 @@
 
 export default function TopHeader() {
   return (
-    <div className="th">
+    <div className="th th-right-only">
       <div className="th-right">
         <div className="th-user">
           <div className="th-name">홍길동님</div>
