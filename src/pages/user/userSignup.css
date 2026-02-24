@@ -1,0 +1,242 @@
+.container{
+    width: 800px; height: 800px;
+    background-color: rgb(183, 222, 255);
+    margin: auto;
+}
+.signup{
+    width: 300px; height: 60px;
+    font-size: 30px;
+    background-color: antiquewhite;
+    text-align: center; line-height: 60px;
+    margin: auto;
+}
+.line{
+    width: 800px; height: 2px;
+    background-color: black;
+    
+}
+.line1{
+    width: 460px; height: 2px;
+    background-color: rgb(68, 68, 68);
+    margin: 0;
+    .container{
+    width: 800px; height: 800px;
+    background-color: rgb(183, 222, 255);
+    margin: auto;
+}
+.signup{
+    width: 300px; height: 60px;
+    font-size: 30px;
+    background-color: antiquewhite;
+    text-align: center; line-height: 60px;
+    margin: auto;
+}
+.line{
+    width: 800px; height: 2px;
+    background-color: black;
+    .container{
+    width: 800px; height: 800px;
+    background-color: rgb(183, 222, 255);
+    margin: auto;
+}
+.signup{
+    width: 300px; height: 60px;
+    font-size: 30px;
+    background-color: antiquewhite;
+    text-align: center; line-height: 60px;
+    margin: auto;
+}
+.line{
+    width: 800px; height: 2px;
+    background-color: black;
+}
+.line1{
+    width: 460px; height: 2px;
+    background-color: rgb(68, 68, 68);
+    margin: 0;
+}
+.container2{
+    width: 500px; height: 800px;
+    background-color: pink;
+    margin: auto;
+}
+.id{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.distinctDiv{
+    width: 170px; height: 65px;
+    display: inline-block;
+    margin: 0;
+}
+.distinct{
+    width: 120px; height: 40px;
+    background-color: blueviolet;
+    text-align: center; line-height: 40px;
+    border-radius: 40px;
+    border: 2px solid black; 
+    position: relative; left: 28px;
+    margin: 0;
+}
+.pw{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+}
+.line1{
+    width: 460px; height: 2px;
+    background-color: rgb(68, 68, 68);
+    margin: 0;
+}
+.container2{
+    width: 500px; height: 800px;
+    background-color: pink;
+    margin: auto;
+}
+.id{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.distinctDiv{
+    width: 170px; height: 65px;
+    display: inline-block;
+    margin: 0;
+}
+.distinct{
+    width: 120px; height: 40px;
+    background-color: blueviolet;
+    text-align: center; line-height: 40px;
+    border-radius: 40px;
+    border: 2px solid black; 
+    position: relative; left: 28px;
+    margin: 0;
+}
+.pw{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+}
+.container2{
+    width: 500px; height: 800px;
+    background-color: pink;
+    margin: auto;
+}
+.id{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.distinctDiv{
+    width: 170px; height: 65px;
+    display: inline-block;
+    margin: 0;
+    /* vertical-align: ; */
+}
+.distinct{
+    width: 120px; height: 40px;
+    background-color: blueviolet;
+    text-align: center; line-height: 40px;
+    border-radius: 40px;
+    border: 2px solid black; 
+    /* position: relative; left: 28px; */
+    margin-left: auto;
+}
+.pw{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.pw2{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.name{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.phone{
+    width: 300px; height: 40px;
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    margin-top: 20px;
+}
+.sendCodeDiv{
+    width: 170px; height: 65px;
+    display: inline-block;
+}
+.sendCode{
+    width: 120px; height: 40px;
+    background-color: blueviolet;
+    text-align: center; line-height: 40px;
+    border-radius: 40px;
+    border: 2px solid black; 
+    position: relative; left: 28px;
+}
+.gender{
+    margin-top: 20px;
+}
+.checkbox{
+    margin-top: 10px;
+}
+.men{
+
+}
+.menLabel{
+
+}
+.women{
+    position: relative;
+    left: 50px;
+}
+.womenLabel{
+    position: relative;
+    left: 50px;
+}
+.term{
+    margin-top: 20px;
+}
+.entireAgreeCheckbox{
+    margin-top: 20px;
+}
+.entireAgree{
+    display: inline-block;
+    font-size: 19px;
+}
+.term1Checkbox{
+    margin-top: 10px;
+}
+.term1{
+    display: inline-block;
+}
+.term2Checkbox{
+    margin-top: 10px;
+}
+.term2{
+    display: inline-block;
+}
+.see{
+    display: inline-block;
+    margin-left: 370px;
+}
+.go{
+    width: 200px; height: 60px;
+    background-color: yellow;
+    text-align: center; line-height: 60px;
+    margin: auto;
+    margin-top: 30px;
+    border-radius: 40px;
+}

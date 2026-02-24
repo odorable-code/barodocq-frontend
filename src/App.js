@@ -1,59 +1,36 @@
-import React, { useEffect, useState } from "react";
-import ReservationDateSelect from "./pages/ReservationDateSelect";
-import HospitalReviews from "./HospitalReviews";
-import ReviewDetail from "./ReviewDetail";
-import ReviewRevise from "./ReviewRevise";
-import ReviewCreate from "./ReviewCreate";
-import Main from "./Main";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { Routes, Route, Link } from 'react-router-dom'
+import {BrowserRouter} from 'react-router-dom';
+import AdminLogin from "./adminLogin";
+import Find from "./find";
+import HoAndPhar from "./hoAndPhar";
+import HoAndPhar공지 from "./hoAndPhar공지";
+import Pharmacy from "./pharmacy";
+import ResetPassword from "./resetPassword";
+import UserLogin from "./userLogin";
+import UserSignup from "./userSignup";
 
 function App() {
-  const [showPopup, setShowPopup] = useState(false);
-// ----------------------------------------------
-  const [loading, setLoading] = useState(true); // 자동 로그인 완료 여부
-
-  useEffect(() => {
-  // 항상 최신 토큰 발급
-  localStorage.removeItem("accessToken");
-
-  fetch("http://localhost:8080/api/v1/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: "test", userPw: "test" }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      localStorage.setItem("accessToken", data.accessToken);
-      setLoading(false);
-    })
-    .catch((err) => {
-      console.error("자동 로그인 실패", err);
-      setLoading(false);
-    });
-}, []);
-
-  if (loading) return <p>자동 로그인 중...</p>;
-
-// -------------------------------
   return (
-    <div>
-      <button onClick={() => setShowPopup(true)}>예약하기</button>
-      {showPopup && (
-        <ReservationDateSelect onClose={() => setShowPopup(false)} />
-      )}
-      <BrowserRouter>
-      <Link to='/reviews'>{'후기'}</Link>
-      <Link to='/main'>{'메인'}</Link>
+    <BrowserRouter>
+    <Link to="/login/adminLogin">관리자로그인. </Link>
+    <Link to="/find">찾기. </Link>
+    <Link to="/hoAndPharmacy">병원&약국. </Link>
+    <Link to="/hoAndPharmacy공지">병원&약국공지. </Link>
+    <Link to="/pharmacy">약국. </Link>
+    <Link to="/passwordReset">비번재설정. </Link>
+    <Link to="/login/userLogin">사용자로그인. </Link>
+    <Link to="/signup/userSignup">사용자회원가입. </Link>
       <Routes>
-        <Route path="/reviews" element={<HospitalReviews />} />
-        <Route path="/reviews/create" element={<ReviewCreate />} />
-        <Route path="/reviews/revise/:rvNum" element={<ReviewRevise />} />
-        <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
-        <Route path="/main" element={<Main />} />
+        <Route path='/login/adminLogin' element={<AdminLogin />} />
+        <Route path='/find' element={<Find />} />
+        <Route path='/hoAndPharmacy' element={<HoAndPhar />} />
+        <Route path='/hoAndPharmacy공지' element={<HoAndPhar공지 />} />
+        <Route path='/pharmacy' element={<Pharmacy />} />
+        <Route path='/passwordReset' element={<ResetPassword />} />
+        <Route path='/login/userLogin' element={<UserLogin />} />
+        <Route path='/signup/userSignup' element={<UserSignup />} />
       </Routes>
     </BrowserRouter>
-    </div>
-
     
   );
 }
