@@ -1,7 +1,6 @@
 /* 1. 컨테이너: 가로/세로 중앙 정렬 */
 .container {
     width: 800px;
-    height: 850px;
     background-color: #C6E2FF;
     margin: 50px auto;
     display: flex;
