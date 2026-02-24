@@ -1,0 +1,174 @@
+
+
+body {
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  min-height: 100vh;
+  padding: 50px 0;
+}
+
+.container {
+  width: 800px;
+  background-color: white;
+  padding: 40px;
+  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signup {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 40px;
+}
+
+.container2 {
+  width: 100%;
+  max-width: 500px; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.idLine, .phoneLine, .pwLine, .nameLine {
+  width: 100%;
+  position: relative;
+}
+
+.id, .pw, .pw2, .name, .phone, .email, .address {
+  width: 100%;
+  padding: 12px 5px;
+  border: none;
+  border-bottom: 1px solid #ccc; 
+  font-size: 16px;
+  outline: none;
+}
+
+.id:focus, .pw:focus, .pw2:focus, .name:focus, .phone:focus {
+  border-bottom: 2px solid #000;
+}
+
+.distinctDiv, .sendCodeDiv {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.distinct, .sendCode {
+  padding: 8px 15px;
+  background-color: #7b2cbf;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.gender {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.checkbox input[type="radio"] {
+  width: 18px;
+  height: 18px;
+}
+
+.term {
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.term input[type="checkbox"] {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.go {
+  width: 100%;
+  padding: 15px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s;
+}
+
+.go:hover {
+  background-color: #000;
+}
+
+.line1 {
+  width: 100%;
+  height: 1px;
+  background-color: #eee;
+  margin-top: 5px;
+}
+/* 부모 컨테이너: 가로 정렬 및 간격 조절 */
+.social {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 (왼쪽 정렬은 flex-start) */
+  align-items: center;
+  gap: 20px;               /* 동그라미 사이의 간격 */
+  margin-top: 20px;
+}
+
+/* 공통 동그라미 스타일 */
+.social a {
+  width: 50px;             /* 동그라미 크기 */
+  height: 50px;
+  border-radius: 50%;      /* 완벽한 원으로 만듦 */
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* 호버 효과 (마우스 올렸을 때 살짝 커짐) */
+.social a:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+/* 각 버튼별 배경색 (나중에 아이콘 이미지를 넣으셔도 됩니다) */
+.social .kakao {
+  background-color: #FEE500; /* 카카오 노란색 */
+}
+
+.social .naver {
+  background-color: #03C75A; /* 네이버 초록색 */
+}
+
+.social .google {
+  background-color: #ffffff; /* 구글 흰색 (테두리 추가 추천) */
+  border: 1px solid #ddd;
+}
