@@ -1,61 +1,102 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/styles/QnAWritePage.css";
-
-const CATEGORIES = [
-  { id: "예약", label: "예약", icon: "calendar-check" },
-  { id: "결제", label: "결제", icon: "credit-card" },
-  { id: "서비스", label: "서비스", icon: "concierge-bell" },
-  { id: "회원", label: "회원", icon: "user" },
-  { id: "기타", label: "기타", icon: "circle-question" }
-];
+import { authFetch } from "../utils/authFetch";
 
 const QnAWritePage = () => {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
-    category: "",
+    ho_num: "",
     title: "",
     content: "",
-    email: "",
     isPrivate: false
   });
 
+  const [hospitalKeyword, setHospitalKeyword] = useState("");
+  const [hospitalList, setHospitalList] = useState([]);
   const [errors, setErrors] = useState({});
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // 에러 초기화
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: null }));
     }
   };
 
+  /* ---------------- 병원 검색 ---------------- */
+
+  const searchHospital = async (keyword) => {
+    if (keyword.length < 2) {
+      setHospitalList([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/hospitals/search?keyword=${keyword}`
+      );
+      const data = await response.json();
+      setHospitalList(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /* ---------------- 유효성 검사 ---------------- */
+
   const validate = () => {
     const newErrors = {};
-    
-    if (!formData.category) newErrors.category = "카테고리를 선택해주세요";
+
+    if (!formData.ho_num) newErrors.ho_num = "병원을 선택해주세요";
     if (!formData.title.trim()) newErrors.title = "제목을 입력해주세요";
-    if (formData.title.trim().length < 5) newErrors.title = "제목은 최소 5자 이상 입력해주세요";
+    if (formData.title.trim().length < 5)
+      newErrors.title = "제목은 최소 5자 이상 입력해주세요";
     if (!formData.content.trim()) newErrors.content = "내용을 입력해주세요";
-    if (formData.content.trim().length < 10) newErrors.content = "내용은 최소 10자 이상 입력해주세요";
-    if (!formData.email.trim()) newErrors.email = "이메일을 입력해주세요";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "올바른 이메일 형식이 아닙니다";
+    if (formData.content.trim().length < 10)
+      newErrors.content = "내용은 최소 10자 이상 입력해주세요";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  /* ---------------- QnA 등록 ---------------- */
+
+  const CreateQnA = async () => {
+    try {
+      const response = await authFetch(
+        "http://localhost:8080/api/v1/qnawrite",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            qn_title: formData.title,
+            qn_content: formData.content,
+            qn_is_private: formData.isPrivate ? 1 : 0,
+            qn_status: "답변기다리는중",
+            qn_deleted_yn: 0,
+            ho_num: formData.ho_num
+          })
+        }
+      );
+
+      if (response.ok) {
+        const text = await response.text();
+        alert(text);
+        navigate("/qna");
+      } else {
+        alert("문의 등록 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류");
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
     if (validate()) {
-      // 백엔드로 전송할 데이터
-      console.log("제출 데이터:", formData);
-      
-      // 성공 메시지 및 페이지 이동
-      alert("문의가 성공적으로 등록되었습니다!");
-      navigate("/qna");
+      CreateQnA();
     }
   };
 
@@ -65,183 +106,107 @@ const QnAWritePage = () => {
     }
   };
 
+  /* ---------------- 화면 ---------------- */
+
   return (
     <div className="qna-write-page">
-      
-      {/* HERO */}
-      <section className="qna-write-hero">
-        <div className="qna-write-hero-blob blob-1" />
-        <div className="qna-write-hero-blob blob-2" />
-        <div className="container-s2">
-          <div className="qna-write-hero-content">
-            <span className="qna-write-hero-label">
-              <i className="fas fa-pen" />
-              문의 작성
-            </span>
-            <h1>무엇이든 물어보세요</h1>
-            <p>궁금하신 점을 남겨주시면 최대한 빠르게 답변해드리겠습니다</p>
-          </div>
-        </div>
-      </section>
-
-      {/* FORM */}
       <section className="qna-write-content">
         <div className="container-s2">
-          <div className="qna-write-wrapper">
-            
-            {/* 안내 */}
-            <div className="qna-write-info">
-              <div className="info-card">
-                <div className="info-icon">
-                  <i className="fas fa-lightbulb" />
-                </div>
-                <div className="info-text">
-                  <strong>문의 작성 팁</strong>
-                  <p>구체적으로 작성하실수록 정확한 답변을 받을 수 있습니다</p>
-                </div>
-              </div>
-              <div className="info-card">
-                <div className="info-icon">
-                  <i className="fas fa-clock" />
-                </div>
-                <div className="info-text">
-                  <strong>평균 답변 시간</strong>
-                  <p>영업일 기준 24시간 이내 답변드립니다</p>
-                </div>
-              </div>
-              <div className="info-card">
-                <div className="info-icon">
-                  <i className="fas fa-shield-halved" />
-                </div>
-                <div className="info-text">
-                  <strong>개인정보 보호</strong>
-                  <p>비공개 설정 시 본인과 관리자만 확인 가능합니다</p>
-                </div>
-              </div>
-            </div>
+          <div className="qna-write-form-container">
+            <form className="qna-write-form" onSubmit={handleSubmit}>
 
-            {/* 폼 */}
-            <div className="qna-write-form-container">
-              <form className="qna-write-form" onSubmit={handleSubmit}>
-                
-                {/* 카테고리 */}
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-folder" />
-                    카테고리 <span className="required">*</span>
-                  </label>
-                  <div className="category-grid">
-                    {CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        className={`category-option ${formData.category === cat.id ? "selected" : ""}`}
-                        onClick={() => handleChange("category", cat.id)}
+              {/* 병원 선택 */}
+              <div className="form-group">
+                <label className="form-label">
+                  병원 선택 <span className="required">*</span>
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="병원명을 입력하세요"
+                  value={hospitalKeyword}
+                  onChange={(e) => {
+                    setHospitalKeyword(e.target.value);
+                    searchHospital(e.target.value);
+                  }}
+                />
+
+                {hospitalList.length > 0 && (
+                  <ul className="hospital-list">
+                    {hospitalList.map(hospital => (
+                      <li
+                        key={hospital.ho_num}
+                        onClick={() => {
+                          handleChange("ho_num", hospital.ho_num);
+                          setHospitalKeyword(hospital.ho_name);
+                          setHospitalList([]);
+                        }}
                       >
-                        <i className={`fas fa-${cat.icon}`} />
-                        <span>{cat.label}</span>
-                      </button>
+                        {hospital.ho_name} - {hospital.ho_addr}
+                      </li>
                     ))}
-                  </div>
-                  {errors.category && <span className="error-message">{errors.category}</span>}
-                </div>
+                  </ul>
+                )}
 
-                {/* 제목 */}
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-heading" />
-                    제목 <span className="required">*</span>
-                  </label>
+                {errors.ho_num && (
+                  <span className="error-message">{errors.ho_num}</span>
+                )}
+              </div>
+
+              {/* 제목 */}
+              <div className="form-group">
+                <label>제목 *</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  className={`form-input ${errors.title ? "error" : ""}`}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                  maxLength={50}
+                />
+                {errors.title && (
+                  <span className="error-message">{errors.title}</span>
+                )}
+              </div>
+
+              {/* 내용 */}
+              <div className="form-group">
+                <label>내용 *</label>
+                <textarea
+                  rows={8}
+                  value={formData.content}
+                  className={`form-textarea ${errors.content ? "error" : ""}`}
+                  onChange={(e) => handleChange("content", e.target.value)}
+                />
+                {errors.content && (
+                  <span className="error-message">{errors.content}</span>
+                )}
+              </div>
+
+              {/* 비공개 */}
+              <div className="form-group">
+                <label>
                   <input
-                    type="text"
-                    className={`form-input ${errors.title ? "error" : ""}`}
-                    placeholder="문의 제목을 입력하세요 (최소 5자)"
-                    value={formData.title}
-                    onChange={(e) => handleChange("title", e.target.value)}
-                    maxLength={100}
+                    type="checkbox"
+                    checked={formData.isPrivate}
+                    onChange={(e) =>
+                      handleChange("isPrivate", e.target.checked)
+                    }
                   />
-                  <div className="input-footer">
-                    {errors.title && <span className="error-message">{errors.title}</span>}
-                    <span className="char-count">{formData.title.length}/100</span>
-                  </div>
-                </div>
-
-                {/* 내용 */}
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-align-left" />
-                    내용 <span className="required">*</span>
-                  </label>
-                  <textarea
-                    className={`form-textarea ${errors.content ? "error" : ""}`}
-                    placeholder="문의 내용을 상세히 입력해주세요 (최소 10자)"
-                    value={formData.content}
-                    onChange={(e) => handleChange("content", e.target.value)}
-                    rows={10}
-                    maxLength={2000}
-                  />
-                  <div className="input-footer">
-                    {errors.content && <span className="error-message">{errors.content}</span>}
-                    <span className="char-count">{formData.content.length}/2000</span>
-                  </div>
-                </div>
-
-                {/* 이메일 */}
-                <div className="form-group">
-                  <label className="form-label">
-                    <i className="fas fa-envelope" />
-                    답변 받을 이메일 <span className="required">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    className={`form-input ${errors.email ? "error" : ""}`}
-                    placeholder="example@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                  />
-                  {errors.email && <span className="error-message">{errors.email}</span>}
-                  <p className="form-hint">
-                    <i className="fas fa-circle-info" />
-                    답변이 등록되면 이메일로 알림을 보내드립니다
-                  </p>
-                </div>
-
-                {/* 비공개 설정 */}
-                <div className="form-group">
-                  <label className="form-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.isPrivate}
-                      onChange={(e) => handleChange("isPrivate", e.target.checked)}
-                    />
-                    <span className="checkbox-custom" />
-                    <div className="checkbox-label">
-                      <i className="fas fa-lock" />
-                      <span>비공개 문의로 설정</span>
-                      <small>(본인과 관리자만 확인 가능)</small>
-                    </div>
-                  </label>
-                </div>
-
-                {/* 버튼 */}
-                <div className="form-actions">
-                  <button type="button" className="btn-cancel" onClick={handleCancel}>
-                    <i className="fas fa-times" />
-                    취소
-                  </button>
-                  <button type="submit" className="btn-submit">
-                    <i className="fas fa-paper-plane" />
-                    문의 등록
-                  </button>
-                </div>
-
-              </form>
-            </div>
-
+                  비공개 문의
+                </label>
+              </div>
+              <button type="button" className="btn-cancel" onClick={handleCancel}>
+                <i className="fas fa-times" />
+                  취소
+              </button>
+              <button type="submit" className="btn-submit">
+                <i className="fas fa-paper-plane" />
+                  문의 등록
+              </button>
+            </form>
           </div>
         </div>
       </section>
-
     </div>
   );
 };
