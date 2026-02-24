@@ -64,7 +64,7 @@ const QnAWritePage = () => {
 
   const CreateQnA = async () => {
     try {
-      const response = await authFetch(
+      const result = await authFetch(
         "http://localhost:8080/api/v1/qnawrite",
         {
           method: "POST",
@@ -80,16 +80,12 @@ const QnAWritePage = () => {
         }
       );
 
-      if (response.ok) {
-        const text = await response.text();
-        alert(text);
+        alert(result);
         navigate("/qna");
-      } else {
-        alert("문의 등록 실패");
-      }
+
     } catch (err) {
       console.error(err);
-      alert("서버 오류");
+      alert("문의 등록 실패");
     }
   };
 
@@ -192,7 +188,7 @@ const QnAWritePage = () => {
                       handleChange("isPrivate", e.target.checked)
                     }
                   />
-                  비공개 문의
+                  공개 문의
                 </label>
               </div>
               <button type="button" className="btn-cancel" onClick={handleCancel}>

@@ -29,6 +29,7 @@ const QnAPage = () => {
     }
   }
 
+
   // QNA 가져오기 & 매핑
   useEffect(() => {
     const getQnas = async () => {
@@ -186,6 +187,7 @@ const QnAModal = ({ qna, onClose }) => (
         {!qna.hasAnswer && <div className="qna-no-answer"><i className="fas fa-clock" /><p>답변을 준비 중입니다.</p></div>}
       </div>
       <div className="qna-modal-footer">
+        {/* <button className="btn-write-qna" onClick={onDelete}>삭제</button> */}
         <button className="btn-modal-close" onClick={onClose}>닫기</button>
       </div>
     </div>
