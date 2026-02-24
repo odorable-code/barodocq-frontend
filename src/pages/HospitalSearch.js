@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RegionSelect from "../components/RegionSelect";
-import Hos_DeptSelect from "../components/Hos_DeptSelect";
-import "./Hos_Search.css";
+import HospitalDeptSelect from "../components/HospitalDeptSelect";
+import "../assets/styles/HospitalSearch.css";
 
 const FILTERS = ["영업중", "야간진료", "휴일", "여의사", "예약가능"];
 
@@ -396,7 +396,7 @@ export default function Hos_Search() {
       </div>
 
       {/* ✅ 진료과 모달 */}
-      <Hos_DeptSelect
+      <HospitalDeptSelect
         isOpen={isDeptOpen}
         onClose={() => setIsDeptOpen(false)}
         onConfirm={({ deptName }) => {

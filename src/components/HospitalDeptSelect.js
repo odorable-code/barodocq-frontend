@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import "./Hos_DeptSelect.css";
+import "./HospitalDeptSelect.css";
 
 export default function Hos_DeptSelect({
   isOpen = false,

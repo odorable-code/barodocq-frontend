@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import RegionSelect from "../components/RegionSelect";
-import "./PharmacySearch.css";
+import "../assets/styles/PharmacySearch.css";
 
 // 환경변수 있으면 쓰고, 없으면 로컬 기본값
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
