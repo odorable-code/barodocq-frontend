@@ -115,9 +115,7 @@ function App() {
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
             <Route path="/main" element={<Main />} />
             <Route path="/hospitals" element={<HospitalSearch />} />
-            <Route
-              path="/hos_detail/:hospitalId"
-              element={<HospitalDetail />}
+            <Route path="/details/:hospitalId" element={<HospitalDetail />}
             />
             <Route path="/pharmacy" element={<PharmacySearch />} />
 
