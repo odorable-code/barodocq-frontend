@@ -55,39 +55,89 @@ function Login(){
         }
     };
 
-    return (
-    <div className="container">
-        <div className="logo" onClick={() => handleNavigate("/main")}>logo</div>
-        <br />
-        <br />
-            <div className="idDiv">
-                <input className="id" name="id" placeholder="아이디 입력" value={userId} onChange={(e)=> setUserId(e.target.value)}/>
-            </div>
-            <div className="pwDiv">
-                <input className="pw" type={showPw ? "text" : "password"} name="pw" placeholder="비밀번호 입력" value={userPw} onChange={(e)=>{setUserPw(e.target.value)}}/>
-                <img className="show" alt="비번" src="img/visibility_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png" value={showPw} onClick={() => setShowPw(!showPw)}/>
-            </div>
-            <div className="keepLoginDiv">
-                <label htmlFor="checkbox" >로그인 상태 유지</label>
-                <input className="keepLogin" type="checkbox" name="keepLoginCheck" id="checkbox" checked={keepLogin} onChange={(e) =>{ setKeepLogin(e.target.checked)}}/>
-            </div>
-        <div className="goDiv">
-            <button type="submit" className="go" onClick={handleLogin}>로그인</button>
-        </div>
-        <div className="divBox">
-            <Link to="/find/id" className="findId">아이디 찾기</Link>
-            <Link to="/resetPw" className="resetPw" onClick={() => handleNavigate("/resetPassword")}>비밀번호 재설정</Link>
-            <Link to="/signup" className="signup" onClick={() => handleNavigate("/signup")}>회원가입</Link>
-        </div>
-        <div className="social">
-            <a className="kakao" onClick={() => handleNavigate("/api/kakao")}></a>
-            <a className="naver" onClick={() => handleNavigate("/api/naver")}></a>
-            <a className="google" onClick={() => handleNavigate("/main")}></a>
-        </div>
-        <br />
-        <a className="userLogin" onClick={() => handleNavigate("/adminLogin")}>관리자로 로그인</a>
+     return (
+    <div className="login-container">
+
+      <div
+        className="login-logo"
+        onClick={() => handleNavigate("/main")}
+        style={{ cursor: "pointer", marginBottom: "30px" }}
+      >
+        logo
+      </div>
+
+      <div className="login-idDiv">
+        <input
+          className="login-id"
+          placeholder="아이디 입력"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        />
+      </div>
+
+      <div className="login-pwDiv">
+        <input
+          className="login-pw"
+          type={showPw ? "text" : "password"}
+          placeholder="비밀번호 입력"
+          value={userPw}
+          onChange={(e) => setUserPw(e.target.value)}
+        />
+        <img
+          className="login-showIcon"
+          alt="비번"
+          src="/img/visibility_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.png"
+          onClick={() => setShowPw(!showPw)}
+        />
+      </div>
+
+      <div className="login-keepDiv">
+        <input
+          className="login-keepCheck"
+          type="checkbox"
+          checked={keepLogin}
+          onChange={(e) => setKeepLogin(e.target.checked)}
+        />
+        <label style={{ marginLeft: "8px" }}>로그인 상태 유지</label>
+      </div>
+
+      <div className="login-goDiv">
+        <button
+          type="button"
+          className="login-submitBtn"
+          onClick={handleLogin}
+        >
+          로그인
+        </button>
+      </div>
+
+      <div className="login-linkBox">
+        <Link to="/find/id" className="login-findId">
+          아이디 찾기
+        </Link>
+        <Link to="/resetPassword" className="login-resetPw">
+          비밀번호 재설정
+        </Link>
+        <Link to="/signup" className="login-signupLink">
+          회원가입
+        </Link>
+      </div>
+
+      <div className="login-social">
+        <a onClick={() => handleNavigate("/api/kakao")}>카카오</a>
+        <a onClick={() => handleNavigate("/api/naver")}>네이버</a>
+        <a onClick={() => handleNavigate("/main")}>구글</a>
+      </div>
+
+      <div
+        style={{ marginTop: "20px", cursor: "pointer", fontSize: "13px" }}
+        onClick={() => handleNavigate("/adminLogin")}
+      >
+        관리자로 로그인
+      </div>
+
     </div>
-    );
+  );
 }
+
 export default Login;
-    

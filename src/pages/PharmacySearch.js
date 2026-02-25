@@ -13,7 +13,12 @@ import {
   faAngleDoubleLeft,
   faAngleLeft,
   faAngleRight,
-  faAngleDoubleRight
+  faAngleDoubleRight,
+  faPills,
+  faLocationDot,
+  faFilter,
+  faMapLocationDot,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 const API_BASE_URL =
@@ -82,7 +87,7 @@ export default function HoAndPhar() {
   });
 
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 9;
 
   const isOpenNow = useCallback((openTime, closeTime) => {
     if (!openTime || !closeTime) return null;
@@ -131,17 +136,17 @@ export default function HoAndPhar() {
       }
     }
     load();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, []);
 
   const filteredPharmacies = useMemo(() => {
     let result = pharmacies;
     if (activeFilter === "진료중")
       result = result.filter((p) => isOpenNow(p.openTime, p.closeTime));
-    else if (activeFilter === "야간진료") result = result.filter((p) => p.isNight);
-    else if (activeFilter === "공휴일") result = result.filter((p) => p.isHoliday);
+    else if (activeFilter === "야간진료")
+      result = result.filter((p) => p.isNight);
+    else if (activeFilter === "공휴일")
+      result = result.filter((p) => p.isHoliday);
 
     const keyword = searchTerm.trim();
     if (keyword)
@@ -160,8 +165,12 @@ export default function HoAndPhar() {
   }, [filteredPharmacies, page]);
 
   const regionLabel = useMemo(() => {
-    const parts = [region?.sido?.name, region?.sigungu?.name, region?.emd?.name].filter(Boolean);
-    return parts.length ? parts.join(" ") : "지역 검색";
+    const parts = [
+      region?.sido?.name,
+      region?.sigungu?.name,
+      region?.emd?.name,
+    ].filter(Boolean);
+    return parts.length ? parts.join(" ") : "지역 선택";
   }, [region]);
 
   const handleFilterChange = useCallback((type) => {
@@ -175,12 +184,14 @@ export default function HoAndPhar() {
     setPage(1);
   }, []);
   const timeText = useCallback(
-    (open, close) => (open && close ? `${open} ~ ${close}` : "운영시간 정보 없음"),
+    (open, close) =>
+      open && close ? `${open} ~ ${close}` : "운영시간 정보 없음",
     []
   );
 
   const PAGE_GROUP = 5;
-  const currentGroupStart = Math.floor((page - 1) / PAGE_GROUP) * PAGE_GROUP + 1;
+  const currentGroupStart =
+    Math.floor((page - 1) / PAGE_GROUP) * PAGE_GROUP + 1;
   const currentGroupEnd = Math.min(totalPages, currentGroupStart + PAGE_GROUP - 1);
   const pageNumbers = useMemo(() => {
     const numbers = [];
@@ -188,136 +199,325 @@ export default function HoAndPhar() {
     return numbers;
   }, [currentGroupStart, currentGroupEnd]);
 
+  const FILTERS = [
+    { key: "전체",   icon: null,          label: "전체" },
+    { key: "진료중", icon: faSun,         label: "진료중" },
+    { key: "야간진료", icon: faMoon,      label: "야간진료" },
+    { key: "공휴일", icon: faCalendarDay, label: "공휴일 운영" },
+  ];
+
   return (
-    <div className="browser">
-      <div className="container">
-        {/* 검색 + 필터 */}
-        <div className="middleContainser">
-          <div className="regionSearch">
-            <div className="regionSearch1" onClick={() => setIsRegionOpen(true)}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} /> {regionLabel}
+    <div className="phar-page">
+
+      {/* ── Hero Banner ── */}
+      <section className="phar-hero">
+        <div className="phar-hero-blob phar-blob1" />
+        <div className="phar-hero-blob phar-blob2" />
+        <div className="phar-container">
+          <div className="phar-hero-inner">
+            <span className="phar-hero-label">
+              <FontAwesomeIcon icon={faPills} /> 약국 찾기
+            </span>
+            <h1 className="phar-hero-title">
+              내 주변 약국을<br />
+              <span className="phar-gradient-text">빠르게 찾아보세요</span>
+            </h1>
+            <p className="phar-hero-desc">
+              야간·공휴일 운영 약국까지 실시간으로 확인하고<br />
+              위치·영업시간을 한눈에 파악하세요
+            </p>
+            {/* 히어로 내 검색창 */}
+            <div className="phar-hero-search">
+              <button
+                className="phar-region-btn"
+                onClick={() => setIsRegionOpen(true)}
+              >
+                <FontAwesomeIcon icon={faLocationDot} />
+                <span>{regionLabel}</span>
+              </button>
+              <div className="phar-search-divider" />
+              <input
+                className="phar-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="약국명 또는 주소를 검색하세요"
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <button className="phar-search-btn" onClick={handleSearch}>
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                검색하기
+              </button>
             </div>
-            <div className="searchLine" />
-            <input
-              className="regionSearch2"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="약국 이름 또는 주소를 입력하세요"
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            />
-            <button className="searchBtn" onClick={handleSearch}>
-              <FontAwesomeIcon icon={faMagnifyingGlass} /> 검색
-            </button>
-          </div>
-          <div className="filter-group">
-            {["진료중", "야간진료", "공휴일", "전체"].map((f) => {
-              let icon = null;
-              if (f === "진료중") icon = faSun;
-              else if (f === "야간진료") icon = faMoon;
-              else if (f === "공휴일") icon = faCalendarDay;
-              return (
+            {/* 필터 탭 */}
+            <div className="phar-filter-row">
+              <FontAwesomeIcon icon={faFilter} className="phar-filter-label-icon" />
+              {FILTERS.map((f) => (
                 <button
-                  key={f}
-                  className={`filter1 filter2 ${activeFilter === f ? "is-active" : ""}`}
-                  onClick={() => handleFilterChange(f)}
+                  key={f.key}
+                  className={`phar-filter-btn ${activeFilter === f.key ? "active" : ""}`}
+                  onClick={() => handleFilterChange(f.key)}
                 >
-                  {icon && <span className="filterIcon"><FontAwesomeIcon icon={icon} /></span>}
-                  <span className="filterText">{f}</span>
+                  {f.icon && <FontAwesomeIcon icon={f.icon} />}
+                  {f.label}
                 </button>
-              );
-            })}
+              ))}
+            </div>
+          </div>
+
+          {/* 히어로 우측 스탯 */}
+          <div className="phar-hero-stats">
+            <div className="phar-stat-item">
+              <div className="phar-stat-icon" style={{ background: "#14b8a6" }}>
+                <FontAwesomeIcon icon={faPills} />
+              </div>
+              <div>
+                <div className="phar-stat-num">{totalCount.toLocaleString()}</div>
+                <div className="phar-stat-lbl">검색 결과</div>
+              </div>
+            </div>
+            <div className="phar-stat-item">
+              <div className="phar-stat-icon" style={{ background: "#0d9488" }}>
+                <FontAwesomeIcon icon={faMoon} />
+              </div>
+              <div>
+                <div className="phar-stat-num">
+                  {pharmacies.filter((p) => p.isNight).length}
+                </div>
+                <div className="phar-stat-lbl">야간 운영</div>
+              </div>
+            </div>
+            <div className="phar-stat-item">
+              <div className="phar-stat-icon" style={{ background: "#0f766e" }}>
+                <FontAwesomeIcon icon={faCalendarDay} />
+              </div>
+              <div>
+                <div className="phar-stat-num">
+                  {pharmacies.filter((p) => p.isHoliday).length}
+                </div>
+                <div className="phar-stat-lbl">공휴일 운영</div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* 지도 + 결과 */}
-        <div className="container2">
-          <div className="map">지도 영역</div>
-          <div className="resultWrap">
-            <div className="resultHeader">
-              <h2 className="resultTitle">약국정보</h2>
-              <div className="resultCount">
-                {totalCount}건 · {page}/{totalPages}페이지
+      {/* ── 본문 ── */}
+      <section className="phar-body">
+        <div className="phar-container">
+          <div className="phar-layout">
+
+            {/* 좌: 지도 */}
+            <div className="phar-map-col">
+              <div className="phar-map-card">
+                <div className="phar-map-header">
+                  <span className="phar-map-title">
+                    <FontAwesomeIcon icon={faMapLocationDot} />
+                    주변 약국 지도
+                  </span>
+                  <span className="phar-map-count">
+                    {totalCount}개 약국
+                  </span>
+                </div>
+                <div className="phar-map-area">
+                  <div className="phar-map-placeholder">
+                    <div className="phar-map-pulse" />
+                    <FontAwesomeIcon icon={faMapLocationDot} className="phar-map-ico" />
+                    <span className="phar-map-txt">지도 로딩 중...</span>
+                    <span className="phar-map-sub">위치 기반 약국 정보를 불러오는 중입니다</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {loading && <div className="stateText">약국 불러오는 중...</div>}
-            {error && <div className="stateText error">{error}</div>}
+            {/* 우: 결과 목록 */}
+            <div className="phar-result-col">
+              {/* 결과 헤더 */}
+              <div className="phar-result-header">
+                <div className="phar-result-title-wrap">
+                  <h2 className="phar-result-title">약국 목록</h2>
+                  <span className="phar-result-badge">
+                    총 {totalCount}건
+                  </span>
+                </div>
+                <span className="phar-page-info">
+                  {page} / {totalPages} 페이지
+                </span>
+              </div>
 
-            {!loading && !error && (
-              <>
-                <div className="pharmacyContainer">
+              {/* 로딩 */}
+              {loading && (
+                <div className="phar-state-box">
+                  <div className="phar-spinner" />
+                  <p>약국 정보를 불러오는 중...</p>
+                </div>
+              )}
+
+              {/* 에러 */}
+              {error && (
+                <div className="phar-state-box phar-state-error">
+                  <p>⚠️ {error}</p>
+                </div>
+              )}
+
+              {/* 카드 목록 */}
+              {!loading && !error && (
+                <>
                   {pagedPharmacies.length > 0 ? (
-                    pagedPharmacies.map((p) => (
-                      <article className="pharmacyCard" key={p.id}>
-                        <div className="cardThumb">
-                          {p.photo ? (
-                            <img
-                              className="cardThumbImg"
-                              src={p.photo}
-                              alt={`${p.name} 썸네일`}
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="noImage">이미지 없음</div>
-                          )}
-                        </div>
-                        <div className="cardBody">
-                          <div className="cardTopRow">
-                            <h3 className="pharName">{p.name}</h3>
-                            <div className="badgeRow">
-                              {p.isNight && <span className="badge">야간</span>}
-                              {p.isHoliday && <span className="badge">공휴일</span>}
+                    <div className="phar-card-grid">
+                      {pagedPharmacies.map((p, idx) => {
+                        const open = isOpenNow(p.openTime, p.closeTime);
+                        return (
+                          <article
+                            className="phar-card"
+                            key={p.id}
+                            style={{ animationDelay: `${idx * 0.06}s` }}
+                          >
+                            {/* 상단 헤더 */}
+                            <div className="phar-card-head">
+                              <div className="phar-card-thumb">
+                                {p.photo ? (
+                                  <img
+                                    src={p.photo}
+                                    alt={`${p.name} 썸네일`}
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="phar-no-img">
+                                    <FontAwesomeIcon icon={faPills} />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="phar-card-meta">
+                                <div className="phar-card-name-row">
+                                  <h3 className="phar-card-name">{p.name}</h3>
+                                  {open !== null && (
+                                    <span
+                                      className={`phar-open-tag ${open ? "open" : "closed"}`}
+                                    >
+                                      {open ? "진료중" : "진료종료"}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="phar-badge-row">
+                                  {p.isNight && (
+                                    <span className="phar-badge night">
+                                      <FontAwesomeIcon icon={faMoon} /> 야간
+                                    </span>
+                                  )}
+                                  {p.isHoliday && (
+                                    <span className="phar-badge holiday">
+                                      <FontAwesomeIcon icon={faCalendarDay} /> 공휴일
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="phar-card-addr">
+                                  <FontAwesomeIcon icon={faLocationDot} />
+                                  {p.addr || "주소 정보 없음"}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          <p className="pharAddr">{p.addr}</p>
-                          <div className="pharMeta">
-                            <FontAwesomeIcon icon={faPhone} className="metaIcon" /> {p.phone || "전화번호 정보 없음"}
-                          </div>
-                          <div className="pharMeta">
-                            <FontAwesomeIcon icon={faClock} className="metaIcon" /> {timeText(p.openTime, p.closeTime)}
-                          </div>
-                        </div>
-                      </article>
-                    ))
+
+                            {/* 정보 행 */}
+                            <div className="phar-card-info-grid">
+                              <div className="phar-info-item">
+                                <FontAwesomeIcon
+                                  icon={faPhone}
+                                  className="phar-info-icon"
+                                />
+                                <span>{p.phone || "전화번호 없음"}</span>
+                              </div>
+                              <div className="phar-info-item">
+                                <FontAwesomeIcon
+                                  icon={faClock}
+                                  className="phar-info-icon"
+                                />
+                                <span>{timeText(p.openTime, p.closeTime)}</span>
+                              </div>
+                            </div>
+
+                            {/* 푸터 */}
+                            <div className="phar-card-footer">
+                              <button className="phar-btn-detail">
+                                상세보기
+                                <FontAwesomeIcon icon={faArrowRight} />
+                              </button>
+                              <button className="phar-btn-map">
+                                <FontAwesomeIcon icon={faLocationDot} />
+                                지도보기
+                              </button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <div className="emptyState">
-                      <FontAwesomeIcon icon={faSun} className="emptyStateIcon" />
-                      <div className="emptyText">
-                        {totalCount}건 · {page}/{totalPages}페이지
-                        <br />
-                        해당하는 약국이 없습니다.
+                    <div className="phar-empty">
+                      <div className="phar-empty-icon">
+                        <FontAwesomeIcon icon={faPills} />
                       </div>
+                      <h3>검색 결과가 없습니다</h3>
+                      <p>다른 검색어나 필터 조건을 시도해보세요</p>
                     </div>
                   )}
-                </div>
 
-                {/* 페이지네이션 */}
-                <nav className="pagination">
-                  {currentGroupStart !== 1 && totalCount > 0 && (
-                    <>
-                      <button onClick={() => setPage(1)}><FontAwesomeIcon icon={faAngleDoubleLeft} /> 처음</button>
-                      <button onClick={() => setPage((prev) => Math.max(1, prev - 1))}><FontAwesomeIcon icon={faAngleLeft} /> 이전</button>
-                    </>
+                  {/* 페이지네이션 */}
+                  {totalCount > 0 && (
+                    <nav className="phar-pagination">
+                      {currentGroupStart > 1 && (
+                        <>
+                          <button
+                            className="phar-page-btn"
+                            onClick={() => setPage(1)}
+                          >
+                            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+                          </button>
+                          <button
+                            className="phar-page-btn"
+                            onClick={() =>
+                              setPage((prev) => Math.max(1, prev - 1))
+                            }
+                          >
+                            <FontAwesomeIcon icon={faAngleLeft} />
+                          </button>
+                        </>
+                      )}
+                      <div className="phar-page-nums">
+                        {pageNumbers.map((n) => (
+                          <button
+                            key={n}
+                            className={`phar-page-num ${n === page ? "active" : ""}`}
+                            onClick={() => setPage(n)}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                      {currentGroupEnd < totalPages && (
+                        <>
+                          <button
+                            className="phar-page-btn"
+                            onClick={() =>
+                              setPage((prev) => Math.min(totalPages, prev + 1))
+                            }
+                          >
+                            <FontAwesomeIcon icon={faAngleRight} />
+                          </button>
+                          <button
+                            className="phar-page-btn"
+                            onClick={() => setPage(totalPages)}
+                          >
+                            <FontAwesomeIcon icon={faAngleDoubleRight} />
+                          </button>
+                        </>
+                      )}
+                    </nav>
                   )}
-                  <div className="pageNums">
-                    {pageNumbers.map((n) => (
-                      <button key={n} className={n === page ? "active" : ""} onClick={() => setPage(n)}>
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                  {currentGroupEnd !== totalPages && totalCount > 0 && (
-                    <>
-                      <button onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}>다음 <FontAwesomeIcon icon={faAngleRight} /></button>
-                      <button onClick={() => setPage(totalPages)}>끝 <FontAwesomeIcon icon={faAngleDoubleRight} /></button>
-                    </>
-                  )}
-                </nav>
-              </>
-            )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <RegionSelect
         isOpen={isRegionOpen}
