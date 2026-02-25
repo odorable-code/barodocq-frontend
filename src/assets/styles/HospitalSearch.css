@@ -46,21 +46,21 @@
   margin-bottom: 2rem;
 }
 
-.search-input-wrapper {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
 .search-input-container {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
+
   background: #fff;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   transition: var(--transition-base);
+
+  width: 100%;          /* 부모 기준 */
+  max-width: 600px;     /* 🔥 최대 너비 제한 */
+  margin: 40px auto;    /* 🔥 가운데 정렬 */
 }
 
 .search-input-container:focus-within {
