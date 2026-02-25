@@ -3,6 +3,7 @@ import "../assets/styles/ReviewBoard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faHeart } from "@fortawesome/free-solid-svg-icons";
 
+// Mock 데이터
 const mockReviews = Array.from({ length: 23 }).map((_, i) => ({
   id: i + 1,
   user: `사용자${i + 1}`,
@@ -34,13 +35,15 @@ export default function ReviewBoard() {
 
   return (
     <div className="review-board-container">
-      <h2 className="review-board-title">병원 방문객 리뷰</h2>
+      <h2 className="review-board-title">💬 방문객 리뷰</h2>
+
       <div className="review-list">
         {paginatedReviews.map((review) => (
           <div key={review.id} className="review-card">
             <div className="review-left">
               <div className="review-avatar">{review.avatar}</div>
             </div>
+
             <div className="review-body">
               <div className="review-top">
                 <span className="review-user">{review.user}</span>
@@ -48,6 +51,7 @@ export default function ReviewBoard() {
                 <span className="review-dept">{review.dept}</span>
                 <span className="review-date">{review.date}</span>
               </div>
+
               <div className="review-stars">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <FontAwesomeIcon
@@ -57,7 +61,9 @@ export default function ReviewBoard() {
                   />
                 ))}
               </div>
+
               <p className="review-text">{review.text}</p>
+
               <div className="review-footer">
                 <button
                   className="review-like-btn"

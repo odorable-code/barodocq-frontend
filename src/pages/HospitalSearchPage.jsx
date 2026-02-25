@@ -19,30 +19,12 @@ const DEPT_CATEGORIES = [
   { id: "obgyn", label: "산부인과", icon: "baby-carriage" },
 ];
 
-const REGION_CATEGORIES = [
-  { id: "all", label: "전체 지역", icon: "map-location-dot" },
-  { id: "gangnam", label: "강남구", icon: "building" },
-  { id: "gangdong", label: "강동구", icon: "building" },
-  { id: "gangbuk", label: "강북구", icon: "building" },
-  { id: "gangseo", label: "강서구", icon: "building" },
-  { id: "gwanak", label: "관악구", icon: "building" },
-  { id: "gwangjin", label: "광진구", icon: "building" },
-  { id: "guro", label: "구로구", icon: "building" },
-  { id: "geumcheon", label: "금천구", icon: "building" },
-  { id: "nowon", label: "노원구", icon: "building" },
-  { id: "dobong", label: "도봉구", icon: "building" },
-  { id: "dongdaemun", label: "동대문구", icon: "building" },
-  { id: "dongjak", label: "동작구", icon: "building" },
-];
-
 const FILTER_TAGS = [
   { id: "open", label: "영업중", icon: "circle-check", color: "#10b981" },
   { id: "night", label: "야간진료", icon: "moon", color: "#6366f1" },
   { id: "weekend", label: "주말진료", icon: "calendar-week", color: "#ec4899" },
-  { id: "female", label: "여의사", icon: "user-doctor", color: "#8b5cf6" },
   { id: "available", label: "예약가능", icon: "calendar-check", color: "#14b8a6" },
   { id: "parking", label: "주차가능", icon: "square-parking", color: "#0ea5e9" },
-  { id: "insurance", label: "보험적용", icon: "shield-halved", color: "#f59e0b" },
 ];
 
 const HOSPITAL_LIST = [
@@ -54,7 +36,6 @@ const HOSPITAL_LIST = [
     region: "gangnam",
     thumbnail: "https://via.placeholder.com/400x250/14b8a6/ffffff?text=Hospital",
     address: "서울 강남구 테헤란로 123",
-    detailAddress: "5층 소아청소년과",
     phone: "02-1234-5678",
     rating: 4.9,
     reviews: 312,
@@ -392,25 +373,6 @@ const HospitalSearchPage = () => {
             </button>
           </div>
 
-          {/* 카테고리 선택 */}
-          <div className="category-scroll-wrapper">
-            <div className="category-tabs">
-              {(searchMode === "dept" ? DEPT_CATEGORIES : REGION_CATEGORIES).map(
-                (cat) => (
-                  <button
-                    key={cat.id}
-                    className={`category-tab ${
-                      selectedCategory === cat.id ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedCategory(cat.id)}
-                  >
-                    <i className={`fas fa-${cat.icon}`} />
-                    <span>{cat.label}</span>
-                  </button>
-                )
-              )}
-            </div>
-          </div>
 
           {/* 필터 태그 */}
           <div className="filter-tags-section">

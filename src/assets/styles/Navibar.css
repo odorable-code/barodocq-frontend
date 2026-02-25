@@ -67,13 +67,27 @@
 	display: flex;
 	border: 1px solid black;
 }
-.nav-item {
-	flex: 1;
-	text-align: center;
-	padding: 15px;
-	border-right: 1px solid #000;
-	cursor: pointer;
+.nav-wrapper .nav-item {
+  flex: 1;
+  text-align: center;
+  padding: 15px;
+  border-right: 1px solid #000;
+  cursor: pointer;
+
+  text-decoration: none !important;   /* 밑줄 제거 */
+  color: #666 !important;             /* 기본 색 강제 */
+  font-weight: 600;
 }
+
+.nav-wrapper .nav-item.active {
+  color: #0d6efd !important;          /* 활성화 색 강제 */
+  font-weight: 700;
+}
+.nav-item.active {
+  color: #0d6efd;
+  font-weight: 700;
+}
+
 .nav-item:last-child {
 	border-right: none;
 }

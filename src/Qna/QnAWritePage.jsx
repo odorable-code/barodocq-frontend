@@ -123,6 +123,7 @@ const QnAWritePage = () => {
 
                 <input
                   type="text"
+                  className={`form-input ${errors.ho_num ? "error" : ""}`}
                   placeholder="병원명을 입력하세요"
                   value={hospitalKeyword}
                   onChange={(e) => {
