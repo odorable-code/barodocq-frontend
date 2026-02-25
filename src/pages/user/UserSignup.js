@@ -5,7 +5,7 @@ import { useNavigate} from "react-router-dom";
 function UserSignup() {
     // 1. 상태 선언
     const [formData, setFormData] = useState({
-        userId: "", userPw: "", userPw2: "", userName: "", userPhone: "", userGender: "", email: "", userAddr: ""
+        userId: "", userPw: "", userPw2: "", userName: "", userPhone: "", userGender: "", email: "", userAddr: "", userBirth: ""
     });
     const [agreements, setAgreements] = useState({ termsAgreed: false, locationAgreed: false });
     const [errors, setErrors] = useState({});
@@ -104,12 +104,6 @@ function UserSignup() {
             return;
         }
 
-        // const startWithAlpha = /^[a-z]/;
-        // if (!startWithAlpha.test(userId)) {
-        //     alert("아이디는 영문 소문자로 시작해야 합니다");
-        //     return;
-        // }
-
         const onlyAlphaNum = /^[a-z0-9]+$/;
         if (!onlyAlphaNum.test(userId)) {
             alert("아이디는 영문 소문자와 숫자만 포함할 수 있습니다.");
@@ -162,7 +156,7 @@ function UserSignup() {
     const signupButton = async (e) => {
         e.preventDefault();
         // formData에서 값 추출
-        const { userPw, userPw2, userPhone, userId, userName, userGender } = formData;
+        const { userPw, userPw2, userPhone, userId, userName, userGender, userBirth } = formData;
 
         // 중복 확인 여부 먼저 체크
         if (!isIdAvailable) {
@@ -199,13 +193,14 @@ function UserSignup() {
             userName: userName,
             userPhone: userPhone,
             userGender: userGender,
-            termAgreement: true };
+            termAgreement: true,
+            userBirth: userBirth };
 
             //http://localhost:8080
         try {
             const response = await fetch("/api/v1/auth/signup", {
                 method: "POST",
-                headers: { "Content-type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(submitData),
             });
 
@@ -247,11 +242,16 @@ function UserSignup() {
 
                     <div className="phoneLine">
                         <input className="phone" name="userPhone" placeholder="휴대폰번호" value={formData.userPhone} onChange={handleChange} />
-                        <div className="sendCodeDiv">
+                        {/* <div className="sendCodeDiv">
                             <button type="submit" className="sendCode" onClick={clickSend}>
                                 {isTimeActive ? formatTime(timeLeft) : "인증번호 전송"}
                             </button>
-                        </div>
+                        </div> */}
+                        <div className="line1"></div>
+                    </div>
+
+                    <div className="birthLine">
+                        <input className="email" name="userBirth" placeholder="생년월일" value={formData.userBirth} onChange={handleChange} required/>
                         <div className="line1"></div>
                     </div>
 
@@ -263,15 +263,14 @@ function UserSignup() {
                     <div className="addressLine">
                         <input className="address" name="userAddr" placeholder="주소" value={formData.userAddr} onChange={handleChange} required/>
                         <div className="line1"></div>
-                        <div className="line1"></div>
                     </div>
 
                     <div className="gender">성별</div>
                     <div className="checkbox">
-                        <input type="radio" name="userGender" id="men" checked={formData.userGender === "men"} onChange={() => setFormData({ ...formData, userGender: "men" })} />
-                        <label htmlFor="men">남성</label>
-                        <input type="radio" name="userGender" id="women" checked={formData.userGender === "women"} onChange={() => setFormData({ ...formData, userGender: "women" })} />
-                        <label htmlFor="women">여성</label>
+                        <input type="radio" name="userGender" id="male" checked={formData.userGender === "male"} onChange={() => setFormData({ ...formData, userGender: "male" })} />
+                        <label htmlFor="male">남성</label>
+                        <input type="radio" name="userGender" id="female" checked={formData.userGender === "female"} onChange={() => setFormData({ ...formData, userGender: "female" })} />
+                        <label htmlFor="female">여성</label>
                     </div>
 
                     <div className="term">

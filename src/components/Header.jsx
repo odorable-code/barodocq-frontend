@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../assets/styles/Header.css";
 import { useRef } from "react";
 
-const Header = () => {
+const Header = ({ onOpenReservation }) => {
   const navRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navMenuRef = useRef(null);
@@ -39,9 +39,13 @@ const Header = () => {
           </div>
 
           <div className="nav-buttons-s2" ref={navButtonsRef}>
-            <Link to="/login" className="btn-text-s2">로그인</Link>
+            <Link to="/login" className="btn-text-s2">
+              로그인
+            </Link>
             {/* <button className="btn-text-s2">로그인</button> */}
-            <Link to="/signup" className="btn-primary-s2">회원가입</Link>
+            <Link to="/signup" className="btn-primary-s2">
+              회원가입
+            </Link>
             <button className="btn-notification-s2">
               <i className="fas fa-bell" />
               <span className="notification-badge-s2">3</span>
@@ -75,27 +79,19 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/appointments">
+              <button
+                type="button"
+                onClick={onOpenReservation}
+                className="nav-menu-link-btn"
+              >
                 <i className="fas fa-calendar-check" />
                 나의 예약
-              </Link>
+              </button>
             </li>
             <li>
               <Link to="/reviews">
                 <i className="fas fa-notes-medical" />
                 병원후기
-              </Link>
-            </li>
-            <li>
-              <Link to="/reviews/details">
-                <i className="fas fa-notes-medical" />
-                후기상세
-              </Link>
-            </li>
-            <li>
-              <Link to="/reviews/revise/1">
-                <i className="fas fa-notes-medical" />
-                후기수정
               </Link>
             </li>
             <li>
