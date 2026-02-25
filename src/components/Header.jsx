@@ -87,18 +87,6 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/reviews/details">
-                <i className="fas fa-notes-medical" />
-                후기상세
-              </Link>
-            </li>
-            <li>
-              <Link to="/reviews/revise/1">
-                <i className="fas fa-notes-medical" />
-                후기수정
-              </Link>
-            </li>
-            <li>
               <Link to="/community">
                 <i className="fas fa-comments" />
                 커뮤니티
