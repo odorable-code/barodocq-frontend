@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/QnAPage.css";
 
 /* ─────────────────────────────────────────

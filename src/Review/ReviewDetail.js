@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/ReviewDetail.css";
 
 const ReviewDetail = () => {
