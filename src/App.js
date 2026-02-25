@@ -5,6 +5,7 @@ import HospitalDetail from "./pages/HospitalDetail";
 import HospitalSearch from "./pages/HospitalSearch";
 import Layout from "./components/Layout";
 import Main from "./Main";
+import MyPage from "./MyPage";
 import UserLogin from "./pages/UserLogin";
 import MainPage from "./pages/MainPage";
 import QnAPage from "./Qna/QnAPage";
@@ -79,6 +80,7 @@ function App() {
 
             {/* 소문자로 통일한 경로 */}
             <Route path="/mainpage" element={<MainPage />} />
+            <Route path="/mypage" element={<MyPage />} />
             <Route path="/qna" element={<QnAPage />} />
             <Route path="/qna/write" element={<QnAWritePage />} />
             <Route path="/hospitalsearchpage" element={<HospitalSearchPage />} />
