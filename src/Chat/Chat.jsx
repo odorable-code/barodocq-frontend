@@ -11,12 +11,13 @@ const Chat = ({ hospitalName, id }) => {
 
   useEffect(() => {
     // 3. 소켓 연결 시작 (서버의 WebSocketConfig 주소와 일치해야 함)
-    socketRef.current = new WebSocket("ws://localhost:8080/chat");
-
+    socketRef.current = new WebSocket("ws://localhost:8080/chat"); //http://는 요청하면 응답하고 끊기는 방식이지만, ws://는 WebSocket의 약자로, 한 번 연결하면 계속 열려 있는 실시간 통로를 의미
+		//리액트에서 useRef()를 호출하면 항상 다음과 같은 구조의 객체가 만들어짐
+		//{ current: null } (초기값)
+		//socketRef.current = new WebSocket(...)이라고 코드를 짜는 순간, 저 null 자리에 진짜 웹소켓 연결 객체가 들어가고 그 후부터 소켓에 명령을 내릴 땐 반드시 이 current라는 문을 열고 들어가야함
     // [연결 성공]
     socketRef.current.onopen = () => {
       console.log("서버와 연결되었습니다.");
-      //setIsConnected(true);
     };
 
     // [메시지 수신] 서버(Java)에서 보내준 메시지를 처리
@@ -55,8 +56,14 @@ const Chat = ({ hospitalName, id }) => {
         id: id,
         hospitalName: hospitalName,
         message: input,
-        type: "CHAT"
+        type: "CHAT",
+				cr_num: 1, // 현재 접속한 방 번호 (실제 변수로 대체 필요)
+  	  	cm_content: input, // 서버 DTO 필드명과 일치
+  	  	cm_sender_type: 'user', // 'user' 또는 'admin' (테이블 enum 값)
       };
+
+		  socketRef.current.send(JSON.stringify(chatData));
+  		setInput("");
 
       // 서버(ChatHandler)로 JSON 문자열 전송
       socketRef.current.send(JSON.stringify(chatData));
