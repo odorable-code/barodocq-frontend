@@ -61,6 +61,7 @@ const RECENT_REVIEWS = [
 const MyPage = () => {
   const [activeStatus, setActiveStatus] = useState("reservation");
   const [scrapCount, setScrapCount] = useState(0);
+  const [scraps, setScraps] = useState({});
 
   const auth = useAuth();
 
@@ -79,15 +80,28 @@ const MyPage = () => {
         setScrapCount(count);
       }
     }
+
+    async function fetchScraps() {
+      const result = await authFetch("/api/v1/hospitals/me/scraps");
+      if (result.ok) {
+        const data = await result.json();
+        setScraps(data);
+      }
+    }
     fetchCount();
+    fetchScraps();
   }, []);
+  
   if (!auth) return null; 
   const { user } = auth;
+
   const STATUS_STATS = [
     { id: "reservation", icon: "calendar-check", label: "예약현황", value: 2, color: "#14b8a6", sub: "진행 중" },
-    { id: "history",     icon: "clipboard-list",  label: "병원내역",  value: 14, color: "#0d9488", sub: "총 방문" },
-    { id: "scrap",       icon: "heart",           label: "찜한 병원", value: scrapCount,  color: "#0f766e", sub: "저장됨" },
+    { id: "history",     icon: "clipboard-list", label: "병원내역",  value: 14, color: "#0d9488", sub: "총 방문" },
+    { id: "scrap",       icon: "heart",          label: "찜한 병원", value: scrapCount,  color: "#0f766e", sub: "저장됨" },
   ];
+
+  console.log(scraps);
   return (
     <div className="mypage-wrapper">
 
@@ -219,10 +233,18 @@ const MyPage = () => {
               <h2>찜한 병원</h2>
               <button className="mp-panel-more">전체보기 <i className="fas fa-chevron-right" /></button>
             </div>
+            { scraps.length === 0 ? 
             <div className="mp-empty">
               <i className="fas fa-heart" style={{ color: "#14b8a6" }} />
               <p>찜한 병원을 확인하세요.</p>
             </div>
+            :
+            <div className="mp-history-list">
+              {scraps.map((data, i) => (
+                <ScrapCard key={i} {...data} />
+              ))}
+            </div>
+            }
           </section>
         )}
 
@@ -277,6 +299,23 @@ const ReservationCard = ({ hospital, dept, date, time, status }) => (
     <div className="mp-res-actions">
       <span className="mp-res-chip upcoming">{status}</span>
       <button className="mp-res-cancel">취소</button>
+    </div>
+  </div>
+);
+const ScrapCard = ({ ho_name, hs_created_at, status }) => (
+  <div className="mp-reservation-card">
+    <div className="mp-res-status-dot" />
+    <div className="mp-res-icon">
+      <i className="fas fa-hospital" />
+    </div>
+    <div className="mp-res-info">
+      <strong>{ho_name}</strong>
+    </div>
+    <div className="mp-res-time">
+      <span className="mp-res-date"><i className="fas fa-calendar" />{hs_created_at}</span>
+    </div>
+    <div className="mp-res-actions">
+      <span className="mp-res-chip upcoming">{status}</span>
     </div>
   </div>
 );
