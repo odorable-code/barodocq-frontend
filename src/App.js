@@ -17,6 +17,7 @@ import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
+import UserLogin from "./pages/UserLogin";
 
 // 관리자 페이지
 
@@ -98,7 +99,6 @@ function App() {
             <Route path="/hospitals" element={<HospitalSearch />} />
             <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
-<<<<<<< HEAD
             
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
@@ -119,11 +119,6 @@ function App() {
             <Route path="/resetPw" element={<ResetPassword />} />
           </Route>
         
-=======
-
-            {/* 잘못된 경로는 메인으로 */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Route>
 
           {/* 로그인만 레이아웃 없이 */}
           <Route path="/login" element={<UserLogin />} />
@@ -138,7 +133,6 @@ function App() {
 
           {/* ✅ 최종 fallback */}
           <Route path="*" element={<Navigate to="/" />} />
->>>>>>> main
         </Routes>
       </BrowserRouter>
     </div>
