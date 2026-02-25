@@ -68,7 +68,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/hospitals" className="active">
+              <Link to="/hospitals">
                 <i className="fas fa-hospital" />
                 병원찾기
               </Link>
@@ -80,8 +80,21 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/dashboard">
-                <i className="fas fa-chart-pie" />내 건강 대시보드
+              <Link to="/reviews">
+                <i className="fas fa-notes-medical" />
+                병원후기
+              </Link>
+            </li>
+            <li>
+              <Link to="/reviews/details">
+                <i className="fas fa-notes-medical" />
+                후기상세
+              </Link>
+            </li>
+            <li>
+              <Link to="/reviews/revise/1">
+                <i className="fas fa-notes-medical" />
+                후기수정
               </Link>
             </li>
             <li>

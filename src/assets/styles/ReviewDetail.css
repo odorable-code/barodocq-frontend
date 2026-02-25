@@ -1,0 +1,903 @@
+/* ================================
+   Review Detail - Style
+================================ */
+
+.review-detail-page {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  padding: 140px 0 5rem;
+}
+
+.review-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ══════════════════════════════
+   MAIN CONTENT
+══════════════════════════════ */
+.review-main-content {
+  background: #fff;
+  border-radius: var(--radius-2xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+/* 브레드크럼 */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+  color: var(--primary-mint);
+}
+
+.breadcrumb i {
+  font-size: 0.65rem;
+}
+
+.breadcrumb span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* 후기 헤더 */
+.review-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.hospital-info-detail {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hospital-badge-detail {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--accent-lighter));
+  color: var(--primary-teal);
+  border-radius: var(--radius-lg);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.hospital-info-detail h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.dept-tag-detail {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.verified-badge-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: #d1fae5;
+  color: #059669;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.verified-badge-detail i {
+  font-size: 0.85rem;
+}
+
+/* 제목 섹션 */
+.review-title-section {
+  margin-bottom: 1.5rem;
+}
+
+.review-title-section h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.review-rating-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.review-rating-detail i {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+}
+
+.review-rating-detail i.filled {
+  color: #fbbf24;
+}
+
+.rating-text-detail {
+  margin-left: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* 메타 바 */
+.review-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+
+.author-info-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.author-avatar-detail {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.author-info-detail strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.author-info-detail span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.meta-stats {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.meta-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.meta-stats i {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* 진료 정보 카드 */
+.treatment-info-card {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border-radius: var(--radius-xl);
+  margin-bottom: 2rem;
+  border: 2px solid var(--border-color);
+}
+
+.treatment-info-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+}
+
+.treatment-info-card h3 i {
+  color: var(--primary-mint);
+  font-size: 1rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.875rem;
+  background: #fff;
+  border-radius: var(--radius-md);
+}
+
+.info-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* 본문 */
+.review-body {
+  margin-bottom: 2rem;
+  line-height: 1.9;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.review-body p {
+  margin-bottom: 1rem;
+  white-space: pre-line;
+}
+
+/* 이미지 갤러리 */
+.review-images-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.gallery-item {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.gallery-item:hover {
+  border-color: var(--primary-mint);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+/* 액션 버튼 */
+.review-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  margin-bottom: 3rem;
+}
+
+.review-actions button {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-base);
+}
+
+.review-actions button i {
+  font-size: 0.9rem;
+}
+
+.btn-like-review {
+  border-color: var(--primary-mint) !important;
+  color: var(--primary-teal) !important;
+}
+
+.btn-like-review:hover,
+.btn-like-review.liked {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal)) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+.review-actions button:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+  transform: translateY(-2px);
+}
+
+/* ══════════════════════════════
+   COMMENTS
+══════════════════════════════ */
+.comments-section {
+  padding-top: 2rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.comments-section > h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comment-count {
+  color: var(--primary-mint);
+}
+
+/* 댓글 작성 */
+.comment-write {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.comment-avatar {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.comment-write textarea {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: var(--transition-base);
+}
+
+.comment-write textarea:focus {
+  outline: none;
+  border-color: var(--primary-mint);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.btn-comment-submit {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition-base);
+}
+
+.btn-comment-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+/* 댓글 리스트 */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.comment-item {
+  display: flex;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
+}
+
+.comment-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.comment-avatar-small {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.comment-content-wrap {
+  flex: 1;
+}
+
+.comment-header-small {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
+}
+
+.comment-header-small strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.comment-header-small span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.comment-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.comment-actions-small {
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-actions-small button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: var(--transition-fast);
+}
+
+.comment-actions-small button:hover {
+  color: var(--primary-mint);
+}
+
+.btn-like-comment.liked {
+  color: #ef4444;
+}
+
+/* ══════════════════════════════
+   SIDEBAR
+══════════════════════════════ */
+.review-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: sticky;
+  top: 130px;
+}
+
+.sidebar-card {
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* 작성자 카드 */
+.author-card .author-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.author-avatar-large {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.author-header strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.author-header span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.author-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.author-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.author-stats .stat i {
+  font-size: 1.25rem;
+  color: var(--primary-mint);
+}
+
+.author-stats .stat strong {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.author-stats .stat span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.btn-view-profile {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--primary-mint);
+  background: transparent;
+  color: var(--primary-teal);
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.btn-view-profile:hover {
+  background: var(--primary-mint);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* 병원 카드 */
+.hospital-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.hospital-card h4 i {
+  color: var(--primary-mint);
+}
+
+.hospital-detail-info {
+  margin-bottom: 1.25rem;
+}
+
+.hospital-name-side {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.hospital-rating-side {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.875rem;
+}
+
+.hospital-rating-side i {
+  color: #fbbf24;
+  font-size: 0.95rem;
+}
+
+.hospital-rating-side strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hospital-rating-side span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.hospital-address,
+.hospital-phone {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.hospital-address i,
+.hospital-phone i {
+  color: var(--primary-mint);
+  font-size: 0.85rem;
+  width: 16px;
+}
+
+.btn-hospital-detail,
+.btn-make-reservation {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-hospital-detail {
+  background: var(--bg-secondary);
+  color: var(--primary-teal);
+  border: 2px solid var(--border-color);
+  margin-bottom: 0.75rem;
+}
+
+.btn-hospital-detail:hover {
+  border-color: var(--primary-mint);
+  background: var(--bg-tertiary);
+}
+
+.btn-make-reservation {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+}
+
+.btn-make-reservation:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+/* 관련 후기 */
+.related-reviews h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.related-reviews h4 i {
+  color: var(--primary-mint);
+}
+
+.related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.related-item {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  border: 2px solid transparent;
+}
+
+.related-item:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-mint);
+  transform: translateX(3px);
+}
+
+.related-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.related-hospital {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-teal);
+}
+
+.related-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.related-rating i {
+  font-size: 0.7rem;
+  color: #fbbf24;
+}
+
+.related-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.625rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 1200px) {
+  .review-detail-layout {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .review-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-sidebar {
+    position: static;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .review-detail-page {
+    padding: 120px 0 3rem;
+  }
+
+  .review-main-content {
+    padding: 1.5rem;
+  }
+
+  .review-title-section h1 {
+    font-size: 1.35rem;
+  }
+
+  .review-actions {
+    flex-direction: column;
+  }
+
+  .review-images-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .comment-write {
+    flex-direction: column;
+  }
+
+  .btn-comment-submit {
+    position: static;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hospital-info-detail {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .review-detail-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .verified-badge-detail {
+    align-self: flex-start;
+  }
+
+  .author-stats {
+    grid-template-columns: 1fr;
+  }
+}
