@@ -3,24 +3,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function UserSignup() {
-  // 1. 상태 선언
-  const [formData, setFormData] = useState({
-    userId: "",
-    userPw: "",
-    userPw2: "",
-    userName: "",
-    userPhone: "",
-    userGender: "",
-    email: "",
-    userAddr: "",
-  });
-  const [agreements, setAgreements] = useState({
-    termsAgreed: false,
-    locationAgreed: false,
-  });
-  const [errors, setErrors] = useState({});
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isTimeActive, setIsTimeActive] = useState(false);
+    // 1. 상태 선언
+    const [formData, setFormData] = useState({
+        userId: "", userPw: "", userPw2: "", userName: "", userPhone: "", userGender: "", email: "", userAddr: "", userBirth: ""
+    });
+    const [agreements, setAgreements] = useState({ termsAgreed: false, locationAgreed: false });
+    const [errors, setErrors] = useState({});
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [isTimeActive, setIsTimeActive] = useState(false);
 
   // 중복 확인 여부 상태 추가
   const [isIdAvailable, setIsIdAvailable] = useState(false);
@@ -223,187 +213,285 @@ function UserSignup() {
         body: JSON.stringify(submitData),
       });
 
-      if (response.ok) {
-        alert("회원가입이 완료되었습니다!");
-        navigate("/user/login");
-      } else {
-        alert("가입 실패");
-      }
+        if (userId.trim().length === 0) {
+            alert("아이디를 입력해주세요.");
+            return;
+        }
+
+        const onlyAlphaNum = /^[a-z0-9]+$/;
+        if (!onlyAlphaNum.test(userId)) {
+            alert("아이디는 영문 소문자와 숫자만 포함할 수 있습니다.");
+            return;
+        }
+
+        if (userId.length < 5 || userId.length > 10) {
+            alert("아이디는 5자 이상 10자 이하로 입력해야 합니다.");
+            return;
+        }
+
+        try {
+        // 2. 서버에 GET 요청 보내기 http://localhost:8080
+        
+        const response = await fetch(`/api/v1/check-id?userId=${userId}`);
+
+        // 3. 응답이 정상인지 확인
+        if (response.ok) {
+            const data = await response.json(); // JSON 파싱 기다리기
+
+            if (data.isDuplicate) {
+                alert("이미 중복된 아이디가 존재합니다.");
+                setErrors({ ...errors, userId: "중복된 아이디입니다." });
+                setIsIdAvailable(false);
+            } else {
+                alert("사용 가능한 아이디입니다");
+                setErrors({ ...errors, userId: "" });
+                setIsIdAvailable(true);
+            }
+        } else {
+            alert("서버 응답에 문제가 있습니다.");
+        }
     } catch (error) {
       alert("네트워크 오류가 발생했습니다.");
     }
   };
 
-  return (
+    function clickSend(){
+            if(!isIdAvailable){
+                alert("먼저 아이디 중복 확인을 하세요.");
+                return;
+            }
+            setIsTimeActive(true);
+            setTimeLeft(180);
+    }
+
+    // 6. 가입하기 버튼 (유효성 검사 및 서버 전송)
+    const signupButton = async (e) => {
+        e.preventDefault();
+        // formData에서 값 추출
+        const { userPw, userPw2, userPhone, userId, userName, userGender, userBirth } = formData;
+
+        // 중복 확인 여부 먼저 체크
+        if (!isIdAvailable) {
+        alert("아이디 중복 확인을 해주세요.");
+        return;
+        }
+
+        if (!userPw.trim()) {
+            alert("비밀번호를 입력하세요.");
+            return; }
+            
+        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        if (!pwRegex.test(userPw)) {
+            alert("비밀번호는 8자 이상, 영문, 숫자, 특수문자를 포함해야 합니다.");
+            return; }
+
+        if (userPw !== userPw2) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return; }
+
+        const phoneRegex = /^010\d{7,8}$/;
+        if (!phoneRegex.test(userPhone)) {
+            alert("올바른 휴대폰 번호를 입력해주세요.");
+            return; }
+
+        if (!(agreements.termsAgreed && agreements.locationAgreed)) {
+            alert("필수 약관에 모두 동의하셔야 가입이 가능합니다.");
+            return; }
+
+        // 서버 전송 로직
+        const submitData = {
+            userId: userId,
+            userPw: userPw,
+            userName: userName,
+            userPhone: userPhone,
+            userGender: userGender,
+            termAgreement: true,
+            userBirth: userBirth };
+
+            //http://localhost:8080
+        try {
+            const response = await fetch("/api/v1/auth/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(submitData),
+            });
+
+            if (response.ok) {
+                alert("회원가입이 완료되었습니다!");
+                navigate("/user/login");
+            } else {
+                alert("가입 실패");
+            }
+        } catch (error) {
+            alert("네트워크 오류가 발생했습니다."); }};
+
+     return (
     <div className="signup-wrapper">
       <div className="signup-container">
+
         <div className="signup-title">회원가입</div>
-        <div className="line"></div>
-        <div className="container2">
-          <form onSubmit={signupButton}>
-            <div className="idLine">
-              <input
-                className="id"
-                name="userId"
-                placeholder="아이디"
-                value={formData.userId}
-                onChange={handleChange}
-              />
-              <div className="distinctDiv">
-                <button type="button" className="distinct" onClick={distinctId}>
-                  중복 확인
-                </button>
-              </div>
-              <div className="line1"></div>
-            </div>
+        <div className="signup-line"></div>
 
-            <div className="pwLine">
-              <input
-                type="password"
-                value={formData.userPw}
-                className="pw"
-                name="userPw"
-                placeholder="비밀번호"
-                onChange={handleChange}
-              />
-              <div className="line1"></div>
-            </div>
+        <form onSubmit={signupButton} className="signup-form">
 
+          <div className="signup-idLine">
             <input
-              type="password"
-              value={formData.userPw2}
-              className="pw2"
-              name="userPw2"
-              placeholder="비밀번호 확인"
+              className="signup-input"
+              name="userId"
+              placeholder="아이디"
+              value={formData.userId}
               onChange={handleChange}
             />
-            <div className="line1"></div>
-
-            <div className="nameLine">
-              <input
-                className="name"
-                name="userName"
-                placeholder="이름"
-                value={formData.userName}
-                onChange={handleChange}
-              />
-              <div className="line1"></div>
+            <div className="signup-distinctDiv">
+              <button type="button" className="signup-distinct">
+                중복 확인
+              </button>
             </div>
-
-            <div className="phoneLine">
-              <input
-                className="phone"
-                name="userPhone"
-                placeholder="휴대폰번호"
-                value={formData.userPhone}
-                onChange={handleChange}
-              />
-              <div className="sendCodeDiv">
-                <button type="submit" className="sendCode" onClick={clickSend}>
-                  {isTimeActive ? formatTime(timeLeft) : "인증번호 전송"}
-                </button>
-              </div>
-              <div className="line1"></div>
-            </div>
-
-            <div className="emailLine">
-              <input
-                type="email"
-                className="email"
-                name="userEmail"
-                placeholder="이메일 주소"
-                value={formData.userEmail}
-                onChange={handleChange}
-                required
-              />
-              <div className="line1"></div>
-            </div>
-
-            <div className="addressLine">
-              <input
-                className="address"
-                name="userAddr"
-                placeholder="주소"
-                value={formData.userAddr}
-                onChange={handleChange}
-                required
-              />
-              <div className="line1"></div>
-              <div className="line1"></div>
-            </div>
-
-            <div className="gender">성별</div>
-            <div className="checkbox">
-              <input
-                type="radio"
-                name="userGender"
-                id="men"
-                checked={formData.userGender === "men"}
-                onChange={() => setFormData({ ...formData, userGender: "men" })}
-              />
-              <label htmlFor="men">남성</label>
-              <input
-                type="radio"
-                name="userGender"
-                id="women"
-                checked={formData.userGender === "women"}
-                onChange={() =>
-                  setFormData({ ...formData, userGender: "women" })
-                }
-              />
-              <label htmlFor="women">여성</label>
-            </div>
-
-            <div className="term">
-              <input
-                type="checkbox"
-                checked={agreements.termsAgreed && agreements.locationAgreed}
-                onChange={(e) =>
-                  setAgreements({
-                    termsAgreed: e.target.checked,
-                    locationAgreed: e.target.checked,
-                  })
-                }
-              />
-              <span>전체 동의</span>
-              <br />
-              <input
-                type="checkbox"
-                checked={agreements.termsAgreed}
-                onChange={(e) =>
-                  setAgreements({
-                    ...agreements,
-                    termsAgreed: e.target.checked,
-                  })
-                }
-              />
-              <span>약관1 (필수)</span>
-              <br />
-              <input
-                type="checkbox"
-                checked={agreements.locationAgreed}
-                onChange={(e) =>
-                  setAgreements({
-                    ...agreements,
-                    locationAgreed: e.target.checked,
-                  })
-                }
-              />
-              <span>약관2 (필수)</span>
-            </div>
-            <button type="submit" className="go">
-              가입하기
-            </button>
-          </form>
-
-          <div className="social">
-            <a className="kakao" onClick={handleKakaoLogin}></a>
-            <a className="naver" onClick={handleNaverLogin}></a>
-            <a className="google" onClick={handleGoogleLogin}></a>
+            <div className="signup-line1"></div>
           </div>
+
+          <div className="signup-pwLine">
+            <input
+              type="password"
+              className="signup-input"
+              name="userPw"
+              placeholder="비밀번호"
+              value={formData.userPw}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <input
+            type="password"
+            className="signup-input"
+            name="userPw2"
+            placeholder="비밀번호 확인"
+            value={formData.userPw2}
+            onChange={handleChange}
+          />
+          <div className="signup-line1"></div>
+
+          <div className="signup-nameLine">
+            <input
+              className="signup-input"
+              name="userName"
+              placeholder="이름"
+              value={formData.userName}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <div className="signup-phoneLine">
+            <input
+              className="signup-input"
+              name="userPhone"
+              placeholder="휴대폰번호"
+              value={formData.userPhone}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <div>
+            <input
+              className="signup-input"
+              name="userBirth"
+              placeholder="생년월일"
+              value={formData.userBirth}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <div>
+            <input
+              type="email"
+              className="signup-input"
+              name="userEmail"
+              placeholder="이메일 주소"
+              value={formData.userEmail}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <div>
+            <input
+              className="signup-input"
+              name="userAddr"
+              placeholder="주소"
+              value={formData.userAddr}
+              onChange={handleChange}
+            />
+            <div className="signup-line1"></div>
+          </div>
+
+          <div className="signup-gender">성별</div>
+          <div className="signup-checkbox">
+            <input
+              type="radio"
+              name="userGender"
+              checked={formData.userGender === "male"}
+              onChange={() =>
+                setFormData({ ...formData, userGender: "male" })
+              }
+            />
+            <label>남성</label>
+
+            <input
+              type="radio"
+              name="userGender"
+              checked={formData.userGender === "female"}
+              onChange={() =>
+                setFormData({ ...formData, userGender: "female" })
+              }
+            />
+            <label>여성</label>
+          </div>
+
+          <div className="signup-term">
+            <input
+              type="checkbox"
+              checked={agreements.termsAgreed}
+              onChange={(e) =>
+                setAgreements({
+                  ...agreements,
+                  termsAgreed: e.target.checked,
+                })
+              }
+            />
+            <span>약관1 (필수)</span>
+            <br />
+            <input
+              type="checkbox"
+              checked={agreements.locationAgreed}
+              onChange={(e) =>
+                setAgreements({
+                  ...agreements,
+                  locationAgreed: e.target.checked,
+                })
+              }
+            />
+            <span>약관2 (필수)</span>
+          </div>
+
+          <button type="submit" className="signup-btn">
+            가입하기
+          </button>
+
+        </form>
+
+        <div className="signup-social">
+          <a className="signup-kakao"></a>
+          <a className="signup-naver"></a>
+          <a className="signup-google"></a>
         </div>
+
       </div>
     </div>
   );
 }
+
 export default UserSignup;

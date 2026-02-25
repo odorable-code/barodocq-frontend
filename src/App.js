@@ -18,6 +18,7 @@ import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
 import UserLogin from "./pages/UserLogin";
 import MyPage from "./MyPage";
+import Chat from "./Chat/Chat";
 
 // 관리자 페이지
 
@@ -128,6 +129,11 @@ function App() {
 
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
+            {/* 채팅방 */}
+            <Route path="/chat" element={<Chat />} />
+            
+            {/* 잘못된 경로는 메인으로 리다이렉트
+            <Route path="*" element={<Navigate to="/" />} /> */}
 
             {/* 로그인 */}
             <Route path="/login" element={<Login />} />
@@ -156,8 +162,8 @@ function App() {
             <Route path="claims" element={<ClaimPage />} />
           </Route>
 
-          {/* ✅ 최종 fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* ✅ 최종 fallback
+          <Route path="*" element={<Navigate to="/" />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
