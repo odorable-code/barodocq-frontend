@@ -100,8 +100,8 @@ function App() {
             <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
             
-            {/* 잘못된 경로는 메인으로 리다이렉트 */}
-            <Route path="*" element={<Navigate to="/" />} />
+            {/* 잘못된 경로는 메인으로 리다이렉트
+            <Route path="*" element={<Navigate to="/" />} /> */}
 
             {/* 로그인 */}
             <Route path="/login" element={<Login />} />
@@ -131,8 +131,8 @@ function App() {
             <Route path="claims" element={<ClaimPage />} />
           </Route>
 
-          {/* ✅ 최종 fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* ✅ 최종 fallback
+          <Route path="*" element={<Navigate to="/" />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
