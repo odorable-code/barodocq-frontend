@@ -202,6 +202,44 @@ body {
 .hamburger-s2 { display: none; flex-direction: column; gap: .25rem; cursor: pointer; border: none; background: transparent; padding: .5rem; }
 .hamburger-s2 span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; transition: var(--transition-base); }
 
+/* Link 디자인 유지하면서 button으로 사용 */
+.nav-menu-link-btn {
+  all: unset; /* 기본 버튼 스타일 제거 */
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 600;
+  font-size: .88rem;
+  padding: .75rem 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+/* 기존 a 스타일과 동일하게 */
+.nav-menu-link-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--primary-mint);
+  border-radius: var(--radius-full);
+  transition: var(--transition-base);
+}
+
+.nav-menu-link-btn:hover {
+  color: var(--primary-mint);
+}
+
+.nav-menu-link-btn:hover::after {
+  width: 60%;
+}
+
 /* ══════════════════════════════
    HERO
 ══════════════════════════════ */

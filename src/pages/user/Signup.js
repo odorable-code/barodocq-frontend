@@ -9,6 +9,8 @@ function Signup(){
 				<Link to="/admin/signup" className="admin">병원</Link>
 			</div>
 			<Link to="/main" className="main">메인으로</Link>
+			<br />
+			<Link to="/chat" className="chat">채팅</Link>
 		</div>
 	)
 }
