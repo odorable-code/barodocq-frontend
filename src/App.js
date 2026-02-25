@@ -91,10 +91,6 @@ function App() {
             <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
 
-
-            {/* 잘못된 경로는 메인으로 리다이렉트 */}
-          <Route path="*" element={<Navigate to="/" />} />
-
             {/* 잘못된 경로는 메인으로 */}
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
