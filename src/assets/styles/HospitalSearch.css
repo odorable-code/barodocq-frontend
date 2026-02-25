@@ -7,7 +7,6 @@
 .hospital-search-page {
   min-height: 100vh;
   background: var(--bg-primary);
-  padding-top: 112px; /* 네비게이션 높이 */
 }
 
 /* ══════════════════════════════

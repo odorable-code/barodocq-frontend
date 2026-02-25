@@ -1,22 +1,563 @@
-.container1{
-	/* width: 800px;
-	background-color: rgb(253, 255, 253); */
-	margin-top: 200px;
-	/* text-align: center; */
+/* =====================================================================
+   Signup.css
+   파일 경로: src/pages/Signup.css (또는 프로젝트 CSS 경로에 맞게)
+
+   📌 디자인 시스템: MainPage Mint Green + Teal Blue 테마
+   📌 Login.css / UserSignup.css와 동일한 CSS 변수 체계
+   📌 모든 클래스는 "signup-" 접두사로 스코프 처리 (충돌 방지)
+
+   목차:
+   1.  CSS 변수 (MainPage 디자인 토큰과 동일)
+   2.  페이지 레이아웃
+   3.  배경 블롭 애니메이션
+   4.  콘텐츠 래퍼
+   5.  로고
+   6.  안내 헤더
+   7.  카드 그리드 (2열)
+   8.  선택 카드 공통 스타일
+   9.  사용자 카드 테마
+   10. 병원 카드 테마
+   11. 카드 내부 요소 (배지, 아이콘, 기능목록, CTA)
+   12. 하단 링크 (로그인 / 메인으로)
+   13. 호버 & 인터랙션 효과
+   14. 애니메이션
+   15. 반응형
+===================================================================== */
+
+
+/* ════════════════════════════════
+   1. CSS 변수 — MainPage / Login / UserSignup과 완전 동일
+════════════════════════════════ */
+.signup-page {
+  --primary-mint:       #14b8a6;
+  --primary-teal:       #0d9488;
+  --primary-dark-teal:  #0f766e;
+  --bg-secondary:       #f0fdfa;
+  --bg-tertiary:        #ccfbf1;
+  --text-primary:       #0f172a;
+  --text-secondary:     #475569;
+  --text-muted:         #94a3b8;
+  --border-color:       #e2e8f0;
+  --shadow-sm:          0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:          0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg:          0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl:          0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-mint:        0 10px 30px rgba(20, 184, 166, 0.22);
+  --radius-sm:          0.5rem;
+  --radius-md:          0.75rem;
+  --radius-lg:          1rem;
+  --radius-xl:          1.25rem;
+  --radius-2xl:         1.75rem;
+  --radius-full:        9999px;
+  --transition-base:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:    200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 병원 카드 전용 색상 — 좀 더 깊은 틸 계열로 차별화 */
+  --hospital-primary:   #0d9488;
+  --hospital-dark:      #0f766e;
+  --hospital-shadow:    0 10px 30px rgba(13, 148, 136, 0.25);
 }
 
-/* .container2{
-	display: flex; flex-direction: row;
+
+/* ════════════════════════════════
+   2. 페이지 레이아웃
+   Login.js의 .login-page와 동일한 구조
+════════════════════════════════ */
+.signup-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--bg-secondary) 0%, #ffffff 65%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem 4rem;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-.user{
-	width: 300px; height: 240px;
-	background-color: aquamarine;
-	border-radius: 30px;
-	text-align: center; line-height: 240px;
+
+
+/* ════════════════════════════════
+   3. 배경 블롭 애니메이션
+   Login.js / UserSignup.js의 블롭과 완전히 동일
+════════════════════════════════ */
+.signup-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.2;
+  pointer-events: none;
+  animation: signup-blob-float 20s ease-in-out infinite;
 }
-.admin{
-	width: 300px; height: 240px;
-	background-color: aquamarine;
-	border-radius: 30px;
-	text-align: center; line-height: 240px;
-} */
+
+/* 오른쪽 상단 — 민트 블롭 */
+.signup-blob-1 {
+  width: 550px;
+  height: 550px;
+  background: var(--primary-mint);
+  top: -18%;
+  right: -10%;
+}
+
+/* 왼쪽 하단 — 틸 블롭 */
+.signup-blob-2 {
+  width: 420px;
+  height: 420px;
+  background: var(--primary-teal);
+  bottom: -14%;
+  left: -8%;
+  animation-delay: 4s;
+}
+
+@keyframes signup-blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(25px, -25px) scale(1.07); }
+  66%       { transform: translate(-18px, 18px) scale(0.94); }
+}
+
+
+/* ════════════════════════════════
+   4. 콘텐츠 래퍼
+   Login.js의 .login-wrapper와 동일한 구조
+════════════════════════════════ */
+.signup-wrapper {
+  width: 100%;
+  max-width: 780px;           /* 카드 2개 가로 배치를 위해 login보다 넓게 */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  animation: signup-fadeInUp 0.65s ease;
+}
+
+@keyframes signup-fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ════════════════════════════════
+   5. 로고
+   Login.js의 .login-logo와 완전히 동일
+════════════════════════════════ */
+.signup-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.signup-logo:hover { opacity: 0.85; }
+
+.signup-logo-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 1.3rem;
+  box-shadow: var(--shadow-mint);
+}
+
+.signup-logo-text {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+/* "독큐" 부분 민트 강조 */
+.signup-logo-accent { color: var(--primary-mint); }
+
+
+/* ════════════════════════════════
+   6. 안내 헤더
+════════════════════════════════ */
+.signup-header {
+  text-align: center;
+}
+
+.signup-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.75px;
+  margin-bottom: 0.5rem;
+}
+
+.signup-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+
+/* ════════════════════════════════
+   7. 카드 그리드 (2열 배치)
+   화면이 좁아지면 1열로 전환 (반응형 섹션 참고)
+════════════════════════════════ */
+.signup-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 사용자 | 병원 */
+  gap: 1.5rem;
+  width: 100%;
+}
+
+
+/* ════════════════════════════════
+   8. 선택 카드 공통 스타일
+   Link 태그 자체가 카드 역할 (block 처리)
+════════════════════════════════ */
+.signup-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.25rem 1.75rem 1.75rem;
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  text-decoration: none;
+  color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  /* 호버 시 올라오는 전환 효과 */
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+
+  /* 카드 등장 애니메이션 — 각각 다른 딜레이 */
+  animation: signup-fadeInUp 0.65s ease both;
+}
+
+/* 사용자 카드는 약간 먼저, 병원 카드는 살짝 늦게 */
+.signup-type-card.user     { animation-delay: 0.1s; }
+.signup-type-card.hospital { animation-delay: 0.2s; }
+
+/* 카드 상단 컬러 바 (hover시 나타남) */
+.signup-type-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: var(--radius-full) var(--radius-full) 0 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+/* 호버 공통: 위로 뜨기 + 테두리 변경 */
+.signup-type-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-xl);
+}
+.signup-type-card:hover::before {
+  transform: scaleX(1);
+}
+
+
+/* ════════════════════════════════
+   9. 사용자 카드 테마 (민트 계열)
+════════════════════════════════ */
+.signup-type-card.user::before {
+  background: linear-gradient(90deg, var(--primary-mint), #5eead4);
+}
+.signup-type-card.user:hover {
+  border-color: var(--primary-mint);
+  box-shadow: 0 20px 40px rgba(20, 184, 166, 0.18);
+}
+
+
+/* ════════════════════════════════
+   10. 병원 카드 테마 (딥 틸 계열로 차별화)
+════════════════════════════════ */
+.signup-type-card.hospital::before {
+  background: linear-gradient(90deg, var(--hospital-primary), var(--hospital-dark));
+}
+.signup-type-card.hospital:hover {
+  border-color: var(--hospital-primary);
+  box-shadow: var(--hospital-shadow);
+}
+
+
+/* ════════════════════════════════
+   11. 카드 내부 요소
+════════════════════════════════ */
+
+/* ── 배지 (일반회원 / 의료기관) ── */
+.signup-card-badge {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* 사용자 배지 — 민트 계열 */
+.signup-card-badge.user {
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+}
+
+/* 병원 배지 — 진한 틸 계열 */
+.signup-card-badge.hospital {
+  background: #ccfbf1;
+  color: var(--hospital-dark);
+}
+
+
+/* ── 아이콘 래퍼 ── */
+.signup-card-icon-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-2xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  margin-bottom: 1.25rem;
+  transition: var(--transition-base);
+}
+
+/* 사용자 아이콘: 민트 그라디언트 */
+.signup-card-icon-wrap.user {
+  background: linear-gradient(135deg, var(--bg-tertiary), #a7f3d0);
+  color: var(--primary-teal);
+}
+
+/* 병원 아이콘: 딥 틸 그라디언트 */
+.signup-card-icon-wrap.hospital {
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  color: var(--hospital-dark);
+}
+
+/* hover 시 아이콘 배경이 진해지고 색상 반전 */
+.signup-type-card.user:hover .signup-card-icon-wrap.user {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  transform: scale(1.08) rotate(3deg);
+}
+.signup-type-card.hospital:hover .signup-card-icon-wrap.hospital {
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  color: #fff;
+  transform: scale(1.08) rotate(-3deg);
+}
+
+
+/* ── 카드 제목 ── */
+.signup-card-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.3px;
+}
+
+
+/* ── 카드 설명 ── */
+.signup-card-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+.signup-card-desc strong {
+  color: var(--primary-dark-teal);
+  font-weight: 700;
+}
+
+
+/* ── 기능 목록 ── */
+.signup-card-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.signup-card-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: left;
+  padding: 0.45rem 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+/* 리스트 아이콘 */
+.signup-card-features li i {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* 사용자 카드 리스트 아이콘 색상 */
+.signup-type-card.user .signup-card-features li i {
+  color: var(--primary-mint);
+}
+
+/* 병원 카드 리스트 아이콘 색상 */
+.signup-type-card.hospital .signup-card-features li i {
+  color: var(--hospital-primary);
+}
+
+/* hover 시 리스트 항목도 밝아짐 */
+.signup-type-card:hover .signup-card-features li {
+  background: var(--bg-tertiary);
+}
+
+
+/* ── 카드 하단 CTA 버튼 ── */
+.signup-card-cta {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg);
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-base);
+  letter-spacing: -0.2px;
+}
+
+/* 사용자 CTA: 민트 그라디언트 */
+.signup-card-cta.user {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.28);
+}
+
+/* 병원 CTA: 딥 틸 그라디언트 */
+.signup-card-cta.hospital {
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.28);
+}
+
+/* hover 시 화살표가 오른쪽으로 살짝 이동 */
+.signup-type-card:hover .signup-card-cta i {
+  transform: translateX(4px);
+}
+.signup-card-cta i {
+  font-size: 0.85rem;
+  transition: transform var(--transition-fast);
+}
+
+
+/* ════════════════════════════════
+   12. 하단 링크 영역
+════════════════════════════════ */
+
+/* 로그인 유도 문구 — Login.js의 .login-signup-cta와 동일 구조 */
+.signup-login-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.signup-login-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  color: var(--primary-teal);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.signup-login-link:hover {
+  color: var(--primary-mint);
+  gap: 0.5rem;
+}
+.signup-login-link i { font-size: 0.75rem; }
+
+/* 메인으로 돌아가기 버튼 (작게, 눈에 띄지 않게) */
+.signup-back-main {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.4rem 0.875rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  transition: var(--transition-fast);
+}
+.signup-back-main:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-teal);
+  background: var(--bg-secondary);
+}
+.signup-back-main i { font-size: 0.75rem; }
+
+
+/* ════════════════════════════════
+   15. 반응형
+════════════════════════════════ */
+
+/* 태블릿 이하: 카드를 1열로 전환 */
+@media (max-width: 680px) {
+  .signup-page    { padding: 2rem 1rem 3.5rem; }
+  .signup-wrapper { max-width: 420px; gap: 1.25rem; }
+  .signup-title   { font-size: 1.6rem; }
+
+  /* 2열 → 1열 */
+  .signup-card-grid {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  /* 카드 내부 좌우 패딩 줄이기 */
+  .signup-type-card {
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+
+  /* 아이콘 약간 작게 */
+  .signup-card-icon-wrap {
+    width: 72px;
+    height: 72px;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .signup-card-title { font-size: 1.25rem; }
+}
+
+/* 소형 모바일 */
+@media (max-width: 400px) {
+  .signup-page    { padding: 1.5rem 0.75rem 3rem; }
+  .signup-logo-text { font-size: 1.4rem; }
+  .signup-title   { font-size: 1.4rem; }
+  .signup-card-features li { font-size: 0.78rem; }
+
+  .signup-login-cta {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+}

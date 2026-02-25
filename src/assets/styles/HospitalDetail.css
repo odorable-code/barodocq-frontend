@@ -1,223 +1,717 @@
-/* 전체 컨테이너 */
+/* ══════════════════════════════════════════════
+   HospitalDetail.css  (hd2__)
+   MainPage.css 디자인 토큰 완전 동기화
+   ══════════════════════════════════════════════ */
+
+/* ── MainPage 토큰 재사용 (이미 :root에 선언되어 있으면 이 블록 생략 가능) ── */
 .hd2 {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: #1f2937;
+  --primary-mint:        #14b8a6;
+  --primary-teal:        #0d9488;
+  --primary-dark-teal:   #0f766e;
+  --bg-secondary:        #f0fdfa;
+  --bg-tertiary:         #ccfbf1;
+  --bg-card:             #ffffff;
+  --text-primary:        #0f172a;
+  --text-secondary:      #475569;
+  --text-muted:          #94a3b8;
+  --border-color:        #e2e8f0;
+  --shadow-sm:           0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:           0 4px 6px rgba(0,0,0,.07);
+  --shadow-lg:           0 10px 15px rgba(0,0,0,.1);
+  --shadow-xl:           0 20px 25px rgba(0,0,0,.1);
+  --shadow-mint:         0 10px 30px rgba(20,184,166,.22);
+  --radius-sm:           .5rem;
+  --radius-md:           .75rem;
+  --radius-lg:           1rem;
+  --radius-xl:           1.25rem;
+  --radius-2xl:          1.75rem;
+  --radius-full:         9999px;
+  --transition-fast:     200ms cubic-bezier(.4,0,.2,1);
+  --transition-base:     300ms cubic-bezier(.4,0,.2,1);
+}
+
+/* ── 루트 ── */
+.hd2 {
+  background: var(--bg-secondary);
+  min-height: 100vh;
+  font-family: 'Pretendard','Noto Sans KR',-apple-system,sans-serif;
+  color: var(--text-primary);
+}
+
+/* ══ 풀스크린 로딩 / 에러 ══ */
+.hd2__fullstate {
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  background: #f9fafb;
-}
-
-/* 상단 바 (임시) */
-.hd2__topbar-placeholder {
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: #14b8a6;
-  margin-bottom: 1rem;
-}
-
-/* 좌우 레이아웃 */
-.hd2__wrap {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-/* 좌측 카드 */
-.hd2__left {
-  flex: 1 1 300px;
-  display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 1rem;
+  color: var(--text-muted);
+  font-size: .95rem;
+  background: var(--bg-secondary);
 }
-
-/* 좌측 카드 내부 */
-.hd2__leftCard {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.hd2__fullstate i {
+  font-size: 2.5rem;
+  color: var(--primary-mint);
 }
-
-.hd2__title {
-  font-size: 1.75rem;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.hd2__sub {
-  font-size: 0.95rem;
-  color: #64748b;
-  display: flex;
-  gap: 0.5rem;
+.hd2__fullstate--err i { color: #ef4444; }
+.hd2__fullstate button {
+  display: inline-flex;
   align-items: center;
-}
-.hd2__dot::before {
-  content: "·";
-}
-
-.hd2__infoLine {
-  font-size: 0.9rem;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* 태그 */
-.hd2__tags {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-}
-.hd2__tag {
-  background: #ccfbf1;
-  color: #0f766e;
-  font-weight: 700;
-  font-size: 0.78rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-}
-
-/* 버튼 */
-.hd2__actionBtn {
-  padding: 0.8rem 1.2rem;
-  border: none;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  gap: .5rem;
+  padding: .7rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
   color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  transition: var(--transition-base);
 }
-.hd2__actionBtn:hover {
+.hd2__fullstate button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(20,184,166,0.25);
+  box-shadow: var(--shadow-mint);
 }
 
-/* 우측 메인 영역 */
+/* ══════════════ 히어로 ══════════════ */
+.hd2__hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary-dark-teal) 0%, var(--primary-mint) 60%, #34d399 100%);
+  padding: 4rem 1.5rem 3.5rem;
+  overflow: hidden;
+}
+/* 블롭 — MainPage blob-1, blob-2 동일 스타일 */
+.hd2__hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .25;
+  pointer-events: none;
+}
+.hd2__hero-blob        { width: 400px; height: 400px; background: #fff; top: -80px;  right: -60px; animation: hd2-float 18s ease-in-out infinite; }
+.hd2__hero-blob--2     { width: 260px; height: 260px; background: #fff; bottom:-60px; left: 30px;  animation: hd2-float 18s ease-in-out infinite 2s; }
+
+.hd2__hero-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* 뒤로가기 — MainPage tag-s2 참고 */
+.hd2__back {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .4rem 1rem;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-size: .83rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.75rem;
+  transition: var(--transition-base);
+}
+.hd2__back:hover { background: rgba(255,255,255,.3); }
+
+.hd2__hero-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+/* 병원 아이콘 — MainPage stat-icon-s2 참고 */
+.hd2__hero-icon {
+  width: 80px; height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.2);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255,255,255,.35);
+  border-radius: var(--radius-xl);
+  font-size: 2.2rem;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+.hd2__hero-text { flex: 1; }
+
+.hd2__hero-dept {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .85rem;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: var(--radius-full);
+  color: rgba(255,255,255,.95);
+  font-size: .78rem;
+  font-weight: 600;
+  margin-bottom: .6rem;
+}
+
+.hd2__hero-name {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 .75rem;
+  letter-spacing: -.5px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.hd2__hero-rating {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .875rem;
+}
+
+/* 별점 — 히어로 내 흰색/노란색 */
+.hd2__hero-rating .hd2__stars  { color: #fde68a; font-size: .9rem; }
+.hd2__hero-score { font-size: 1.05rem; font-weight: 800; color: #fff; }
+.hd2__hero-rcnt  {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .8rem;
+  color: rgba(255,255,255,.8);
+}
+
+/* 히어로 태그 */
+.hd2__hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.hd2__hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .85rem;
+  border-radius: var(--radius-full);
+  font-size: .75rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+.hd2__hero-tag--night   { background: rgba(99,102,241,.25); color: #ede9fe; border: 1px solid rgba(99,102,241,.4); }
+.hd2__hero-tag--holiday { background: rgba(139,92,246,.25); color: #ede9fe; border: 1px solid rgba(139,92,246,.4); }
+
+/* ══════════════ 퀵 스트립 ══════════════ */
+/* MainPage .quick-search-s2 동일 언어 */
+.hd2__strip {
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  font-size: .84rem;
+  color: var(--text-secondary);
+}
+.hd2__strip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.hd2__strip-item > i { color: var(--primary-mint); font-size: .82rem; }
+.hd2__strip-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border-color);
+}
+.hd2__strip-tel {
+  color: var(--primary-teal);
+  font-weight: 600;
+  text-decoration: none;
+}
+.hd2__strip-tel:hover { text-decoration: underline; }
+
+/* ══════════════ 본문 레이아웃 ══════════════ */
+.hd2__wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+/* ══════════════ 사이드바 ══════════════ */
+.hd2__left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 100px;
+}
+
+/* 예약 카드 — MainPage cta-box-s2 그라디언트 참고 */
+.hd2__reserveCard {
+  background: linear-gradient(135deg, var(--primary-dark-teal), var(--primary-mint));
+  border-radius: var(--radius-2xl);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .875rem;
+  box-shadow: var(--shadow-mint);
+}
+.hd2__reserveHead {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+.hd2__reserveHead i { font-size: 1.1rem; }
+.hd2__reserveDesc {
+  font-size: .83rem;
+  color: rgba(255,255,255,.85);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 버튼 — MainPage btn-reserve-new / btn-scrap-new 동일 스타일 */
+.hd2__actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1rem;
+  border-radius: var(--radius-lg);
+  font-size: .875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-base);
+  width: 100%;
+  border: none;
+}
+.hd2__actionBtn--primary {
+  background: #fff;
+  color: var(--primary-dark-teal);
+  box-shadow: var(--shadow-md);
+}
+.hd2__actionBtn--primary:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.hd2__actionBtn--ghost {
+  background: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.95);
+  border: 1.5px solid rgba(255,255,255,.35);
+}
+.hd2__actionBtn--ghost:hover { background: rgba(255,255,255,.25); }
+
+/* 병원 정보 카드 — MainPage dash-side-card 동일 언어 */
+.hd2__leftCard {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+}
+.hd2__leftCard:hover {
+  border-color: var(--primary-mint);
+  box-shadow: var(--shadow-mint);
+}
+.hd2__cardTitle {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--bg-secondary);
+}
+.hd2__cardTitle i { color: var(--primary-mint); }
+
+.hd2__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: .5rem;
+}
+.hd2__sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem;
+  font-size: .82rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+.hd2__score-sm { font-weight: 700; color: var(--text-primary); }
+.hd2__dot {
+  width: 3px; height: 3px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* 정보 리스트 — MainPage hospital-addr / nearby-info 참고 */
+.hd2__infoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+.hd2__infoLine {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.hd2__infoIcon {
+  color: var(--primary-mint);
+  font-size: .8rem;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.hd2__tel {
+  color: var(--primary-teal);
+  font-weight: 600;
+  text-decoration: none;
+}
+.hd2__tel:hover { text-decoration: underline; }
+
+/* 태그 — MainPage tag-s2 완전 동일 */
+.hd2__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+.hd2__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .3rem .75rem;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: .75rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+}
+.hd2__tag:hover { background: var(--primary-mint); color: #fff; }
+.hd2__tag i { font-size: .7rem; }
+.hd2__tag--night   { background: #ede9fe; color: #7c3aed; }
+.hd2__tag--holiday { background: #f3e8ff; color: #9333ea; }
+
+/* ── 별점 (사이드바) ── */
+.hd2__stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #fbbf24;
+  font-size: .82rem;
+}
+.hd2__stars .far { color: #d1d5db; }
+
+/* ══════════════ 우측 패널 ══════════════ */
 .hd2__right {
-  flex: 2 1 600px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* 패널 */
+/* 패널 — MainPage hospital-card-new 완전 동일 언어 */
 .hd2__panel {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition-base);
+  position: relative;
 }
+.hd2__panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-mint), var(--primary-teal));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: var(--transition-base);
+}
+.hd2__panel:hover { border-color: var(--primary-mint); box-shadow: var(--shadow-xl); }
+.hd2__panel:hover::before { transform: scaleX(1); }
 
+/* 패널 타이틀 */
 .hd2__panelTitle {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
-  color: #0f172a;
-}
-
-/* 사진, 지도, 안내 박스 */
-.hd2__panelBody {
-  height: 200px;
-  background: #f1f5f9;
-  border-radius: 0.75rem;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #94a3b8;
-  font-size: 0.95rem;
+  gap: .65rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-color);
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.hd2__panelIcon {
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: .85rem;
+  flex-shrink: 0;
 }
 
-/* 리뷰 */
-.hd2__reviews {
+.hd2__panelBody {
+  padding: 1.5rem;
+}
+
+/* 사진 플레이스홀더 */
+.hd2__photoBox,
+.hd2__mapBox {
+  min-height: 160px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--primary-mint);
+  color: var(--text-muted);
+  font-size: .875rem;
+  margin: 1.25rem;
+}
+.hd2__placeholder-icon {
+  font-size: 2.5rem;
+  color: var(--primary-mint);
+  opacity: .45;
 }
 
+/* 지도 주소바 */
+.hd2__addrBar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1.5rem;
+  background: var(--bg-tertiary);
+  font-size: .83rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+.hd2__addrBar i { color: var(--primary-mint); }
+
+/* 카카오맵 링크 버튼 — MainPage dept-tab-btn ghost 스타일 */
+.hd2__mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .55rem 1.25rem;
+  border: 2px solid var(--primary-mint);
+  background: #fff;
+  color: var(--primary-teal);
+  font-size: .83rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+.hd2__mapLink:hover {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-mint);
+}
+
+/* ══ 리뷰 뱃지 ══ */
+.hd2__reviewBadge {
+  margin-left: auto;
+  padding: .2rem .6rem;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: .72rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+/* 리뷰 빈 화면 */
 .hd2__emptyReviews {
-  color: #94a3b8;
-  font-size: 0.9rem;
-  text-align: center;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  color: var(--text-muted);
 }
+.hd2__emptyReviews i { font-size: 2.5rem; color: var(--bg-tertiary); }
 
+/* 리뷰 목록 */
+.hd2__reviews { display: flex; flex-direction: column; }
+
+/* 리뷰 행 — MainPage hot-review-card 완전 동일 언어 */
 .hd2__reviewRow {
   display: flex;
   gap: 1rem;
-  background: #f0fdfa;
-  border-radius: 1rem;
-  padding: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-base);
+  border-left: 3px solid transparent;
+}
+.hd2__reviewRow:last-child { border-bottom: none; }
+.hd2__reviewRow:hover {
+  background: var(--bg-secondary);
+  border-left-color: var(--primary-mint);
+  transform: translateX(4px);
 }
 
-.hd2__reviewImg img {
-  width: 60px;
-  height: 60px;
-  border-radius: 0.75rem;
+/* 아바타 — MainPage testimonial-avatar-s2 / hrv-avatar 동일 */
+.hd2__revAvatar {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  overflow: hidden;
+}
+.hd2__revAvatarImg {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.hd2__reviewContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+.hd2__reviewContent { flex: 1; min-width: 0; }
 
 .hd2__revTop {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 0.85rem;
-  color: #0f172a;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .4rem;
 }
-
-.hd2__revStars {
-  color: #facc15;
+.hd2__revUser {
+  font-size: .875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.hd2__revRating {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.hd2__revScore {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .hd2__reviewText {
-  font-size: 0.85rem;
-  color: #475569;
+  font-size: .875rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0 0 .5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .hd2__revDate {
-  font-size: 0.75rem;
-  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .76rem;
+  color: var(--text-muted);
 }
+.hd2__revDate i { font-size: .7rem; }
 
-/* 리뷰 더보기 */
-.hd2__moreWrap {
-  text-align: center;
-  margin-top: 0.5rem;
-}
+/* 더보기 — MainPage btn-search-s2 동일 */
+.hd2__moreWrap { padding: 1rem 1.5rem; background: var(--bg-secondary); }
 .hd2__moreBtn {
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .75rem 1.5rem;
   border: none;
-  color: #14b8a6;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  font-size: .875rem;
   font-weight: 700;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 .hd2__moreBtn:hover {
-  text-decoration: underline;
+  transform: translateX(4px);
+  box-shadow: var(--shadow-mint);
+}
+.hd2__moreBtn i { font-size: .8rem; }
+
+/* ══════════════ 애니메이션 ══════════════ */
+@keyframes hd2-float {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(20px,-20px) scale(1.08); }
+  66%     { transform: translate(-15px,15px) scale(.94); }
 }
 
-/* 반응형 */
+/* ══════════════ 반응형 ══════════════ */
+@media (max-width: 1200px) {
+  .hd2__wrap { grid-template-columns: 260px 1fr; }
+}
+
 @media (max-width: 1024px) {
-  .hd2__wrap {
-    flex-direction: column;
+  .hd2__wrap { grid-template-columns: 1fr; }
+  .hd2__left { position: static; }
+  /* 예약 카드를 가로로 전환 */
+  .hd2__reserveCard {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
   }
-  .hd2__left, .hd2__right {
-    flex: 1 1 100%;
-  }
+  .hd2__reserveHead { flex: 1 1 100%; }
+  .hd2__reserveDesc { display: none; }
+  .hd2__actionBtn   { flex: 1; }
+  .hd2__hero-name   { font-size: 1.6rem; }
+}
+
+@media (max-width: 768px) {
+  .hd2__hero { padding: 2.5rem 1rem 2rem; }
+  .hd2__hero-content { flex-direction: column; gap: 1rem; }
+  .hd2__hero-icon    { width: 60px; height: 60px; font-size: 1.7rem; border-radius: var(--radius-lg); }
+  .hd2__hero-name    { font-size: 1.4rem; }
+  .hd2__wrap         { padding: 1.25rem 1rem 3rem; gap: 1.25rem; }
+  .hd2__strip        { padding: .875rem 1rem; font-size: .8rem; gap: .4rem 1rem; }
+  .hd2__strip-sep    { display: none; }
+  .hd2__panelTitle   { padding: .875rem 1rem; }
+  .hd2__panelBody    { padding: 1rem; }
+  .hd2__reviewRow    { padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .hd2__hero-name  { font-size: 1.2rem; }
+  .hd2__hero-dept  { font-size: .72rem; }
+  .hd2__leftCard   { padding: 1.25rem; }
+  .hd2__moreBtn    { font-size: .83rem; padding: .65rem 1rem; }
+  .hd2__revTop     { flex-direction: column; align-items: flex-start; }
 }
