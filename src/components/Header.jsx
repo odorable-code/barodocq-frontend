@@ -79,6 +79,18 @@ const Header = ({ onOpenReservation }) => {
               </Link>
             </li>
             <li>
+              <Link to="/hospitalsearchpage">
+                <i className="fas fa-clinic-medical" />
+                병원찾기2
+              </Link>
+            </li>
+            <li>
+              <Link to="/mypage">
+                <i className="fas fa-user-circle" />
+                마이 페이지
+              </Link>
+            </li>
+            <li>
               <button
                 type="button"
                 onClick={onOpenReservation}
