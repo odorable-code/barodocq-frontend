@@ -572,6 +572,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
 }
 
 /* 진료중 / 진료종료 태그 */
@@ -583,12 +584,12 @@
   font-weight: 700;
 }
 
-.phar-open-tag.open {
+.phar-badge.open {
   background: #d1fae5;
   color: #059669;
 }
 
-.phar-open-tag.closed {
+.phar-badge.closed {
   background: #fee2e2;
   color: #dc2626;
 }
@@ -697,29 +698,49 @@
   box-shadow: var(--shadow-mint);
 }
 
+/* 지도 버튼 - 심플 + 코너 고정 */
 .phar-btn-map {
-  padding: 0.35rem 0.5rem;
-  font-size: 0.78rem;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--primary-mint);
-  background: transparent;
-  color: var(--primary-teal);
+  position: absolute;          /* 카드 코너에 고정 */
+  top: 0.5rem;                 /* 카드 상단과 간격 */
+  right: 0.5rem;               /* 카드 우측과 간격 */
+  background: rgba(255, 255, 255, 0.85); /* 살짝 투명한 흰 배경 */
+  border: 2px solid #d1f7ef;  /* 연한 테두리 */
+  border-radius: 50%;          /* 완전 원형 */
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.25s ease;
+  z-index: 2;                  /* 카드 내용 위 */
+}
+
+.phar-btn-map svg {
+  font-size: 1rem;
+  color: var(--primary-mint);
+  transition: color 0.25s ease;
 }
 
 .phar-btn-map:hover {
-  background: var(--bg-tertiary);
+  background: rgba(20,184,166,0.1);
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
-/* 푸터 뱃지 */
-.phar-card-footer {
-  margin-top: 0.75rem;
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
+.phar-btn-map:hover svg {
+  color: var(--primary-teal);
 }
+
+.phar-card-distance {
+  font-weight: 700;
+  margin-right: 0.4rem;
+  color: var(--primary-teal);
+  font-size: 0.75rem;
+}
+
 
 /* ── 빈 상태 ── */
 .phar-empty {
