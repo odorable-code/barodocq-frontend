@@ -1,33 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../assets/styles/HospitalSearchPage.css";
+import RegionSelect from "../components/RegionSelect";
+import HospitalDeptSelect from "../components/HospitalDeptSelect";
 
 /* ─────────────────────────────────────────
    데이터 상수
 ───────────────────────────────────────── */
-const DEPT_CATEGORIES = [
-  { id: "all", label: "전체", icon: "th-large" },
-  { id: "pediatrics", label: "소아청소년과", icon: "baby" },
-  { id: "internal", label: "내과", icon: "heartbeat" },
-  { id: "surgery", label: "외과", icon: "cut" },
-  { id: "orthopedics", label: "정형외과", icon: "bone" },
-  { id: "ophthalmology", label: "안과", icon: "eye" },
-  { id: "dental", label: "치과", icon: "tooth" },
-  { id: "dermatology", label: "피부과", icon: "spa" },
-  { id: "ent", label: "이비인후과", icon: "ear-listen" },
-  { id: "neuro", label: "신경과", icon: "brain" },
-  { id: "psychiatry", label: "정신건강의학과", icon: "brain" },
-  { id: "obgyn", label: "산부인과", icon: "baby-carriage" },
-];
-
-const REGION_CATEGORIES = [
-  { id: "all", label: "전체" },
-  { id: "gangnam", label: "강남구" },
-  { id: "mapo", label: "마포구" },
-  { id: "yongsan", label: "용산구" },
-  { id: "seocho", label: "서초구" },
-  { id: "songpa", label: "송파구" },
-  { id: "yeongdeungpo", label: "영등포구" },
-];
 
 const FILTER_TAGS = [
   { id: "open", label: "영업중", icon: "circle-check", color: "#10b981" },
@@ -91,171 +69,155 @@ const HOSPITAL_LIST = [
   },
   {
     id: 3,
-    name: "한강정형외과의원",
+    name: "신촌종합병원",
     dept: "정형외과",
     deptId: "orthopedics",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/0f766e/ffffff?text=Orthopedics",
-    address: "서울 용산구 이태원로 78",
-    detailAddress: "2층",
+    region: "sinchon",
+    thumbnail: "https://via.placeholder.com/400x250/f97316/ffffff?text=Hospital",
+    address: "서울 서대문구 연세로 50",
     phone: "02-3456-7890",
-    rating: 5.0,
-    reviews: 198,
-    distance: "2.1km",
-    open: true,
-    openTime: "09:00 - 19:00",
-    closedDays: ["일요일", "공휴일"],
-    tags: ["open", "available", "parking", "insurance"],
-    features: ["주차가능", "즉시예약"],
+    rating: 4.5,
+    reviews: 180,
+    distance: "2.5km",
+    open: false,
+    openTime: "09:00 - 17:00",
+    closedDays: ["토요일", "일요일"],
+    tags: ["available", "parking"],
+    features: ["주차가능", "예약가능"],
     femaleDoctor: false,
   },
   {
     id: 4,
-    name: "밝은눈안과",
-    dept: "안과",
-    deptId: "ophthalmology",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/115e59/ffffff?text=Eye+Clinic",
-    address: "서울 마포구 홍익로 90",
-    detailAddress: "4층 안과",
+    name: "이대여성병원",
+    dept: "산부인과",
+    deptId: "obstetrics",
+    region: "ehwa",
+    thumbnail: "https://via.placeholder.com/400x250/8b5cf6/ffffff?text=Hospital",
+    address: "서울 서대문구 이화여대길 52",
     phone: "02-4567-8901",
     rating: 4.7,
-    reviews: 167,
-    distance: "1.5km",
-    open: false,
-    openTime: "10:00 - 18:00",
-    closedDays: ["토요일", "일요일"],
-    tags: ["insurance"],
-    features: ["보험적용"],
+    reviews: 220,
+    distance: "3.1km",
+    open: true,
+    openTime: "08:30 - 19:00",
+    closedDays: ["일요일"],
+    tags: ["open", "available", "female"],
+    features: ["예약가능", "여의사"],
     femaleDoctor: true,
   },
   {
     id: 5,
-    name: "스마일치과의원",
-    dept: "치과",
-    deptId: "dental",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/14b8a6/ffffff?text=Dental+Clinic",
-    address: "서울 서초구 방배로 200",
-    detailAddress: "1층",
+    name: "청담서울병원",
+    dept: "피부과",
+    deptId: "dermatology",
+    region: "cheongdam",
+    thumbnail: "https://via.placeholder.com/400x250/14b8a6/ffffff?text=Hospital",
+    address: "서울 강남구 청담동 101",
     phone: "02-5678-9012",
-    rating: 4.8,
-    reviews: 289,
-    distance: "0.5km",
+    rating: 4.6,
+    reviews: 155,
+    distance: "1.8km",
     open: true,
-    openTime: "09:00 - 21:00",
+    openTime: "09:00 - 18:30",
     closedDays: ["공휴일"],
-    tags: ["open", "night", "weekend", "available", "parking"],
-    features: ["야간진료", "주말진료", "주차가능"],
+    tags: ["open", "available", "parking"],
+    features: ["주차가능", "예약가능"],
     femaleDoctor: false,
   },
   {
     id: 6,
-    name: "맑은피부과",
-    dept: "피부과",
-    deptId: "dermatology",
+    name: "삼성서울병원",
+    dept: "신경외과",
+    deptId: "neurosurgery",
     region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/0d9488/ffffff?text=Dermatology",
-    address: "서울 강남구 청담동 55",
-    detailAddress: "빌딩 전체",
+    thumbnail: "https://via.placeholder.com/400x250/0ea5e9/ffffff?text=Medical+Center",
+    address: "서울 강남구 일원로 81",
     phone: "02-6789-0123",
-    rating: 4.6,
-    reviews: 134,
-    distance: "1.8km",
+    rating: 4.9,
+    reviews: 410,
+    distance: "4.2km",
     open: true,
-    openTime: "10:00 - 19:00",
+    openTime: "08:00 - 21:00",
     closedDays: ["일요일"],
-    tags: ["open", "female", "available", "insurance"],
-    features: ["여의사", "예약가능"],
-    femaleDoctor: true,
+    tags: ["open", "night", "available"],
+    features: ["야간진료", "예약가능"],
+    femaleDoctor: false,
   },
   {
     id: 7,
-    name: "우리아이클리닉",
+    name: "서울소아청소년과의원",
     dept: "소아청소년과",
     deptId: "pediatrics",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/0f766e/ffffff?text=Kids+Clinic",
-    address: "서울 송파구 올림픽로 301",
-    detailAddress: "2층 소아과",
+    region: "hongdae",
+    thumbnail: "https://via.placeholder.com/400x250/f43f5e/ffffff?text=Hospital",
+    address: "서울 마포구 양화로 100",
     phone: "02-7890-1234",
-    rating: 4.7,
-    reviews: 156,
-    distance: "3.0km",
-    open: true,
-    openTime: "09:00 - 18:00",
+    rating: 4.3,
+    reviews: 132,
+    distance: "3.7km",
+    open: false,
+    openTime: "09:00 - 17:30",
     closedDays: ["토요일", "일요일"],
-    tags: ["open", "available", "parking", "insurance"],
-    features: ["주차가능", "예약가능"],
+    tags: ["available", "parking"],
+    features: ["예약가능", "주차가능"],
     femaleDoctor: true,
   },
   {
     id: 8,
-    name: "소화기내과의원",
+    name: "한강내과의원",
     dept: "내과",
     deptId: "internal",
     region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/115e59/ffffff?text=GI+Clinic",
-    address: "서울 영등포구 여의대방로 12",
-    detailAddress: "3층",
+    thumbnail: "https://via.placeholder.com/400x250/8b5cf6/ffffff?text=Clinic",
+    address: "서울 강남구 삼성로 200",
     phone: "02-8901-2345",
-    rating: 4.9,
-    reviews: 203,
-    distance: "2.4km",
+    rating: 4.4,
+    reviews: 98,
+    distance: "2.0km",
     open: true,
-    openTime: "08:30 - 17:30",
-    closedDays: ["일요일", "공휴일"],
-    tags: ["open", "available", "insurance"],
-    features: ["즉시예약", "보험적용"],
+    openTime: "08:30 - 18:00",
+    closedDays: ["일요일"],
+    tags: ["open", "available"],
+    features: ["예약가능"],
     femaleDoctor: false,
   },
   {
     id: 9,
-    name: "여성메디컬센터",
-    dept: "산부인과",
-    deptId: "obgyn",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/14b8a6/ffffff?text=Women+Medical",
-    address: "서울 강남구 선릉로 234",
-    detailAddress: "6-7층",
+    name: "홍대정형외과",
+    dept: "정형외과",
+    deptId: "orthopedics",
+    region: "hongdae",
+    thumbnail: "https://via.placeholder.com/400x250/f97316/ffffff?text=Clinic",
+    address: "서울 마포구 서교동 50",
     phone: "02-9012-3456",
-    rating: 4.8,
-    reviews: 421,
-    distance: "1.1km",
-    open: true,
-    openTime: "09:00 - 20:00",
-    closedDays: ["일요일"],
-    tags: ["open", "night", "female", "available", "parking", "insurance"],
-    features: ["여의사", "야간진료", "주차가능"],
-    femaleDoctor: true,
-  },
-  {
-    id: 10,
-    name: "서울이비인후과",
-    dept: "이비인후과",
-    deptId: "ent",
-    region: "gangnam",
-    thumbnail:
-      "https://via.placeholder.com/400x250/0d9488/ffffff?text=ENT+Clinic",
-    address: "서울 강남구 역삼동 567",
-    detailAddress: "4층",
-    phone: "02-0123-4567",
-    rating: 4.7,
-    reviews: 198,
-    distance: "0.9km",
+    rating: 4.2,
+    reviews: 76,
+    distance: "3.3km",
     open: false,
     openTime: "09:00 - 18:00",
     closedDays: ["토요일", "일요일"],
-    tags: ["insurance"],
-    features: ["보험적용"],
+    tags: ["weekend", "available"],
+    features: ["주말진료", "예약가능"],
     femaleDoctor: false,
+  },
+  {
+    id: 10,
+    name: "가로수길피부과",
+    dept: "피부과",
+    deptId: "dermatology",
+    region: "gangnam",
+    thumbnail: "https://via.placeholder.com/400x250/0d9488/ffffff?text=Clinic",
+    address: "서울 강남구 가로수길 77",
+    phone: "02-0123-4567",
+    rating: 4.7,
+    reviews: 134,
+    distance: "1.5km",
+    open: true,
+    openTime: "09:30 - 19:00",
+    closedDays: ["공휴일"],
+    tags: ["open", "available", "parking"],
+    features: ["예약가능", "주차가능"],
+    femaleDoctor: true,
   },
 ];
 
@@ -271,6 +233,17 @@ const HospitalSearchPage = () => {
   const [sortBy, setSortBy] = useState("distance");
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const headerRef = useRef(null);
+
+  // 모달 상태
+  const [isDeptOpen, setIsDeptOpen] = useState(false);
+  const [isRegionOpen, setIsRegionOpen] = useState(false);
+  const [selectedDept, setSelectedDept] = useState("");
+  const [region, setRegion] = useState({
+    level: "",
+    sido: null,
+    sigungu: null,
+    emd: null,
+  });
 
   /* 스크롤 헤더 효과 */
   useEffect(() => {
@@ -380,20 +353,25 @@ const HospitalSearchPage = () => {
               </button>
             </div>
 
-            {/* 퀵 태그 */}
-            <div className="hsp-quick-tags">
-              {["감기", "두통", "피부트러블", "치아교정", "눈 건조"].map(
-                (t) => (
-                  <button
-                    key={t}
-                    className="hsp-quick-tag"
-                    onClick={() => setSearchQuery(t)}
-                  >
-                    <i className="fas fa-fire" />
-                    {t}
-                  </button>
-                ),
-              )}
+            {/* 지역/진료과 모달 버튼 */}
+            <div className="quick-actions">
+              <button
+                type="button"
+                className="quick-action-btn primary"
+                onClick={() => setIsDeptOpen(true)}
+              >
+                <i className="fas fa-stethoscope" />
+                <span>진료과별 찾기</span>
+              </button>
+
+              <button
+                type="button"
+                className="quick-action-btn ghost"
+                onClick={() => setIsRegionOpen(true)}
+              >
+                <i className="fas fa-map-marked-alt" />
+                <span>지역별 찾기</span>
+              </button>
             </div>
           </div>
         </div>
@@ -402,48 +380,7 @@ const HospitalSearchPage = () => {
       {/* ══════════ 필터 바 ══════════ */}
       <section className="hsp-filter-bar">
         <div className="container-s2">
-          {/* 모드 탭 */}
-          <div className="hsp-mode-tabs">
-            {[
-              { key: "dept", icon: "stethoscope", label: "진료과별" },
-              { key: "region", icon: "map-location-dot", label: "지역별" },
-            ].map((m) => (
-              <button
-                key={m.key}
-                className={`hsp-mode-tab ${searchMode === m.key ? "active" : ""}`}
-                onClick={() => {
-                  setSearchMode(m.key);
-                  setSelectedCategory("all");
-                }}
-              >
-                <i className={`fas fa-${m.icon}`} />
-                {m.label}
-              </button>
-            ))}
-          </div>
-
-          {/* 진료과 카테고리 스크롤 */}
-          <div className="hsp-cat-scroll">
-            <div className="hsp-cat-inner">
-              {(searchMode === "dept"
-                ? DEPT_CATEGORIES
-                : REGION_CATEGORIES
-              ).map((cat) => (
-                <button
-                  key={cat.id}
-                  className={`hsp-cat-btn ${selectedCategory === cat.id ? "active" : ""}`}
-                  onClick={() => setSelectedCategory(cat.id)}
-                >
-                  {searchMode === "dept" && (
-                    <i className={`fas fa-${cat.icon}`} />
-                  )}
-                  <span>{cat.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 상세 필터 */}
+          {/* 상세 필터 버튼 영역 */}
           <div className="hsp-detail-filter">
             <button
               className="hsp-filter-toggle"
@@ -534,19 +471,40 @@ const HospitalSearchPage = () => {
               </button>
             </div>
           ) : (
-            <div className="hsp-cards-grid">
-              {sortedHospitals.map((h) => (
-                <HospitalDetailCard
-                  key={h.id}
-                  hospital={h}
-                  isBookmarked={bookmarkedHospitals.has(h.id)}
-                  onToggleBookmark={() => toggleBookmark(h.id)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="hsp-cards-grid">
+                {sortedHospitals.map((h) => (
+                  <HospitalDetailCard
+                    key={h.id}
+                    hospital={h}
+                    isBookmarked={bookmarkedHospitals.has(h.id)}
+                    onToggleBookmark={() => toggleBookmark(h.id)}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>
+
+      {/* 모달 유지 */}
+      <HospitalDeptSelect
+        isOpen={isDeptOpen}
+        onClose={() => setIsDeptOpen(false)}
+        onConfirm={({ deptName }) => {
+          setSelectedDept(deptName);
+          setIsDeptOpen(false);
+        }}
+      />
+
+      <RegionSelect
+        isOpen={isRegionOpen}
+        onClose={() => setIsRegionOpen(false)}
+        onConfirm={(nextRegion) => {
+          setRegion(nextRegion);
+          setIsRegionOpen(false);
+        }}
+      />
     </div>
   );
 };

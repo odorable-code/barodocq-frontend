@@ -215,9 +215,6 @@ export default function HoAndPhar() {
         <div className="phar-hero-blob phar-blob2" />
         <div className="phar-container">
           <div className="phar-hero-inner">
-            <span className="phar-hero-label">
-              <FontAwesomeIcon icon={faPills} /> 약국 찾기
-            </span>
             <h1 className="phar-hero-title">
               내 주변 약국을<br />
               <span className="phar-gradient-text">빠르게 찾아보세요</span>

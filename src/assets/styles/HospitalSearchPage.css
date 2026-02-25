@@ -123,7 +123,7 @@
   padding: .6rem .6rem .6rem 1.25rem;
   box-shadow: var(--shadow-lg);
   transition: var(--transition-base);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 .hsp-searchbar:focus-within {
   border-color: var(--primary-mint);
@@ -176,6 +176,7 @@
 .hsp-quick-tag:hover {
   background: var(--primary-mint); color: #fff;
   transform: translateY(-2px); border-color: transparent;
+  
 }
 .hsp-quick-tag:hover i { color: #fff; }
 
@@ -187,6 +188,7 @@
   border-bottom: 1.5px solid var(--border-color);
   z-index: 100;
   box-shadow: 0 4px 24px rgba(15,118,110,.06);
+  
 }
 .hsp-filter-bar .container-s2 {
   padding-top: 1.25rem;
@@ -248,7 +250,12 @@
 }
 
 /* 상세 필터 토글 */
-.hsp-detail-filter { display: flex; flex-direction: column; gap: .75rem; }
+/* 상세 필터 토글 */
+.hsp-detail-filter { 
+  display: flex; 
+  flex-direction: column; 
+  gap: .75rem; 
+}
 .hsp-filter-toggle {
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .5rem 1.1rem;
