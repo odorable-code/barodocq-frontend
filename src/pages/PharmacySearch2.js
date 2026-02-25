@@ -21,9 +21,141 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+// ── 더미 약국 데이터 (위도/경도 포함) ──
+const DUMMY_PHARMACIES = [
+  {
+    id: 1,
+    name: "한빛약국",
+    addr: "서울 강남구 테헤란로 11111111111111111111111111111112222222222222222222222222222",
+    phone: "02-123-4567",
+    photo: "",
+    openTime: "09:00",
+    closeTime: "21:00",
+    isNight: false,
+    isHoliday: false,
+    lat: 37.501,
+    lng: 127.039,
+  },
+  {
+    id: 2,
+    name: "굿모닝약국",
+    addr: "서울 강남구 테헤란로 2",
+    phone: "02-234-5678",
+    photo: "",
+    openTime: "08:00",
+    closeTime: "23:00",
+    isNight: true,
+    isHoliday: false,
+    lat: 37.502,
+    lng: 127.038,
+  },
+  {
+    id: 3,
+    name: "별빛약국",
+    addr: "서울 송파구 올림픽로 5",
+    phone: "02-345-6789",
+    photo: "",
+    openTime: "10:00",
+    closeTime: "20:00",
+    isNight: false,
+    isHoliday: true,
+    lat: 37.515,
+    lng: 127.107,
+  },
+  {
+    id: 4,
+    name: "참좋은약국",
+    addr: "서울 송파구 올림픽로 10",
+    phone: "02-456-7890",
+    photo: "",
+    openTime: "09:30",
+    closeTime: "22:30",
+    isNight: true,
+    isHoliday: false,
+    lat: 37.516,
+    lng: 127.106,
+  },
+  {
+    id: 5,
+    name: "해피약국",
+    addr: "서울 강서구 화곡로 3",
+    phone: "02-567-8901",
+    photo: "",
+    openTime: "09:00",
+    closeTime: "21:00",
+    isNight: false,
+    isHoliday: false,
+    lat: 37.551,
+    lng: 126.854,
+  },
+  {
+    id: 6,
+    name: "푸른약국",
+    addr: "서울 강서구 화곡로 5",
+    phone: "02-678-9012",
+    photo: "",
+    openTime: "08:30",
+    closeTime: "20:30",
+    isNight: true,
+    isHoliday: false,
+    lat: 37.553,
+    lng: 126.856,
+  },
+  {
+    id: 7,
+    name: "빛나는약국",
+    addr: "서울 마포구 월드컵로 15",
+    phone: "02-789-0123",
+    photo: "",
+    openTime: "10:00",
+    closeTime: "22:00",
+    isNight: false,
+    isHoliday: true,
+    lat: 37.565,
+    lng: 126.9,
+  },
+  {
+    id: 8,
+    name: "행복약국",
+    addr: "서울 마포구 월드컵로 20",
+    phone: "02-890-1234",
+    photo: "",
+    openTime: "09:00",
+    closeTime: "21:00",
+    isNight: false,
+    isHoliday: false,
+    lat: 37.566,
+    lng: 126.902,
+  },
+  {
+    id: 9,
+    name: "신나는약국",
+    addr: "서울 용산구 한강대로 1",
+    phone: "02-901-2345",
+    photo: "",
+    openTime: "07:00",
+    closeTime: "23:00",
+    isNight: true,
+    isHoliday: false,
+    lat: 37.532,
+    lng: 126.99,
+  },
+  {
+    id: 10,
+    name: "우리약국",
+    addr: "서울 용산구 한강대로 5",
+    phone: "02-012-3456",
+    photo: "",
+    openTime: "09:00",
+    closeTime: "21:00",
+    isNight: false,
+    isHoliday: true,
+    lat: 37.533,
+    lng: 126.992,
+  },
+];
 
+// ── 유틸 ──
 const ynToBool = (v) => {
   if (v === true || v === false) return v;
   if (v === 1 || v === 0) return Boolean(v);
@@ -59,16 +191,18 @@ const matchRegionByAddr = (addr, regionPick) => {
   return true;
 };
 
-async function fetchPharmacies() {
-  const res = await fetch(`${API_BASE_URL}/api/v1/pharmacy/cards`);
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(
-      `약국 목록 조회 실패 (status: ${res.status})\n${txt.slice(0, 120)}`,
-    );
-  }
-  return res.json();
-}
+// ── 거리 계산 ──
+const getDistanceKm = (lat1, lon1, lat2, lon2) => {
+  const toRad = (v) => (v * Math.PI) / 180;
+  const R = 6371; // km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 export default function HoAndPhar() {
   const [pharmacies, setPharmacies] = useState([]);
@@ -87,8 +221,10 @@ export default function HoAndPhar() {
   });
 
   const [page, setPage] = useState(1);
+  const [userPos, setUserPos] = useState(null);
   const PAGE_SIZE = 9;
 
+  // ── 현재 진료중 여부 ──
   const isOpenNow = useCallback((openTime, closeTime) => {
     if (!openTime || !closeTime) return null;
     const now = new Date();
@@ -103,46 +239,42 @@ export default function HoAndPhar() {
     return now >= open && now <= close;
   }, []);
 
+  // ── 사용자 위치 가져오기 ──
   useEffect(() => {
-    let ignore = false;
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const data = await fetchPharmacies();
-        const list = Array.isArray(data) ? data : (data?.content ?? []);
-        const mapped = list.map((r, idx) => ({
-          id: r.ph_num ?? idx + 1,
-          name: r.ph_name ?? "약국명",
-          addr: r.ph_addr ?? "",
-          phone: r.ph_phone ?? "",
-          photo: r.ph_photo ?? "",
-          openTime: r.phh_open_time ?? null,
-          closeTime: r.phh_close_time ?? null,
-          isNight: ynToBool(r.ph_night_yn),
-          isHoliday: ynToBool(r.ph_holiday_yn),
-        }));
-        if (!ignore) {
-          setPharmacies(mapped);
-          setPage(1);
-        }
-      } catch (e) {
-        if (!ignore) {
-          setPharmacies([]);
-          setError(e?.message || "에러 발생");
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) =>
+          setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => console.warn("위치 정보 사용 불가"),
+      );
     }
-    load();
-    return () => {
-      ignore = true;
-    };
   }, []);
 
+  // ── 더미 데이터 로딩 ──
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+    setTimeout(() => {
+      setPharmacies(DUMMY_PHARMACIES);
+      setLoading(false);
+    }, 300);
+  }, []);
+
+  // ── 거리 계산 포함한 약국 배열 ──
+  const pharmaciesWithDistance = useMemo(() => {
+    if (!userPos) return pharmacies;
+    return pharmacies.map((p) => {
+      if (p.lat && p.lng) {
+        const dist = getDistanceKm(userPos.lat, userPos.lng, p.lat, p.lng);
+        return { ...p, distanceKm: dist.toFixed(1) };
+      }
+      return { ...p, distanceKm: null };
+    });
+  }, [pharmacies, userPos]);
+
+  // ── 필터, 검색, 지역 적용 ──
   const filteredPharmacies = useMemo(() => {
-    let result = pharmacies;
+    let result = pharmaciesWithDistance;
     if (activeFilter === "진료중")
       result = result.filter((p) => isOpenNow(p.openTime, p.closeTime));
     else if (activeFilter === "야간진료")
@@ -157,7 +289,7 @@ export default function HoAndPhar() {
       );
     result = result.filter((p) => matchRegionByAddr(p.addr, region));
     return result;
-  }, [pharmacies, activeFilter, searchTerm, region, isOpenNow]);
+  }, [pharmaciesWithDistance, activeFilter, searchTerm, region, isOpenNow]);
 
   const totalCount = filteredPharmacies.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -213,7 +345,7 @@ export default function HoAndPhar() {
 
   return (
     <div className="phar-page">
-      {/* ── Hero Banner ── */}
+      {/* Hero, 검색창, 필터, 스탯 */}
       <section className="phar-hero">
         <div className="phar-hero-blob phar-blob1" />
         <div className="phar-hero-blob phar-blob2" />
@@ -229,13 +361,13 @@ export default function HoAndPhar() {
               <br />
               위치·영업시간을 한눈에 파악하세요
             </p>
-            {/* 히어로 내 검색창 */}
+
             <div className="phar-hero-search">
               <button
                 className="phar-region-btn"
                 onClick={() => setIsRegionOpen(true)}
               >
-                <FontAwesomeIcon icon={faLocationDot} />
+                <FontAwesomeIcon icon={faLocationDot} />{" "}
                 <span>{regionLabel}</span>
               </button>
               <div className="phar-search-divider" />
@@ -247,11 +379,10 @@ export default function HoAndPhar() {
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
               <button className="phar-search-btn" onClick={handleSearch}>
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                검색하기
+                <FontAwesomeIcon icon={faMagnifyingGlass} /> 검색하기
               </button>
             </div>
-            {/* 필터 탭 */}
+
             <div className="phar-filter-row">
               <FontAwesomeIcon
                 icon={faFilter}
@@ -263,23 +394,19 @@ export default function HoAndPhar() {
                   className={`phar-filter-btn ${activeFilter === f.key ? "active" : ""}`}
                   onClick={() => handleFilterChange(f.key)}
                 >
-                  {f.icon && <FontAwesomeIcon icon={f.icon} />}
-                  {f.label}
+                  {f.icon && <FontAwesomeIcon icon={f.icon} />} {f.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 히어로 우측 스탯 */}
           <div className="phar-hero-stats">
             <div className="phar-stat-item">
               <div className="phar-stat-icon" style={{ background: "#14b8a6" }}>
                 <FontAwesomeIcon icon={faPills} />
               </div>
               <div>
-                <div className="phar-stat-num">
-                  {totalCount.toLocaleString()}
-                </div>
+                <div className="phar-stat-num">{totalCount}</div>
                 <div className="phar-stat-lbl">검색 결과</div>
               </div>
             </div>
@@ -309,17 +436,15 @@ export default function HoAndPhar() {
         </div>
       </section>
 
-      {/* ── 본문 ── */}
+      {/* 본문 */}
       <section className="phar-body">
         <div className="phar-container">
           <div className="phar-layout">
-            {/* 좌: 지도 */}
             <div className="phar-map-col">
               <div className="phar-map-card">
                 <div className="phar-map-header">
                   <span className="phar-map-title">
-                    <FontAwesomeIcon icon={faMapLocationDot} />
-                    주변 약국 지도
+                    <FontAwesomeIcon icon={faMapLocationDot} /> 주변 약국 지도
                   </span>
                   <span className="phar-map-count">{totalCount}개 약국</span>
                 </div>
@@ -339,9 +464,7 @@ export default function HoAndPhar() {
               </div>
             </div>
 
-            {/* 우: 결과 목록 */}
             <div className="phar-result-col">
-              {/* 결과 헤더 */}
               <div className="phar-result-header">
                 <div className="phar-result-title-wrap">
                   <h2 className="phar-result-title">약국 목록</h2>
@@ -352,22 +475,18 @@ export default function HoAndPhar() {
                 </span>
               </div>
 
-              {/* 로딩 */}
               {loading && (
                 <div className="phar-state-box">
                   <div className="phar-spinner" />
-                  <p>약국 정보를 불러오는 중...</p>
+                  약국 정보를 불러오는 중...
                 </div>
               )}
-
-              {/* 에러 */}
               {error && (
                 <div className="phar-state-box phar-state-error">
-                  <p>⚠️ {error}</p>
+                  ⚠️ {error}
                 </div>
               )}
 
-              {/* 카드 목록 */}
               {!loading && !error && (
                 <>
                   {pagedPharmacies.length > 0 ? (
@@ -380,7 +499,6 @@ export default function HoAndPhar() {
                             key={p.id}
                             style={{ animationDelay: `${idx * 0.06}s` }}
                           >
-                            {/* 상단 헤더 */}
                             <div className="phar-card-head">
                               <div className="phar-card-thumb">
                                 {p.photo ? (
@@ -395,30 +513,36 @@ export default function HoAndPhar() {
                                   </div>
                                 )}
                               </div>
-
                               <div className="phar-card-meta">
                                 <div className="phar-card-name-row">
                                   <h3 className="phar-card-name">{p.name}</h3>
-                                  {/* 지도보기 버튼 우측 상단으로 이동 */}
                                   <button className="phar-btn-map">
                                     <FontAwesomeIcon icon={faLocationDot} />
                                   </button>
                                 </div>
                                 <p className="phar-card-addr">
-                                  <FontAwesomeIcon icon={faLocationDot} />
-                                  {p.addr || "주소 정보 없음"}
+                                  <FontAwesomeIcon icon={faLocationDot} />{" "}
+                                  {/* 지도 아이콘 먼저 */}
+                                  {p.distanceKm && (
+                                    <span className="phar-card-distance">
+                                      {p.distanceKm}km
+                                    </span>
+                                  )}{" "}
+                                  {/* 거리 */}
+                                  <span className="phar-card-addr-text">
+                                    {p.addr}
+                                  </span>{" "}
+                                  {/* 주소 */}
                                 </p>
                               </div>
                             </div>
-
-                            {/* 정보 그리드 */}
                             <div className="phar-card-info-grid">
                               <div className="phar-info-item">
                                 <FontAwesomeIcon
                                   icon={faPhone}
                                   className="phar-info-icon"
                                 />
-                                <span>{p.phone || "전화번호 없음"}</span>
+                                <span>{p.phone}</span>
                               </div>
                               <div className="phar-info-item">
                                 <FontAwesomeIcon
@@ -428,8 +552,6 @@ export default function HoAndPhar() {
                                 <span>{timeText(p.openTime, p.closeTime)}</span>
                               </div>
                             </div>
-
-                            {/* 푸터에 뱃지만 표시 */}
                             <div className="phar-card-footer">
                               {open !== null && (
                                 <span
@@ -464,7 +586,6 @@ export default function HoAndPhar() {
                     </div>
                   )}
 
-                  {/* 페이지네이션 */}
                   {totalCount > 0 && (
                     <nav className="phar-pagination">
                       {currentGroupStart > 1 && (

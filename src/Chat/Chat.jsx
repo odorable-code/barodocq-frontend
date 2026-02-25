@@ -94,7 +94,7 @@ const Chat = ({ hospitalName, id }) => {
           style={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()} //키보드가 눌렸을 때(onKeyDown), 그 키(e.key)가 'Enter'라면 handleSend() 함수를 실행해라 의미. if (e.key === 'Enter') { handleSend(); }를 줄여씀
           placeholder="문의사항을 입력하세요..."
         />
         <button style={styles.sendBtn} onClick={handleSend}>
