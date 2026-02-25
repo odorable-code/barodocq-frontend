@@ -19,6 +19,7 @@ import PharmacySearch from "./pages/PharmacySearch";
 import UserLogin from "./pages/UserLogin";
 import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
+import ChatList from "./Chat/ChatList";
 
 // 관리자 페이지
 
@@ -131,6 +132,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
             {/* 채팅방 */}
             <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/list" element={<ChatList />} />
             
             {/* 잘못된 경로는 메인으로 리다이렉트
             <Route path="*" element={<Navigate to="/" />} /> */}

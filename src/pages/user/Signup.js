@@ -11,6 +11,8 @@ function Signup(){
 			<Link to="/main" className="main">메인으로</Link>
 			<br />
 			<Link to="/chat" className="chat">채팅</Link>
+			<br />
+			<Link to="/chat/list" className="chatList">채팅목록</Link>
 		</div>
 	)
 }
