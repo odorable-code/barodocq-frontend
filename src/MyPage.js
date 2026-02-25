@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MyPage.css";
-
+import { useAuth } from "./AuthContext";
+import { authFetch } from "./utils/AuthFetch";
 /* ─────────────────────────────────────────
    데이터 상수
 ───────────────────────────────────────── */
@@ -14,11 +15,7 @@ const USER_INFO = {
   avatar: "은",
 };
 
-const STATUS_STATS = [
-  { id: "reservation", icon: "calendar-check", label: "예약현황", value: 2, color: "#14b8a6", sub: "진행 중" },
-  { id: "history",     icon: "clipboard-list",  label: "병원내역",  value: 14, color: "#0d9488", sub: "총 방문" },
-  { id: "scrap",       icon: "heart",           label: "찜한 병원", value: 6,  color: "#0f766e", sub: "저장됨" },
-];
+
 
 const RESERVATIONS = [
   { hospital: "서울아동병원",    dept: "소아청소년과", date: "2026-03-05", time: "14:30", status: "예정" },
@@ -55,7 +52,7 @@ const MENU_GROUPS = [
 
 const RECENT_REVIEWS = [
   { hospital: "한강정형외과의원", dept: "정형외과", rating: 5, text: "친절하고 대기 시간도 짧았어요.", date: "2026-02-10" },
-  { hospital: "밝은눈안과",       dept: "안과",     rating: 4, text: "시설이 깔끔하고 선생님이 자세히 설명해주셨습니다.", date: "2026-01-25" },
+  { hospital: "밝은눈안과",      dept: "안과",    rating: 4, text: "시설이 깔끔하고 선생님이 자세히 설명해주셨습니다.", date: "2026-01-25" },
 ];
 
 /* ─────────────────────────────────────────
@@ -63,7 +60,34 @@ const RECENT_REVIEWS = [
 ───────────────────────────────────────── */
 const MyPage = () => {
   const [activeStatus, setActiveStatus] = useState("reservation");
+  const [scrapCount, setScrapCount] = useState(0);
 
+  const auth = useAuth();
+
+
+  useEffect(() => {
+    if (auth?.getMeAndSetUser) {
+      auth.getMeAndSetUser();
+    }
+  }, []);
+
+  useEffect(() => {
+    async function fetchCount() {
+      const result = await authFetch("/api/v1/hospitals/me/scraps/count");
+      if (result.ok) {
+        const count = await result.text();
+        setScrapCount(count);
+      }
+    }
+    fetchCount();
+  }, []);
+  if (!auth) return null; 
+  const { user } = auth;
+  const STATUS_STATS = [
+    { id: "reservation", icon: "calendar-check", label: "예약현황", value: 2, color: "#14b8a6", sub: "진행 중" },
+    { id: "history",     icon: "clipboard-list",  label: "병원내역",  value: 14, color: "#0d9488", sub: "총 방문" },
+    { id: "scrap",       icon: "heart",           label: "찜한 병원", value: scrapCount,  color: "#0f766e", sub: "저장됨" },
+  ];
   return (
     <div className="mypage-wrapper">
 
@@ -86,7 +110,7 @@ const MyPage = () => {
                   <i className="fas fa-hand-sparkles" /> WELCOME
                 </div>
                 <h1 className="mp-username">
-                  {USER_INFO.name}<span className="mp-nim">님</span>
+                  {user? user.id : "none"}<span className="mp-nim">님</span>
                 </h1>
                 <div className="mp-meta-row">
                   <span className="mp-grade-badge">
