@@ -156,7 +156,7 @@ function UserSignup() {
     const signupButton = async (e) => {
         e.preventDefault();
         // formData에서 값 추출
-        const { userPw, userPw2, userPhone, userId, userName, userGender, userBirth } = formData;
+        const { userPw, userPw2, userPhone, userId, userName, userEmail, userGender, userBirth, userAddr } = formData;
 
         // 중복 확인 여부 먼저 체크
         if (!isIdAvailable) {
@@ -187,14 +187,9 @@ function UserSignup() {
             return; }
 
         // 서버 전송 로직
-        const submitData = {
-            userId: userId,
-            userPw: userPw,
-            userName: userName,
-            userPhone: userPhone,
-            userGender: userGender,
-            termAgreement: true,
-            userBirth: userBirth };
+        const submitData =
+            {...formData, termAgreement: true};
+        
 
             //http://localhost:8080
         try {
