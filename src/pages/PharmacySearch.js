@@ -64,7 +64,7 @@ async function fetchPharmacies() {
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
     throw new Error(
-      `약국 목록 조회 실패 (status: ${res.status})\n${txt.slice(0, 120)}`
+      `약국 목록 조회 실패 (status: ${res.status})\n${txt.slice(0, 120)}`,
     );
   }
   return res.json();
@@ -110,7 +110,7 @@ export default function HoAndPhar() {
       setError("");
       try {
         const data = await fetchPharmacies();
-        const list = Array.isArray(data) ? data : data?.content ?? [];
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
         const mapped = list.map((r, idx) => ({
           id: r.ph_num ?? idx + 1,
           name: r.ph_name ?? "약국명",
@@ -136,7 +136,9 @@ export default function HoAndPhar() {
       }
     }
     load();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const filteredPharmacies = useMemo(() => {
@@ -151,7 +153,7 @@ export default function HoAndPhar() {
     const keyword = searchTerm.trim();
     if (keyword)
       result = result.filter(
-        (p) => p.name.includes(keyword) || p.addr.includes(keyword)
+        (p) => p.name.includes(keyword) || p.addr.includes(keyword),
       );
     result = result.filter((p) => matchRegionByAddr(p.addr, region));
     return result;
@@ -186,13 +188,16 @@ export default function HoAndPhar() {
   const timeText = useCallback(
     (open, close) =>
       open && close ? `${open} ~ ${close}` : "운영시간 정보 없음",
-    []
+    [],
   );
 
   const PAGE_GROUP = 5;
   const currentGroupStart =
     Math.floor((page - 1) / PAGE_GROUP) * PAGE_GROUP + 1;
-  const currentGroupEnd = Math.min(totalPages, currentGroupStart + PAGE_GROUP - 1);
+  const currentGroupEnd = Math.min(
+    totalPages,
+    currentGroupStart + PAGE_GROUP - 1,
+  );
   const pageNumbers = useMemo(() => {
     const numbers = [];
     for (let i = currentGroupStart; i <= currentGroupEnd; i++) numbers.push(i);
@@ -200,15 +205,14 @@ export default function HoAndPhar() {
   }, [currentGroupStart, currentGroupEnd]);
 
   const FILTERS = [
-    { key: "전체",   icon: null,          label: "전체" },
-    { key: "진료중", icon: faSun,         label: "진료중" },
-    { key: "야간진료", icon: faMoon,      label: "야간진료" },
+    { key: "전체", icon: null, label: "전체" },
+    { key: "진료중", icon: faSun, label: "진료중" },
+    { key: "야간진료", icon: faMoon, label: "야간진료" },
     { key: "공휴일", icon: faCalendarDay, label: "공휴일 운영" },
   ];
 
   return (
     <div className="phar-page">
-
       {/* ── Hero Banner ── */}
       <section className="phar-hero">
         <div className="phar-hero-blob phar-blob1" />
@@ -216,11 +220,13 @@ export default function HoAndPhar() {
         <div className="phar-container">
           <div className="phar-hero-inner">
             <h1 className="phar-hero-title">
-              내 주변 약국을<br />
+              내 주변 약국을
+              <br />
               <span className="phar-gradient-text">빠르게 찾아보세요</span>
             </h1>
             <p className="phar-hero-desc">
-              야간·공휴일 운영 약국까지 실시간으로 확인하고<br />
+              야간·공휴일 운영 약국까지 실시간으로 확인하고
+              <br />
               위치·영업시간을 한눈에 파악하세요
             </p>
             {/* 히어로 내 검색창 */}
@@ -247,7 +253,10 @@ export default function HoAndPhar() {
             </div>
             {/* 필터 탭 */}
             <div className="phar-filter-row">
-              <FontAwesomeIcon icon={faFilter} className="phar-filter-label-icon" />
+              <FontAwesomeIcon
+                icon={faFilter}
+                className="phar-filter-label-icon"
+              />
               {FILTERS.map((f) => (
                 <button
                   key={f.key}
@@ -268,7 +277,9 @@ export default function HoAndPhar() {
                 <FontAwesomeIcon icon={faPills} />
               </div>
               <div>
-                <div className="phar-stat-num">{totalCount.toLocaleString()}</div>
+                <div className="phar-stat-num">
+                  {totalCount.toLocaleString()}
+                </div>
                 <div className="phar-stat-lbl">검색 결과</div>
               </div>
             </div>
@@ -302,7 +313,6 @@ export default function HoAndPhar() {
       <section className="phar-body">
         <div className="phar-container">
           <div className="phar-layout">
-
             {/* 좌: 지도 */}
             <div className="phar-map-col">
               <div className="phar-map-card">
@@ -311,16 +321,19 @@ export default function HoAndPhar() {
                     <FontAwesomeIcon icon={faMapLocationDot} />
                     주변 약국 지도
                   </span>
-                  <span className="phar-map-count">
-                    {totalCount}개 약국
-                  </span>
+                  <span className="phar-map-count">{totalCount}개 약국</span>
                 </div>
                 <div className="phar-map-area">
                   <div className="phar-map-placeholder">
                     <div className="phar-map-pulse" />
-                    <FontAwesomeIcon icon={faMapLocationDot} className="phar-map-ico" />
+                    <FontAwesomeIcon
+                      icon={faMapLocationDot}
+                      className="phar-map-ico"
+                    />
                     <span className="phar-map-txt">지도 로딩 중...</span>
-                    <span className="phar-map-sub">위치 기반 약국 정보를 불러오는 중입니다</span>
+                    <span className="phar-map-sub">
+                      위치 기반 약국 정보를 불러오는 중입니다
+                    </span>
                   </div>
                 </div>
               </div>
@@ -332,9 +345,7 @@ export default function HoAndPhar() {
               <div className="phar-result-header">
                 <div className="phar-result-title-wrap">
                   <h2 className="phar-result-title">약국 목록</h2>
-                  <span className="phar-result-badge">
-                    총 {totalCount}건
-                  </span>
+                  <span className="phar-result-badge">총 {totalCount}건</span>
                 </div>
                 <span className="phar-page-info">
                   {page} / {totalPages} 페이지
@@ -384,28 +395,14 @@ export default function HoAndPhar() {
                                   </div>
                                 )}
                               </div>
+
                               <div className="phar-card-meta">
                                 <div className="phar-card-name-row">
                                   <h3 className="phar-card-name">{p.name}</h3>
-                                  {open !== null && (
-                                    <span
-                                      className={`phar-open-tag ${open ? "open" : "closed"}`}
-                                    >
-                                      {open ? "진료중" : "진료종료"}
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="phar-badge-row">
-                                  {p.isNight && (
-                                    <span className="phar-badge night">
-                                      <FontAwesomeIcon icon={faMoon} /> 야간
-                                    </span>
-                                  )}
-                                  {p.isHoliday && (
-                                    <span className="phar-badge holiday">
-                                      <FontAwesomeIcon icon={faCalendarDay} /> 공휴일
-                                    </span>
-                                  )}
+                                  {/* 지도보기 버튼 우측 상단으로 이동 */}
+                                  <button className="phar-btn-map">
+                                    <FontAwesomeIcon icon={faLocationDot} />
+                                  </button>
                                 </div>
                                 <p className="phar-card-addr">
                                   <FontAwesomeIcon icon={faLocationDot} />
@@ -414,7 +411,7 @@ export default function HoAndPhar() {
                               </div>
                             </div>
 
-                            {/* 정보 행 */}
+                            {/* 정보 그리드 */}
                             <div className="phar-card-info-grid">
                               <div className="phar-info-item">
                                 <FontAwesomeIcon
@@ -432,16 +429,26 @@ export default function HoAndPhar() {
                               </div>
                             </div>
 
-                            {/* 푸터 */}
+                            {/* 푸터에 뱃지만 표시 */}
                             <div className="phar-card-footer">
-                              <button className="phar-btn-detail">
-                                상세보기
-                                <FontAwesomeIcon icon={faArrowRight} />
-                              </button>
-                              <button className="phar-btn-map">
-                                <FontAwesomeIcon icon={faLocationDot} />
-                                지도보기
-                              </button>
+                              {open !== null && (
+                                <span
+                                  className={`phar-badge ${open ? "open" : "closed"}`}
+                                >
+                                  {open ? "진료중" : "진료종료"}
+                                </span>
+                              )}
+                              {p.isNight && (
+                                <span className="phar-badge night">
+                                  <FontAwesomeIcon icon={faMoon} /> 야간
+                                </span>
+                              )}
+                              {p.isHoliday && (
+                                <span className="phar-badge holiday">
+                                  <FontAwesomeIcon icon={faCalendarDay} />{" "}
+                                  공휴일
+                                </span>
+                              )}
                             </div>
                           </article>
                         );

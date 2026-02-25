@@ -558,12 +558,11 @@
   min-width: 0;
 }
 
+/* 지도보기 버튼 상단 우측 배치 */
 .phar-card-name-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.4rem;
 }
 
 .phar-card-name {
@@ -699,25 +698,27 @@
 }
 
 .phar-btn-map {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.6rem 0.875rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--primary-mint);
   background: transparent;
   color: var(--primary-teal);
-  font-size: 0.82rem;
-  font-weight: 700;
-  border: 2px solid var(--primary-mint);
-  border-radius: var(--radius-md);
   cursor: pointer;
-  white-space: nowrap;
   transition: var(--transition-base);
 }
 
 .phar-btn-map:hover {
   background: var(--bg-tertiary);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+}
+
+/* 푸터 뱃지 */
+.phar-card-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
 /* ── 빈 상태 ── */
