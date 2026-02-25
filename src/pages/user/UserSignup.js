@@ -285,5 +285,6 @@ function UserSignup() {
     </div>
   );
 }
+}
 
 export default UserSignup;
