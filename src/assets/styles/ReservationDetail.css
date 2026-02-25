@@ -1,0 +1,672 @@
+/* ================================
+   ReservationDetail.css
+   Mint Green + Teal Blue Theme
+   — MainPage 통일 디자인 시스템
+================================ */
+
+/* ── CSS 변수 (MainPage와 동일) ── */
+.rd-trigger-btn,
+.rd-overlay,
+.rd-modal,
+.rd-card {
+  --primary-mint:        #14b8a6;
+  --primary-teal:        #0d9488;
+  --primary-dark-teal:   #0f766e;
+  --primary-darker-teal: #115e59;
+  --bg-primary:          #ffffff;
+  --bg-secondary:        #f0fdfa;
+  --bg-tertiary:         #ccfbf1;
+  --text-primary:        #0f172a;
+  --text-secondary:      #475569;
+  --text-muted:          #94a3b8;
+  --border-color:        #e2e8f0;
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:   0 4px 6px rgba(0,0,0,.07);
+  --shadow-lg:   0 10px 15px rgba(0,0,0,.1);
+  --shadow-xl:   0 20px 25px rgba(0,0,0,.12);
+  --shadow-mint: 0 10px 30px rgba(20,184,166,.25);
+  --radius-sm:   .5rem;
+  --radius-md:   .75rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.25rem;
+  --radius-2xl:  1.75rem;
+  --radius-full: 9999px;
+  --transition-fast: 200ms cubic-bezier(.4,0,.2,1);
+  --transition-base: 300ms cubic-bezier(.4,0,.2,1);
+}
+
+/* ══════════════════════════════
+   트리거 버튼
+══════════════════════════════ */
+.rd-trigger-btn {
+  position: fixed;
+  top: 140px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem 1.4rem;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: var(--shadow-mint);
+  transition: var(--transition-base);
+  z-index: 900;
+}
+.rd-trigger-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(20,184,166,.4);
+}
+.rd-trigger-btn i { font-size: 1rem; }
+
+.rd-trigger-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #fff;
+  color: var(--primary-teal);
+  font-size: .72rem;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+}
+
+/* ══════════════════════════════
+   오버레이
+══════════════════════════════ */
+.rd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: rd-fade-in .2s ease;
+}
+
+@keyframes rd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ══════════════════════════════
+   모달
+══════════════════════════════ */
+.rd-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(20,184,166,.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: rd-slide-up .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes rd-slide-up {
+  from { opacity: 0; transform: translateY(28px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── 모달 헤더 ── */
+.rd-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 2px solid var(--bg-secondary);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #fff 100%);
+  flex-shrink: 0;
+}
+
+.rd-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rd-modal-icon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  border-radius: var(--radius-lg);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-mint);
+}
+
+.rd-modal-title h2 {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 .2rem;
+}
+
+.rd-modal-title p {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.rd-close-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+.rd-close-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
+  transform: rotate(90deg);
+}
+
+/* ── 탭 바 ── */
+.rd-tab-bar {
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.rd-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .875rem .5rem;
+  border: none;
+  background: transparent;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: .875rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: var(--transition-base);
+  white-space: nowrap;
+}
+.rd-tab-btn:hover {
+  color: var(--primary-mint);
+  background: var(--bg-tertiary);
+}
+.rd-tab-btn.active {
+  color: var(--primary-teal);
+  border-bottom-color: var(--primary-mint);
+  background: #fff;
+}
+
+.rd-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: .7rem;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  transition: var(--transition-base);
+}
+.rd-tab-count.active {
+  background: var(--primary-mint);
+  color: #fff;
+}
+
+/* ── 모달 바디 ── */
+.rd-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.75rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-mint) var(--bg-secondary);
+}
+.rd-modal-body::-webkit-scrollbar { width: 5px; }
+.rd-modal-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+.rd-modal-body::-webkit-scrollbar-thumb {
+  background: var(--primary-mint);
+  border-radius: var(--radius-full);
+}
+
+/* ── 빈 상태 ── */
+.rd-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 1rem;
+  text-align: center;
+  gap: .75rem;
+}
+
+.rd-empty-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border-radius: 50%;
+  font-size: 2rem;
+  margin-bottom: .5rem;
+  border: 2px dashed var(--border-color);
+}
+
+.rd-empty-state p {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.rd-empty-state span {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+/* ── 카드 리스트 ── */
+.rd-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ══════════════════════════════
+   예약 카드
+══════════════════════════════ */
+.rd-card {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  background: #fff;
+  cursor: pointer;
+  transition: var(--transition-base);
+  overflow: hidden;
+  position: relative;
+}
+.rd-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-mint), var(--primary-teal));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: var(--transition-base);
+}
+.rd-card:hover {
+  border-color: var(--primary-mint);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+.rd-card:hover::before,
+.rd-card.expanded::before {
+  transform: scaleX(1);
+}
+.rd-card.expanded {
+  border-color: var(--primary-mint);
+  box-shadow: var(--shadow-mint);
+}
+
+/* 카드 메인 행 */
+.rd-card-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+}
+
+/* 병원 아이콘 아바타 */
+.rd-card-avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-tertiary), #a7f3d0);
+  color: var(--primary-teal);
+  border-radius: var(--radius-lg);
+  font-size: 1.4rem;
+  transition: var(--transition-base);
+}
+.rd-card:hover .rd-card-avatar,
+.rd-card.expanded .rd-card-avatar {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+}
+
+/* 카드 텍스트 */
+.rd-card-info { flex: 1; min-width: 0; }
+
+.rd-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  margin-bottom: .3rem;
+  flex-wrap: wrap;
+}
+
+.rd-card-name-row h3 {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.rd-dept-tag {
+  display: inline-block;
+  padding: .18rem .55rem;
+  background: var(--bg-tertiary);
+  color: var(--primary-dark-teal);
+  font-size: .7rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  margin-bottom: .4rem;
+}
+
+.rd-card-meta {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  flex-wrap: wrap;
+  margin-top: .25rem;
+}
+
+.rd-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.rd-card-meta i {
+  color: var(--primary-mint);
+  font-size: .7rem;
+}
+
+/* 펼치기 버튼 */
+.rd-expand-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+.rd-expand-btn:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+}
+.rd-expand-btn.rotated {
+  transform: rotate(180deg);
+  border-color: var(--primary-mint);
+  background: var(--bg-tertiary);
+  color: var(--primary-teal);
+}
+
+/* ── 상태 칩 ── */
+.rd-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: .22rem .65rem;
+  border-radius: var(--radius-full);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  flex-shrink: 0;
+}
+.status-confirmed { background: #d1fae5; color: #059669; }
+.status-pending   { background: #dbeafe; color: #2563eb; }
+.status-cancelled { background: #fee2e2; color: #dc2626; }
+.status-done      { background: var(--bg-tertiary); color: var(--primary-dark-teal); }
+
+/* ── 확장 상세 ── */
+.rd-card-detail {
+  padding: 0 1.25rem 1.25rem;
+  animation: rd-expand-in .25s ease;
+}
+
+@keyframes rd-expand-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.rd-detail-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.rd-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .625rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.rd-detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+.rd-detail-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.rd-detail-label i {
+  color: var(--primary-mint);
+  font-size: .72rem;
+  width: 14px;
+  text-align: center;
+}
+
+.rd-detail-value {
+  font-size: .82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.5;
+}
+.rd-detail-value.highlight {
+  color: var(--primary-teal);
+  font-weight: 600;
+}
+
+/* ── 카드 액션 버튼 ── */
+.rd-card-actions {
+  display: flex;
+  gap: .75rem;
+}
+
+.rd-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .65rem 1rem;
+  border: none;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: .83rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.rd-action-btn.primary {
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(20,184,166,.3);
+}
+.rd-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+.rd-action-btn.secondary {
+  background: var(--bg-secondary);
+  color: var(--primary-teal);
+  border: 2px solid var(--border-color);
+}
+.rd-action-btn.secondary:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-mint);
+}
+
+.rd-action-btn.danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 2px solid #fecaca;
+}
+.rd-action-btn.danger:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+/* ══════════════════════════════
+   모달 푸터
+══════════════════════════════ */
+.rd-modal-footer {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  padding: 1.125rem 1.75rem;
+  border-top: 2px solid var(--bg-secondary);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.rd-btn-new {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  color: #fff;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(20,184,166,.3);
+  transition: var(--transition-base);
+}
+.rd-btn-new:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mint);
+}
+
+.rd-btn-close-footer {
+  padding: .75rem 1.5rem;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+.rd-btn-close-footer:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+/* ══════════════════════════════
+   반응형
+══════════════════════════════ */
+@media (max-width: 600px) {
+  .rd-modal {
+    max-height: 92vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    animation: rd-slide-up-mobile .3s cubic-bezier(.34,1.2,.64,1);
+  }
+
+  @keyframes rd-slide-up-mobile {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0);    }
+  }
+
+  .rd-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .rd-modal-header { padding: 1.25rem 1.25rem 1rem; }
+  .rd-modal-body   { padding: 1rem 1.25rem; }
+  .rd-modal-footer { padding: 1rem 1.25rem; }
+
+  .rd-card-meta { gap: .5rem; }
+  .rd-trigger-btn {
+    top: auto;
+    bottom: 24px;
+    right: 20px;
+  }
+  .rd-card-actions { flex-direction: column; }
+}
+
+@media (max-width: 400px) {
+  .rd-modal-title h2 { font-size: 1rem; }
+  .rd-tab-btn { font-size: .8rem; padding: .75rem .35rem; }
+}
