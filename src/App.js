@@ -22,9 +22,11 @@ import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
 
 // 관리자 페이지
-
-import ClaimPage from "./adminComponents/ClaimPage";
+import AdminHospitals from "./adminComponents/AdminHospitals";
 import AdminLayout from "./adminComponents/AdminLayout";
+import AdminMain from "./adminComponents/AdminMain";
+import AdminReservation from "./adminComponents/AdminReservation";
+import AdminCustomers from "./adminComponents/AdminCustomers";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Login from "./pages/user/Login";
@@ -114,9 +116,7 @@ function App() {
             <Route path="/reviews/:rvNum" element={<ReviewDetail />} />
             <Route path="/main" element={<Main />} />
             <Route path="/hospitals" element={<HospitalSearch />} />
-            <Route
-              path="/hos_detail/:hospitalId"
-              element={<HospitalDetail />}
+            <Route path="/details/:hospitalId" element={<HospitalDetail />}
             />
             <Route path="/pharmacy" element={<PharmacySearch />} />
 
@@ -155,12 +155,15 @@ function App() {
           {/* 로그인만 레이아웃 없이 */}
           <Route path="/login" element={<UserLogin />} />
 
-          {/* ✅ 관리자 영역 (사용자 Layout과 완전 분리) */}
+          {/* 관리자 라우터*/}
           <Route path="/admin" element={<AdminLayout />}>
-            {/* /admin */}
-            <Route index element={<ClaimPage />} />
-            {/* /admin/claims */}
-            <Route path="claims" element={<ClaimPage />} />
+            {/* /admin 기본진입 화면 */}
+            <Route index element={<AdminMain />} />
+
+            {/* 메뉴별 라우터 */}
+            <Route path="hospitals" element={<AdminHospitals />} />
+            <Route path="reservations" element={<AdminReservation />} />
+            <Route path="customers" element={<AdminCustomers />} />
           </Route>
 
           {/* ✅ 최종 fallback

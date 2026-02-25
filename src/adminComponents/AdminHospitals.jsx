@@ -23,7 +23,7 @@ export default function ClaimPage() {
   const [status, setStatus] = useState("전체");
   const [searchField, setSearchField] = useState("전체");
 
-  // ✅ 검색필드별로 어떤 컬럼을 검색할지 "매핑"으로 정리
+  // ✅ 검색필드별 매핑
   const fieldMap = useMemo(
     () => ({
       전체: (row) => [
@@ -34,7 +34,7 @@ export default function ClaimPage() {
         row.address,
         row.phone,
       ],
-      사업자번호: (row) => [row.hNo],
+      사업자번호: (row) => [row.bizNo], // ✅ 버그 수정 (hNo -> bizNo)
       관리자아이디: (row) => [row.adminId],
       병원명: (row) => [row.hospitalName],
       진료과: (row) => [row.department],
@@ -48,44 +48,36 @@ export default function ClaimPage() {
     const kw = keyword.trim();
 
     return DUMMY.filter((row) => {
-      // 1) ✅ 상태 필터
+      // 1) 상태 필터
       const hitStatus = status === "전체" ? true : row.approveStatus === status;
 
-      // 2) ✅ 키워드 필터
+      // 2) 키워드 필터
       if (kw === "") return hitStatus;
 
-      // 선택된 searchField에 맞는 값 배열 뽑기
       const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
-
-      // candidates 중 하나라도 keyword 포함하면 true
       const hitKeyword = candidates.some((v) => String(v).includes(kw));
 
       return hitStatus && hitKeyword;
     });
   }, [keyword, status, searchField, fieldMap]);
 
-  const handleApproveClick = (row) => {
-    // 승인요청 버튼 눌렀을 때만 호출되게 아래에서 분기함
-    alert(`승인요청 처리: ${row.hospitalName}`);
-  };
-
   return (
-    <div className="page">
-      <div className="page-head">
+    <div className="adm-page">
+      <div className="adm-page-head">
         <div>
-          <div className="breadcrumb">회원관리 &gt; 병원관리</div>
-          <h1 className="page-title">병원관리</h1>
+          <div className="adm-breadcrumb">회원관리 &gt; 병원관리</div>
+          <h1 className="adm-page-title">병원관리</h1>
         </div>
-        <button className="primary-btn">+ 신규등록</button>
+        <button className="adm-primary-btn">+ 신규등록</button>
       </div>
 
-      <div className="card">
-        <div className="filters">
-          <div className="filter-row">
-            <span className="label">검색옵션</span>
-            <div className="chips">
+      <div className="adm-card">
+        <div className="adm-filters">
+          <div className="adm-filter-row">
+            <span className="adm-label">검색옵션</span>
+            <div className="adm-chips">
               {STATUS.map((s) => (
-                <label key={s} className="chip">
+                <label key={s} className="adm-chip">
                   <input
                     type="radio"
                     name="status"
@@ -98,10 +90,10 @@ export default function ClaimPage() {
             </div>
           </div>
 
-          <div className="search-row">
-            <span className="label">검색명</span>
+          <div className="adm-search-row">
+            <span className="adm-label">검색명</span>
             <select
-              className="select"
+              className="adm-select"
               value={searchField}
               onChange={(e) => setSearchField(e.target.value)}
             >
@@ -115,26 +107,26 @@ export default function ClaimPage() {
             </select>
 
             <input
-              className="input"
+              className="adm-input"
               placeholder="검색어를 입력해주세요."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
 
-            {/* 지금은 입력 즉시 필터라 버튼은 그냥 UI용 */}
-            <button className="ghost-btn" type="button">
+            <button className="adm-ghost-btn" type="button">
               검색
             </button>
           </div>
         </div>
       </div>
 
-      <div className="table-wrap">
-        <div className="table-meta">전체 {filtered.length}건</div>
+      <div className="adm-table-wrap">
+        <div className="adm-table-meta">전체 {filtered.length}건</div>
 
-        <table className="table">
+        <table className="adm-table adm-table-hospitals">
           <thead>
             <tr>
+              <th>No.</th>
               <th>사업자번호</th>
               <th>관리자아이디</th>
               <th>병원명</th>
@@ -142,15 +134,16 @@ export default function ClaimPage() {
               <th>주소</th>
               <th>전화번호</th>
               <th>알림허용여부</th>
-              <th>최초가입일</th>
-              <th>마지막 정보수정일</th>
+              <th>가입일</th>
+              <th>정보수정일</th>
               <th>승인여부</th>
             </tr>
           </thead>
 
           <tbody>
-            {filtered.slice(0, 10).map((r) => (
+            {filtered.slice(0, 10).map((r, idx) => (
               <tr key={r.id}>
+                <td>{idx + 1}</td>
                 <td>{r.bizNo}</td>
                 <td>{r.adminId}</td>
                 <td>{r.hospitalName}</td>
@@ -158,8 +151,12 @@ export default function ClaimPage() {
                 <td>{r.address}</td>
                 <td>{r.phone}</td>
 
-                <td className="cell-center">
-                  <span className={`badge ${r.alertAllowed ? "ON" : "OFF"}`}>
+                <td className="adm-cell-center">
+                  <span
+                    className={
+                      "adm-badge " + (r.alertAllowed ? "adm-on" : "adm-off")
+                    }
+                  >
                     {r.alertAllowed ? "허용" : "미허용"}
                   </span>
                 </td>
@@ -167,14 +164,13 @@ export default function ClaimPage() {
                 <td>{r.firstJoinedAt}</td>
                 <td>{r.lastUpdatedAt}</td>
 
-                {/* ✅ 승인여부 규칙 적용 */}
-                <td className="cell-center">
+                <td className="adm-cell-center">
                   {r.approveStatus === "승인요청" ? (
-                    <button className="approve-btn request" type="button">
+                    <button className="adm-approve-btn adm-request" type="button">
                       승인요청
                     </button>
                   ) : (
-                    <span className="approve-done">승인완료</span>
+                    <span className="adm-approve-done">승인완료</span>
                   )}
                 </td>
               </tr>
@@ -182,7 +178,7 @@ export default function ClaimPage() {
           </tbody>
         </table>
 
-        <div className="more">∨ 더보기 (1/12)</div>
+        <div className="adm-more">∨ 더보기 (1/12)</div>
       </div>
     </div>
   );
