@@ -1,83 +1,85 @@
-:root {
-  --bg: #f4f7fb;
-  --card: #ffffff;
-  --line: #e7edf5;
-  --text: #1b2b41;
-  --muted: #6c7c92;
-  --blue: #1f5eff;
-  --nav: #121b3a;
-}
-
 /* =========================
-   Base
+   Admin Scoped Variables / Base
+   (관리자 영역에서만 적용)
 ========================= */
-* {
-  box-sizing: border-box;
+.adm-scope {
+  --adm-bg: #f4f7fb;
+  --adm-card: #ffffff;
+  --adm-line: #e7edf5;
+  --adm-text: #1b2b41;
+  --adm-muted: #6c7c92;
+  --adm-blue: #1f5eff;
+  --adm-nav: #121b3a;
+
+  background: var(--adm-bg);
+  color: var(--adm-text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+.adm-scope * {
+  box-sizing: border-box;
 }
 
 /* =========================
    Layout
 ========================= */
-.admin-root {
+.adm-scope.adm-root {
   display: flex;
   min-height: 100vh;
 }
 
-.admin-sidebar {
+.adm-scope .adm-sidebar {
   width: 240px;
-  background: var(--nav);
+  flex: 0 0 240px; /* ✅ 오타주의: px */
+  background: var(--adm-nav);
   color: #fff;
 }
 
-.admin-main {
+.adm-scope .adm-main {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
-.admin-top {
+.adm-scope .adm-top {
   height: 72px;
   background: #fff;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--adm-line);
 }
 
-.admin-content {
+.adm-scope .adm-content {
+  flex: 1;
+  min-width: 0;
   padding: 24px;
 }
 
 /* =========================
    Sidebar
 ========================= */
-.sb {
+.adm-scope .adm-sb {
   padding: 20px 14px;
 }
 
-.sb-logo {
+.adm-scope .adm-sb-logo {
   font-weight: 800;
   font-size: 20px;
   margin-bottom: 20px;
 }
 
-.sb-title {
+.adm-scope .adm-sb-title {
   font-size: 14px;
   color: #c7d2ff;
   margin: 8px 8px 12px;
 }
 
-.sb-nav {
+.adm-scope .adm-sb-nav {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.sb-item {
+.adm-scope .adm-sb-item {
   width: 100%;
   background: transparent;
   color: #cfd7ff;
@@ -88,23 +90,23 @@ body {
   cursor: pointer;
 }
 
-.sb-item.active {
+.adm-scope .adm-sb-item.adm-active {
   background: rgba(31, 94, 255, 0.18);
   color: #fff;
 }
 
 /* Sub menu */
-.sb-group {
+.adm-scope .adm-sb-group {
   margin-bottom: 6px;
 }
 
-.sb-parent {
+.adm-scope .adm-sb-parent {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.sb-caret {
+.adm-scope .adm-sb-caret {
   margin-left: auto;
   background: transparent;
   border: 0;
@@ -114,11 +116,11 @@ body {
   border-radius: 10px;
 }
 
-.sb-caret:hover {
+.adm-scope .adm-sb-caret:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.sb-sub {
+.adm-scope .adm-sb-sub {
   max-height: 0;
   overflow: hidden;
   transition: max-height 200ms ease;
@@ -126,13 +128,13 @@ body {
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.sb-sub.open {
+.adm-scope .adm-sb-sub.adm-open {
   max-height: 240px;
   margin-top: 6px;
   padding-left: 10px;
 }
 
-.sb-sub-item {
+.adm-scope .adm-sb-sub-item {
   display: block;
   padding: 10px 12px;
   border-radius: 10px;
@@ -141,11 +143,11 @@ body {
   font-size: 13px;
 }
 
-.sb-sub-item:hover {
+.adm-scope .adm-sb-sub-item:hover {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.sb-sub-item.active {
+.adm-scope .adm-sb-sub-item.adm-active {
   background: rgba(31, 94, 255, 0.18);
   color: #fff;
 }
@@ -153,7 +155,7 @@ body {
 /* =========================
    Top Header (Right aligned)
 ========================= */
-.th {
+.adm-scope .adm-th {
   height: 72px;
   display: flex;
   align-items: center;
@@ -162,27 +164,27 @@ body {
   gap: 16px;
 }
 
-.th-right {
+.adm-scope .adm-th-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.th-user {
+.adm-scope .adm-th-user {
   text-align: right;
 }
 
-.th-name {
+.adm-scope .adm-th-name {
   font-weight: 800;
   font-size: 14px;
 }
 
-.th-sub {
+.adm-scope .adm-th-sub {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--adm-muted);
 }
 
-.th-btn {
+.adm-scope .adm-th-btn {
   background: #eef3ff;
   border: 1px solid #d6e2ff;
   padding: 8px 10px;
@@ -191,7 +193,7 @@ body {
   font-weight: 700;
 }
 
-.th-icon {
+.adm-scope .adm-th-icon {
   border: 0;
   background: transparent;
   font-size: 18px;
@@ -200,34 +202,34 @@ body {
   border-radius: 10px;
 }
 
-.th-icon:hover {
+.adm-scope .adm-th-icon:hover {
   background: #f3f6ff;
 }
 
 /* =========================
    Page header
 ========================= */
-.page-head {
+.adm-scope .adm-page-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 14px;
 }
 
-.breadcrumb {
-  color: var(--muted);
+.adm-scope .adm-breadcrumb {
+  color: var(--adm-muted);
   font-size: 12px;
   margin-bottom: 6px;
 }
 
-.page-title {
+.adm-scope .adm-page-title {
   margin: 0;
   font-size: 28px;
   letter-spacing: -0.5px;
 }
 
-.primary-btn {
-  background: var(--blue);
+.adm-scope .adm-primary-btn {
+  background: var(--adm-blue);
   color: #fff;
   border: 0;
   padding: 10px 14px;
@@ -239,76 +241,76 @@ body {
 /* =========================
    Filter card
 ========================= */
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
+.adm-scope .adm-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
   border-radius: 12px;
   padding: 16px;
 }
 
-.filters {
+.adm-scope .adm-filters {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.filter-row {
+.adm-scope .adm-filter-row {
   display: flex;
   gap: 12px;
   align-items: flex-start;
 }
 
-.label {
+.adm-scope .adm-label {
   width: 70px;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--adm-muted);
   padding-top: 6px;
 }
 
-.chips {
+.adm-scope .adm-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.chip {
+.adm-scope .adm-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--adm-line);
   padding: 6px 10px;
   border-radius: 999px;
   background: #fff;
   cursor: pointer;
 }
 
-.chip input {
-  accent-color: var(--blue);
+.adm-scope .adm-chip input {
+  accent-color: var(--adm-blue);
 }
 
-.search-row {
+.adm-scope .adm-search-row {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.select {
+.adm-scope .adm-select {
   height: 38px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--adm-line);
   border-radius: 10px;
   padding: 0 10px;
   background: #fff;
 }
 
-.input {
+.adm-scope .adm-input {
   flex: 1;
   height: 38px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--adm-line);
   border-radius: 10px;
   padding: 0 12px;
 }
 
-.ghost-btn {
+.adm-scope .adm-ghost-btn {
   height: 38px;
   padding: 0 14px;
   border-radius: 10px;
@@ -321,66 +323,63 @@ body {
 /* =========================
    Table
 ========================= */
-.table-wrap {
+.adm-scope .adm-table-wrap {
   margin-top: 14px;
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
   border-radius: 12px;
   padding: 16px;
 }
 
-.table-meta {
-  color: var(--muted);
+.adm-scope .adm-table-meta {
+  color: var(--adm-muted);
   font-size: 13px;
   margin-bottom: 10px;
 }
 
-.table {
+.adm-scope .adm-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-.table th,
-.table td {
+.adm-scope .adm-table th,
+.adm-scope .adm-table td {
   padding: 12px 10px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--adm-line);
   vertical-align: middle;
 }
 
-.table th {
-  color: var(--muted);
+.adm-scope .adm-table th {
+  color: var(--adm-muted);
   font-weight: 700;
   background: #fbfcff;
 }
 
-.right {
+.adm-scope .adm-right {
   text-align: right;
 }
 
-.more {
+.adm-scope .adm-more {
   text-align: center;
   padding: 12px 0 6px;
-  color: var(--muted);
+  color: var(--adm-muted);
   cursor: pointer;
 }
 
-/* 행 높이 고정(칩 있는 줄 들쭉날쭉 방지) */
-.table tbody tr {
+.adm-scope .adm-table tbody tr {
   height: 56px;
 }
 
-/* (선택) 승인여부 컬럼 폭 고정 */
-.table th:last-child,
-.table td:last-child {
+.adm-scope .adm-table th:last-child,
+.adm-scope .adm-table td:last-child {
   width: 120px;
 }
 
 /* =========================
-   Cell Center Wrapper (중요)
-   td를 flex로 바꾸지 말고, 내부를 중앙정렬
+   Cell center
 ========================= */
-.cell-center {
+.adm-scope .adm-cell-center {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -388,19 +387,17 @@ body {
 }
 
 /* =========================
-   Badges / Buttons (정렬 문제 해결 핵심)
+   Badges / Buttons
 ========================= */
-
-/* 공통: 높이(32px)와 line-height(32px) 동일 -> 글씨 위로 뜨는 문제 해결 */
-.badge,
-.approve-btn,
-.approve-done {
+.adm-scope .adm-badge,
+.adm-scope .adm-approve-btn,
+.adm-scope .adm-approve-done {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   height: 32px;
-  line-height: 32px; /* 🔥 이게 핵심 */
+  line-height: 32px;
 
   padding: 0 14px;
   white-space: nowrap;
@@ -408,29 +405,27 @@ body {
   vertical-align: middle;
 }
 
-/* 알림 허용/미허용 */
-.badge {
+.adm-scope .adm-badge {
   min-width: 56px;
   border-radius: 999px;
   font-weight: 800;
   font-size: 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--adm-line);
 }
 
-.badge.ON {
+.adm-scope .adm-badge.adm-on {
   background: #eafff0;
   border-color: #b9f3c8;
   color: #1a8f3a;
 }
 
-.badge.OFF {
+.adm-scope .adm-badge.adm-off {
   background: #fff3e8;
   border-color: #ffd3b0;
   color: #ff7a00;
 }
 
-/* 승인요청 버튼 */
-.approve-btn {
+.adm-scope .adm-approve-btn {
   border-radius: 10px;
   font-weight: 800;
   font-size: 13px;
@@ -439,18 +434,17 @@ body {
   background: #fff;
 }
 
-.approve-btn.request {
+.adm-scope .adm-approve-btn.adm-request {
   background: #ffecec;
   border-color: #ffb3b3;
   color: #d92d20;
 }
 
-.approve-btn.request:hover {
+.adm-scope .adm-approve-btn.adm-request:hover {
   background: #ffd6d6;
 }
 
-/* 승인완료 텍스트 */
-.approve-done {
+.adm-scope .adm-approve-done {
   font-weight: 800;
   font-size: 13px;
   color: #1a8f3a;

@@ -4,18 +4,19 @@ import { useState } from "react";
 const MENUS = [
   {
     key: "material",
-    label: "일반1",
+    label: "회원관리",
     to: "/admin/users",
     children: [
-      { label: "하단1", to: "/admin/url지정" },
-      { label: "하단2", to: "/admin/url지정" },
+      { label: "관리자 회원관리", to: "/admin/url지정" },
+      { label: "사용자 회원관리", to: "/admin/url지정" },
+      { label: "내 정보 보기", to: "/admin/url지정" },
     ],
   },
-  { key: "pay", label: "일반2", to: "/admin/pay" },
-  { key: "approve", label: "일반3", to: "/admin/approve" },
+  { key: "pay", label: "병원정보", to: "/admin/hospitals" },
+  { key: "approve", label: "예약관리", to: "/admin/approve" },
   {
-    key: "claims",
-    label: "일반4",
+    key: "community",
+    label: "게시글관리",
     to: "/admin/claims",
     children: [
       { label: "하단1", to: "/admin/claims" },
@@ -28,15 +29,15 @@ const MENUS = [
 
 export default function Sidebar() {
   const [hoverKey, setHoverKey] = useState(null);
-  const [openKey, setOpenKey] = useState(null); // 클릭으로 고정하고 싶으면 유지
+  const [openKey, setOpenKey] = useState(null);
 
   const activeKey = openKey ?? hoverKey;
 
   return (
-    <div className="sb">
-      <div className="sb-logo">BarodocQ</div>
+    <div className="adm-sb">
+      <div className="adm-sb-logo">BarodocQ</div>
 
-      <nav className="sb-nav">
+      <nav className="adm-sb-nav">
         {MENUS.map((m) => {
           const hasChildren = Array.isArray(m.children) && m.children.length > 0;
           const isOpen = activeKey === m.key;
@@ -44,20 +45,19 @@ export default function Sidebar() {
           return (
             <div
               key={m.key}
-              className="sb-group"
+              className="adm-sb-group"
               onMouseEnter={() => setHoverKey(m.key)}
               onMouseLeave={() => setHoverKey(null)}
             >
               {/* 상위 메뉴 */}
-              <div className="sb-parent">
+              <div className="adm-sb-parent">
                 <NavLink
                   to={m.to}
                   className={({ isActive }) =>
-                    "sb-item" + (isActive ? " active" : "")
+                    "adm-sb-item" + (isActive ? " adm-active" : "")
                   }
                   onClick={(e) => {
                     if (hasChildren) {
-                      // 상위 메뉴 클릭 시: 서브메뉴 고정 토글
                       e.preventDefault();
                       setOpenKey((prev) => (prev === m.key ? null : m.key));
                     } else {
@@ -70,8 +70,10 @@ export default function Sidebar() {
 
                 {hasChildren && (
                   <button
-                    className="sb-caret"
-                    onClick={() => setOpenKey((prev) => (prev === m.key ? null : m.key))}
+                    className="adm-sb-caret"
+                    onClick={() =>
+                      setOpenKey((prev) => (prev === m.key ? null : m.key))
+                    }
                     aria-label="submenu toggle"
                     type="button"
                   >
@@ -80,15 +82,15 @@ export default function Sidebar() {
                 )}
               </div>
 
-              {/* ✅ 호버(또는 고정) 시 하단 메뉴 */}
+              {/* 하단 메뉴 */}
               {hasChildren && (
-                <div className={"sb-sub" + (isOpen ? " open" : "")}>
+                <div className={"adm-sb-sub" + (isOpen ? " adm-open" : "")}>
                   {m.children.map((c) => (
                     <NavLink
                       key={c.to}
                       to={c.to}
                       className={({ isActive }) =>
-                        "sb-sub-item" + (isActive ? " active" : "")
+                        "adm-sb-sub-item" + (isActive ? " adm-active" : "")
                       }
                       onClick={() => {
                         // 서브 클릭하면 고정 해제하고 싶으면:
