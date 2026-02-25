@@ -1,0 +1,108 @@
+/* 메인 컨테이너 */
+.entireContainer {
+  width: 800px;
+  margin: 50px auto;
+  padding: 60px 40px;
+  background-color: #ffffff;
+  border: 1px solid #dbdbdb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Pretendard', sans-serif;
+}
+
+/* 아이디/비밀번호 탭 메뉴 */
+.mergeFind {
+  display: flex;
+  width: 100%;
+  max-width: 500px;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.findId, .findPw {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  cursor: pointer;
+  padding-bottom: 5px;
+}
+
+/* 탭 아래 하단 선 (활성화 표시용) */
+.lineWrapper {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  margin-bottom: 40px;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background-color: #333333; /* 아이디 찾기 활성화 상태 가정 */
+}
+
+/* 입력 영역 공통 (인풋 + 버튼) */
+.mergePhone, .mergeCode {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* 인풋창 스타일 */
+.putPhone, .putEmail {
+  width: 100%;
+  padding: 15px 0;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  color: #333333;
+  width: 330px;
+}
+
+/* 입력창 아래 구분선 */
+.line2 {
+  width: 100%;
+  max-width: 500px;
+  height: 1px;
+  background-color: #cccccc;
+  margin-bottom: 20px;
+}
+
+/* 우측 버튼 스타일 (인증번호 전송, 확인) */
+.sendCode, .ok {
+  white-space: nowrap;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid #333333;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.sendCode:hover, .ok:hover {
+  background-color: #f5f5f5;
+}
+
+/* 하단 메인 버튼 */
+.go {
+  width: 100%;
+  max-width: 500px;
+  padding: 18px;
+  background-color: #333333;
+  color: #ffffff;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 40px;
+  border-radius: 4px;
+}
+
+.go:hover {
+  background-color: #000000;
+}

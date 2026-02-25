@@ -39,8 +39,9 @@ const Header = () => {
           </div>
 
           <div className="nav-buttons-s2" ref={navButtonsRef}>
-            <button className="btn-text-s2">로그인</button>
-            <button className="btn-primary-s2">회원가입</button>
+            <Link to="/login" className="btn-text-s2">로그인</Link>
+            {/* <button className="btn-text-s2">로그인</button> */}
+            <Link to="/signup" className="btn-primary-s2">회원가입</Link>
             <button className="btn-notification-s2">
               <i className="fas fa-bell" />
               <span className="notification-badge-s2">3</span>

@@ -1,0 +1,145 @@
+/* 컨테이너 설정 */
+.signup-container {
+  width: 1024px;
+  margin: 0 auto;
+  padding: 50px 0;
+  font-family: 'Pretendard', sans-serif;
+  color: #333;
+}
+
+/* 제목 영역 */
+.main-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+/* 로고 배지 */
+.logo-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.logo-badge {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 10px 30px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* 섹션 타이틀 및 구분선 */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 40px 0 10px 0;
+  padding-left: 5px;
+}
+
+.line {
+  height: 2px;
+  background-color: #333;
+  margin-bottom: 25px;
+}
+
+.line1 {
+  height: 1px;
+  background-color: #ddd;
+  margin-top: 5px;
+}
+
+/* 입력 그룹 공통 */
+.inputGroup, .idLine, .pwLine, .pw2Line, .emailLine, .phoneLine, .addressLine, .fileLine {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.input-field, .id, .pw, .pw2, .email, .phone, .address, .addressDetail {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 12px 5px;
+  font-size: 16px;
+  background-color: transparent;
+}
+
+.input-field::placeholder, input::placeholder {
+  color: #aaa;
+}
+
+/* 아이디 중복확인 레이아웃 */
+.idLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.id {
+  flex: 1;
+}
+
+.distinctDiv {
+  margin-left: 10px;
+}
+
+.distinct {
+  background-color: #fff;
+  border: 1px solid #333;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.distinct:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+/* 주소 및 파일 입력 보완 */
+.addressLine .address {
+  margin-top: 10px;
+}
+
+.file-input {
+  width: 100%;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.label-text {
+  font-weight: 500;
+}
+
+/* 하단 버튼 (추가될 경우 대비) */
+.go {
+  width: 100%;
+  height: 55px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 50px;
+  cursor: pointer;
+}
+.go:hover {
+  background-color: #000;
+}
+.term {
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.term input[type="checkbox"] {
+  margin-right: 10px;
+  cursor: pointer;
+}

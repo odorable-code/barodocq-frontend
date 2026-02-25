@@ -5,8 +5,12 @@ import HospitalDetail from "./pages/HospitalDetail";
 import HospitalSearch from "./pages/HospitalSearch";
 import Layout from "./components/Layout";
 import Main from "./Main";
+<<<<<<< HEAD
 import MyPage from "./MyPage";
 import UserLogin from "./pages/UserLogin";
+=======
+
+>>>>>>> seoyeon
 import MainPage from "./pages/MainPage";
 import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
@@ -18,6 +22,7 @@ import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
+import UserLogin from "./pages/UserLogin";
 
 // 관리자 페이지
 
@@ -25,6 +30,14 @@ import ClaimPage from "./adminComponents/ClaimPage";
 import AdminLayout from "./adminComponents/AdminLayout";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Login from "./pages/user/Login";
+import Signup from "./pages/user/Signup";
+import UserSignup from "./pages/user/UserSignup";
+import AdminSignup from "./pages/user/AdminSignup";
+import FindId from "./pages/user/FindId";
+import FoundId from "./pages/user/FoundId";
+import ResetPassword from "./pages/user/ResetPassword";
+
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -92,10 +105,26 @@ function App() {
             <Route path="/hospitals" element={<HospitalSearch />} />
             <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
-
-            {/* 잘못된 경로는 메인으로 */}
+            
+            {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
+
+            {/* 로그인 */}
+            <Route path="/login" element={<Login />} />
+
+            {/* 회원가입 */}
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/user/signup" element={<UserSignup />} />
+            <Route path="/admin/signup" element={<AdminSignup />} />
+
+            {/* 아이디 찾기 */}
+            <Route path="/find/id" element={<FindId />} />
+            <Route path="/found/id" element={<FoundId />} />
+
+            {/* 비밀번호 재설정 */}
+            <Route path="/resetPw" element={<ResetPassword />} />
           </Route>
+        
 
           {/* 로그인만 레이아웃 없이 */}
           <Route path="/login" element={<UserLogin />} />
