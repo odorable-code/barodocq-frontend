@@ -15,7 +15,8 @@ const Chat = ({ hospitalName, id }) => {
 		//리액트에서 useRef()를 호출하면 항상 다음과 같은 구조의 객체가 만들어짐
 		//{ current: null } (초기값)
 		//socketRef.current = new WebSocket(...)이라고 코드를 짜는 순간, 저 null 자리에 진짜 웹소켓 연결 객체가 들어가고 그 후부터 소켓에 명령을 내릴 땐 반드시 이 current라는 문을 열고 들어가야함
-    // [연결 성공]
+    
+		// [연결 성공]
     socketRef.current.onopen = () => {
       console.log("서버와 연결되었습니다.");
     };
@@ -33,7 +34,6 @@ const Chat = ({ hospitalName, id }) => {
     // [연결 종료]
     socketRef.current.onclose = () => {
       console.log("연결이 끊겼습니다.");
-      // setIsConnected(false);
     };
 
     // 컴포넌트가 사라질 때 소켓 닫기
@@ -74,13 +74,10 @@ const Chat = ({ hospitalName, id }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.chatContainer}>
       {/* 헤더 */}
-      <div style={styles.header}>
+      <div style={styles.chatHeader}>
         <h4>{hospitalName} 문의 상담</h4>
-        {/* <span style={{color: isConnected ? '#4CAF50' : '#f44336'}}>
-          {isConnected ? '● 온라인' : '○ 오프라인'}
-        </span> */}
       </div>
 
       {/* 메시지창 */}
@@ -101,7 +98,7 @@ const Chat = ({ hospitalName, id }) => {
           style={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()} //.key는 KeyboradEvent의 표준 속성 > 엔터키를 누르면 e.key의 값은 "Enter"로 들어가서 어떤 키가 눌렸는지 문자열을 담아준다. 
           placeholder="문의사항을 입력하세요..."
         />
         <button style={styles.sendBtn} onClick={handleSend}>
@@ -114,8 +111,8 @@ const Chat = ({ hospitalName, id }) => {
 
 // CSS-in-JS 스타일
 const styles = {
-  container: { marginTop: '200px', marginBottom: '100px', width: '400px', border: '1px solid #ddd', borderRadius: '10px', display: 'flex', flexDirection: 'column', height: '500px', backgroundColor: '#fff' },
-  header: { padding: '15px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8f9fa' },
+  chatContainer: { marginTop: '200px', marginBottom: '100px', width: '400px', border: '1px solid #ddd', borderRadius: '10px', display: 'flex', flexDirection: 'column', height: '500px', backgroundColor: '#fff' },
+  chatHeader: { padding: '15px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8f9fa' },
   chatWindow: { flex: 1, padding: '15px', overflowY: 'auto', backgroundColor: '#f0f2f5' },
   myRow: { display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' },
   otherRow: { display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' },
