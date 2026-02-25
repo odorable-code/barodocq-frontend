@@ -339,7 +339,6 @@ export default function HospitalSearchPage() {
             <p className="search-page-subtitle">원하는 조건으로 가장 적합한 병원을 찾아보세요</p>
 
             {/* 검색바 */}
-            <div className="search-input-wrapper">
               <div className="search-input-container">
                 <i className="fas fa-search" />
                 <input
@@ -358,7 +357,6 @@ export default function HospitalSearchPage() {
                   </button>
                 )}
               </div>
-            </div>
 
             {/* 지역/진료과 모달 버튼 */}
             <div className="quick-actions">
