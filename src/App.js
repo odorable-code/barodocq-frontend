@@ -18,6 +18,7 @@ import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
 import UserLogin from "./pages/UserLogin";
+import Chat from "./Chat/Chat";
 
 // 관리자 페이지
 
@@ -99,6 +100,9 @@ function App() {
             <Route path="/hospitals" element={<HospitalSearch />} />
             <Route path="/hos_detail/:hospitalId" element={<HospitalDetail />} />
             <Route path="/pharmacy" element={<PharmacySearch />} />
+
+            {/* 채팅방 */}
+            <Route path="/chat" element={<Chat />} />
             
             {/* 잘못된 경로는 메인으로 리다이렉트
             <Route path="*" element={<Navigate to="/" />} /> */}
