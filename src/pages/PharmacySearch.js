@@ -1,6 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import RegionSelect from "../components/RegionSelect";
 import "../assets/styles/PharmacySearch.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMapMarkerAlt,
+  faMagnifyingGlass,
+  faSun,
+  faMoon,
+  faCalendarDay,
+  faPhone,
+  faClock,
+  faAngleDoubleLeft,
+  faAngleLeft,
+  faAngleRight,
+  faAngleDoubleRight
+} from "@fortawesome/free-solid-svg-icons";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
