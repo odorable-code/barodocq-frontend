@@ -5,12 +5,6 @@ import HospitalDetail from "./pages/HospitalDetail";
 import HospitalSearch from "./pages/HospitalSearch";
 import Layout from "./components/Layout";
 import Main from "./Main";
-<<<<<<< HEAD
-import MyPage from "./MyPage";
-import UserLogin from "./pages/UserLogin";
-=======
-
->>>>>>> seoyeon
 import MainPage from "./pages/MainPage";
 import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
@@ -23,6 +17,7 @@ import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
 import UserLogin from "./pages/UserLogin";
+import MyPage from "./MyPage";
 
 // 관리자 페이지
 
