@@ -3,28 +3,28 @@ import { useState } from "react";
 
 const MENUS = [
   {
-    key: "material",
+    key: "users", // ✅ 회원관리
     label: "회원관리",
     to: "/admin/users",
     children: [
-      { label: "관리자 회원관리", to: "/admin/url지정" },
-      { label: "사용자 회원관리", to: "/admin/url지정" },
-      { label: "내 정보 보기", to: "/admin/url지정" },
+      { key: "admins", label: "관리자 회원관리", to: "/admin/hospitals" },
+      { key: "customers", label: "사용자 회원관리", to: "/admin/customers" },
+      { key: "my", label: "내 정보 보기", to: "/admin" },
     ],
   },
-  { key: "pay", label: "병원정보", to: "/admin/hospitals" },
-  { key: "approve", label: "예약관리", to: "/admin/approve" },
+  { key: "hospitals", label: "병원정보", to: "/admin/hospitals" }, // ✅ 병원정보
+  { key: "reservations", label: "예약관리", to: "/admin/reservations" }, // ✅ 예약관리
   {
-    key: "community",
+    key: "posts", // ✅ 게시글관리
     label: "게시글관리",
     to: "/admin/claims",
     children: [
-      { label: "하단1", to: "/admin/claims" },
-      { label: "하단2", to: "/admin/claims/request" },
-      { label: "하단3", to: "/admin/claims/hold" },
+      { key: "reviews", label: "병원후기", to: "/admin/claims" },
+      { key: "qna", label: "Q&A", to: "/admin/claims/request" },
+      { key: "events", label: "이벤트", to: "/admin/claims/hold" },
     ],
   },
-  { key: "order", label: "일반4", to: "/admin/order" },
+  { key: "inquiries", label: "1:1문의", to: "/admin/order" }, // ✅ 1:1문의
 ];
 
 export default function Sidebar() {
@@ -35,7 +35,10 @@ export default function Sidebar() {
 
   return (
     <div className="adm-sb">
-      <div className="adm-sb-logo">BarodocQ</div>
+      {/* ✅ 로고 클릭 시 /admin 메인으로 이동 */}
+      <NavLink to="/admin" className="adm-sb-logo" style={{ textDecoration: "none", color: "inherit" }}>
+        BarodocQ
+      </NavLink>
 
       <nav className="adm-sb-nav">
         {MENUS.map((m) => {
@@ -87,15 +90,11 @@ export default function Sidebar() {
                 <div className={"adm-sb-sub" + (isOpen ? " adm-open" : "")}>
                   {m.children.map((c) => (
                     <NavLink
-                      key={c.to}
+                      key={c.key ?? c.to} // ✅ key가 있으면 key, 없으면 to
                       to={c.to}
                       className={({ isActive }) =>
                         "adm-sb-sub-item" + (isActive ? " adm-active" : "")
                       }
-                      onClick={() => {
-                        // 서브 클릭하면 고정 해제하고 싶으면:
-                        // setOpenKey(null);
-                      }}
                     >
                       {c.label}
                     </NavLink>

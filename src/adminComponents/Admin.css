@@ -67,6 +67,11 @@
   margin-bottom: 20px;
 }
 
+.adm-sb-logo {
+  display: block;       
+  margin-bottom: 20px; 
+}
+
 .adm-scope .adm-sb-title {
   font-size: 14px;
   color: #c7d2ff;
@@ -341,6 +346,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  text-align: center;
 }
 
 .adm-scope .adm-table th,
@@ -376,14 +382,65 @@
   width: 120px;
 }
 
+/* ✅ 사용자 회원관리 테이블 컬럼 폭 튜닝 */
+.adm-scope .adm-table-customers th:nth-child(1),
+.adm-scope .adm-table-customers td:nth-child(1) { width: 50px; }  /* No. */
+
+.adm-scope .adm-table-customers th:nth-child(2),
+.adm-scope .adm-table-customers td:nth-child(2) { width: 130px; }  /* 성함 */
+
+.adm-scope .adm-table-customers th:nth-child(5),
+.adm-scope .adm-table-customers td:nth-child(5) { width: 50px; }  /* 성별 */
+
+.adm-scope .adm-table-customers th:nth-child(3),
+.adm-scope .adm-table-customers td:nth-child(3) { width: 90px; }  /* 성함 */
+
+.adm-scope .adm-table-customers th:nth-child(4),
+.adm-scope .adm-table-customers td:nth-child(4) { width: 110px; } /* 생년월일 */
+
+.adm-scope .adm-table-customers th:nth-child(7),
+.adm-scope .adm-table-customers td:nth-child(7) { width: 120px; } /* 전화번호 */
+
+.adm-scope .adm-table-customers th:nth-child(8),
+.adm-scope .adm-table-customers td:nth-child(8) { width: 200px; } /* 이메일 */
+
+.adm-scope .adm-table-customers th:nth-child(9),
+.adm-scope .adm-table-customers td:nth-child(9) { width: 110px; } /* 가입일 */
+
+.adm-scope .adm-table-customers th:nth-child(10),
+.adm-scope .adm-table-customers td:nth-child(10) { width: 110px; } /* 마지막수정 */
+
+.adm-scope .adm-table-customers th:nth-child(11),
+.adm-scope .adm-table-customers td:nth-child(11) { width: 130px; } /* 알림 */
+
+.adm-scope .adm-table-customers th:nth-child(12),
+.adm-scope .adm-table-customers td:nth-child(12) { width: 90px; }  /* 소셜 */
+
+/* ✅ 주소는 너무 짧게 말고 “줄바꿈 허용 + 보기 좋게” */
+.adm-scope .adm-table-customers td:nth-child(6) {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
 /* =========================
    Cell center
 ========================= */
+/* td에 .adm-cell-center가 붙어도 테이블 깨지지 않게 방지 */
+.adm-scope td.adm-cell-center {
+  display: table-cell;   /* ✅ td 원래 동작으로 */
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 진짜 중앙정렬은 내부 래퍼가 담당 */
 .adm-scope .adm-cell-center {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  width: 100%;
 }
 
 /* =========================
@@ -448,4 +505,26 @@
   font-weight: 800;
   font-size: 13px;
   color: #1a8f3a;
+}
+
+/*예약관리 버튼 색상값*/
+.adm-scope .adm-badge.adm-st-wait { background:#fff3e8; border-color:#ffd3b0; color:#ff7a00; }
+.adm-scope .adm-badge.adm-st-ok { background:#eaf2ff; border-color:#cfe0ff; color:#1f5eff; }
+.adm-scope .adm-badge.adm-st-done { background:#eafff0; border-color:#b9f3c8; color:#1a8f3a; }
+.adm-scope .adm-badge.adm-st-cancel { background:#ffecec; border-color:#ffb3b3; color:#d92d20; }
+
+/* ✅ 관리자 테이블 레이아웃 응급 리셋 */
+.adm-scope .adm-table {
+  width: 100%;
+  table-layout: fixed;      /* 컬럼폭 안정화 */
+  border-collapse: collapse;
+}
+
+.adm-scope .adm-table th,
+.adm-scope .adm-table td {
+  white-space: nowrap;      /* 글자 세로찢김 방지 */
+  word-break: keep-all;     /* 한글 단어 분해 방지 */
+  overflow: hidden;
+  text-overflow: ellipsis;  /* 길면 ... */
+  writing-mode: horizontal-tb; /* 혹시 누가 세로쓰기 걸어놨으면 강제 해제 */
 }

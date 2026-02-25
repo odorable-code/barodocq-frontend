@@ -21,10 +21,11 @@ import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
 
 // 관리자 페이지
-
 import AdminHospitals from "./adminComponents/AdminHospitals";
 import AdminLayout from "./adminComponents/AdminLayout";
 import AdminMain from "./adminComponents/AdminMain";
+import AdminReservation from "./adminComponents/AdminReservation";
+import AdminCustomers from "./adminComponents/AdminCustomers";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Login from "./pages/user/Login";
@@ -162,6 +163,8 @@ function App() {
 
             {/* 메뉴별 라우터 */}
             <Route path="hospitals" element={<AdminHospitals />} />
+            <Route path="reservations" element={<AdminReservation />} />
+            <Route path="customers" element={<AdminCustomers />} />
           </Route>
 
           {/* ✅ 최종 fallback
