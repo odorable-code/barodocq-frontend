@@ -30,6 +30,9 @@ function ReviewRevise() {
   // ── 변경 감지 (수정된 내용이 있을 때만 저장 버튼 활성화) ──
   const [isDirty, setIsDirty] = useState(false);
 
+  const token = localStorage.getItem("token");
+  console.log("현재 token:", token);
+
   // 별점 표시값: hover 중이면 hover값, 아니면 선택값
   const displayRating = hoverRating || rating;
 
@@ -72,32 +75,34 @@ function ReviewRevise() {
   //  - 성공 시 /reviews 목록으로 이동
   // ─────────────────────────────────────────────
   const updateReview = async () => {
-    // 필수값 유효성 검사
-    if (!title.trim())   { alert("제목을 입력해주세요.");   return; }
-    if (!content.trim()) { alert("내용을 입력해주세요.");   return; }
-    if (rating === 0)    { alert("별점을 선택해주세요.");   return; }
+  if (!title.trim()) { alert("제목을 입력해주세요."); return; }
+  if (!content.trim()) { alert("내용을 입력해주세요."); return; }
+  if (rating === 0) { alert("별점을 선택해주세요."); return; }
 
-    try {
-      const res = await authFetch(
-        `http://localhost:8080/api/v1/reviews/revise/${rvNum}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            rvTitle:   title,
-            rvContent: content,
-            rvRating:  rating,
-          }),
-        }
-      );
-      const result = await res.text(); // 서버가 JSON이면 res.json()으로 변경
-      alert(result);
-      navigate("/reviews");
-    } catch (err) {
-      console.error("후기 수정 오류:", err);
-      alert(err.message || "수정에 실패했습니다.");
+  try {
+    const res = await authFetch(
+      `http://localhost:8080/api/v1/reviews/revise/${rvNum}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rvTitle: title, rvContent: content, rvRating: rating }),
+      }
+    );
+
+    if (!res.ok) {  // <- res로 바뀌어야 함
+      if (res.status === 403) throw new Error("본인이 작성한 후기만 수정할 수 있습니다.");
+      const errText = await res.text();
+      throw new Error(errText || "수정에 실패했습니다.");
     }
-  };
+
+    const result = await res.text();
+    alert(result);
+    navigate("/reviews");
+
+  } catch (err) {
+    alert(err.message || "수정에 실패했습니다.");
+  }
+};
 
 
   // ─────────────────────────────────────────────

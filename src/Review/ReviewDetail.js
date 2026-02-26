@@ -246,11 +246,9 @@ function ReviewDetail() {
                 {liked ? "좋아요 취소" : "좋아요"}
                 <span>({review.rvLikesCount})</span>
               </button>
-
               <button onClick={() => navigate(`/reviews/revise/${rvNum}`)}>
                 <i className="fas fa-pen" /> 수정하기
               </button>
-
               <button onClick={() => navigate("/reviews")}>
                 <i className="fas fa-list" /> 목록으로
               </button>

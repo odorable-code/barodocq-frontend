@@ -28,6 +28,11 @@ export async function authFetch(url, options = {}) {
 	if (resp.ok) {
 		return resp;
 	}
+	// 403 Unauthorized나 권한 없는 경우 바로 alert
+    if (resp.status === 403) {
+        alert("권한이 없습니다.");
+        throw new Error("권한 없음");
+    }
 	// 실패하면 리프레시 토큰을 이용해서 새 토큰을 발급받고, 받았으면 기존 하던작업 다시 진행
 	const refresh = await fetch("/api/v1/auth/refresh", {
 		method: "POST",
