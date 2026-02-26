@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Chat from "./Chat/Chat";
-<<<<<<< HEAD
 import ChatList from "./Chat/ChatList";
 import Layout from "./components/Layout";
 import Main from "./Main";
@@ -18,8 +17,6 @@ import ReviewCreate from "./Review/ReviewCreate";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import PharmacySearch from "./pages/PhamacySearch";
-=======
->>>>>>> parent of 5f9d377 (Merge branch 'main' into hos_search)
 
 // 관리자 페이지
 import AdminCustomers from "./adminComponents/AdminCustomers";
@@ -98,7 +95,6 @@ function App() {
 
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
-<<<<<<< HEAD
           {/*<Route path="hospitals"          element={<HospitalSearch />} />
           <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />*/}
           
@@ -110,9 +106,6 @@ function App() {
             
             {/* 잘못된 경로는 메인으로 리다이렉트
             <Route path="*" element={<Navigate to="/" />} /> */}
-=======
-          <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />
->>>>>>> parent of 5f9d377 (Merge branch 'main' into hos_search)
 
           {/* 약국 */}
           <Route path="pharmacy"           element={<PharmacySearch />} />

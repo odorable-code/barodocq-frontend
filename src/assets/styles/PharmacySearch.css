@@ -1082,7 +1082,6 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
-<<<<<<< HEAD
 @keyframes phar-fade-up {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1356,5 +1355,3 @@
   .hdc__btn     { font-size: 12px; padding: 6px 11px; }
   .hdc__btn--primary { width: 100%; justify-content: center; margin-left: 0; }
 }
-=======
->>>>>>> parent of 5f9d377 (Merge branch 'main' into hos_search)
