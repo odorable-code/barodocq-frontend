@@ -34,7 +34,7 @@ function ReviewDetail() {
         );
 
         setReview(data);  // 이미 JSON 객체로 반환됨
-        setLiked(data.rl_like === 1);//후기, 좋아요 상태 가져오기
+        setLiked(data.rlLike === 1);//후기, 좋아요 상태 가져오기
         console.log(data);
       } catch (err) {
         console.error(err);
@@ -63,63 +63,63 @@ function ReviewDetail() {
   };
 
   return (
+    
     <div className="container mt-4" style={{ maxWidth: "800px" }}>
-      
-				<div className="mb-2">
-  				<strong>{review.review.user_name}</strong> 평점: {"⭐".repeat(review.review.rv_rating)}
-				</div>
-
-      <div className="mb-2 text-muted">
-        작성일: {review.review.rv_created_at}
-      </div>
-
-      <hr />
-      <h2>{review.review.rv_title}</h2>
-
-      {review.files && review.files.map((file) => (
-    <img
-      key={file.rf_num}
-      src={`http://localhost:8080${file.rf_path}`}
-      alt="후기 이미지"
-      style={{ width: "300px", marginBottom: "10px" }}
-    />
-  ))}
-			<h3 className="mb-3">{review.rv_title}</h3>
-      <div className="mb-4" style={{ whiteSpace: "pre-line" }}>
-        {review.review.rv_content}
-      </div>
-
-      <div className="d-flex justify-content-between">
-        <div>
-          조회수: {review.review.rv_view_count} | 좋아요수: {review.review.rv_likes_count} | 댓글수: {review.review.rv_comment_count}
-        </div>
-        <div>{review.ho_name}</div>
-      </div>
-
       <div className="mt-4">
         <button
-          className="btn btn-warning me-2"
+          className="btn-edit"
           onClick={() => navigate(`/reviews/revise/${rvNum}`)}
         >
           수정
         </button>
 
         <button
-          className="btn btn-secondary"
+          className="btn-primary-s2"
           onClick={() => navigate("/reviews")}
         >
           목록
         </button>
       </div>
+				<div className="mb-2">
+  				<strong>{review.review.userName}</strong> 평점: {"⭐".repeat(review.review.rvRating)}
+				</div>
+
+      <div className="mb-2 text-muted">
+        작성일: {review.review.rvCreatedAt}
+      </div>
+
+      <hr />
+      <h2>{review.review.rvTitle}</h2>
+
+      {review.files && review.files.map((file) => (
+    <img
+      key={file.rfNum}
+      src={`http://localhost:8080${file.rfPath}`}
+      alt="후기 이미지"
+      style={{ width: "300px", marginBottom: "10px" }}
+    />
+  ))}
+			<h3 className="mb-3">{review.rvTitle}</h3>
+      <div className="mb-4" style={{ whiteSpace: "pre-line" }}>
+        {review.review.rvContent}
+      </div>
+
+      <div className="d-flex justify-content-between">
+        <div>
+          조회수: {review.review.rvViewCount} | 좋아요수: {review.review.rvLikesCount} | 댓글수: {review.review.rvCommentCount}
+        </div>
+        <div>{review.hoName}</div>
+      </div>
+
 
       <div className="mb-4">
         <button
-          className={`btn ${liked ? "btn-primary" : "btn-outline-primary"} me-2`}
+          className={`btn-text-s2 ${liked ? "btn-edit" : "btn-text-s2"} me-2`}
           onClick={handleLike}
         >
           👍 {liked ? "좋아요 취소" : "좋아요"}
         </button>
-        <span>{review.review.rv_likes_count}</span>
+        <span>{review.review.rvLikesCount}</span>
       </div>
       
       <div className="mt-4">
@@ -128,8 +128,8 @@ function ReviewDetail() {
       <div>
         {comments.map(c => (
           <div key={c.id} className="mb-2 p-2 border rounded">
-            <strong>{c.user_name}</strong> <span className="text-muted">{c.created_at}</span>
-            <p>{c.rc_content}</p>
+            <strong>{c.userNum}</strong> <span className="text-muted">{c.rcCreatedAt}</span>
+            <p>{c.rcContent}</p>
           </div>
         ))}
       </div>
@@ -150,7 +150,7 @@ function ReviewDetail() {
               await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/comments`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ rc_content: newComment })
+                body: JSON.stringify({ rcContent: newComment })
               });
 
               // 댓글 추가 후 다시 가져오기

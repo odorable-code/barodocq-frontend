@@ -26,14 +26,14 @@ const CreateReservation = async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        re_date: redate,
-        re_time: retime,
-        re_status: restatus,
-        re_visit_type: revisittype,
-        re_memo: rememo,
-        user_num: usernum,
-        ho_num: honum,
-        dept_num: deptnum
+        reDate: redate,
+        reTime: retime,
+        reStatus: restatus,
+        reVisitType: revisittype,
+        reMemo: rememo,
+        userNum: usernum,
+        hoNum: honum,
+        deptNum: deptnum
       })
     });
 
@@ -58,13 +58,13 @@ const CreateReservation = async () => {
   const formData = new FormData();
 
   const reviewData = {
-    re_num: renum,
-    user_num: usernum,
-    ho_num: honum,
-    rv_title: title,
-    rv_content: content,
-    rv_rating: rating,
-    rv_deleted_yn: 0
+    reNum: renum,
+    userNum: usernum,
+    hoNum: honum,
+    rvTitle: title,
+    rvContent: content,
+    rvRating: rating,
+    rvDeletedYn: 0
   };
 
   // 핵심

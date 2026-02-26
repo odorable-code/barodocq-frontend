@@ -1,257 +1,252 @@
+// HospitalReviews.js
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authFetch } from "../utils/authFetch";
+import "./HospitalReviews.css";
 
+/* ────────────────────────────────
+   ReviewCard 컴포넌트
+──────────────────────────────── */
+const ReviewCard = ({ review, currentUser, navigate, deletePost }) => {
+  return (
+    <div
+      className="review-card modern"
+      onClick={() => navigate(`/reviews/${review.rvNum}`)}
+    >
+      {/* 상단: 병원 정보 + 평점 + 수정/삭제 */}
+      <div className="review-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        
+        {/* 병원 이름 + 평점 */}
+        <div className="hospital-info" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="hospital-badge-mini">
+            <i className="fas fa-hospital" />
+          </div>
+          <div>
+            <strong>{review.hoName}</strong>
+            <span className="dept-tag-mini">⭐ {review.rvRating}.0</span>
+          </div>
+        </div>
+
+        {/* 작성자만 수정/삭제 버튼 */}
+        {review.userId === currentUser && (
+          <div className="action-buttons" style={{ display: "flex", gap: "6px" }}>
+            <Link
+              to={`/reviews/revise/${review.rvNum}`}
+              className="btn-edit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              수정
+            </Link>
+            <button
+              className="btn-delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                deletePost(review.rvNum);
+              }}
+            >
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 이미지 */}
+      <h1 className="review-title">{review.rvTitle}</h1>
+
+      {/* 이미지가 있고, 경로가 유효할 때만 렌더링 */}
+      {review.files?.length > 0 && (
+        <img
+          className="review-thumbnail-modern"
+          src={`http://localhost:8080${review.files[0].rfPath}`}
+          alt="review"
+        />
+      )}
+      {/* 제목과 내용 */}
+      <p className="review-content">
+        {review.rvContent.length > 120
+          ? review.rvContent.substring(0, 120) + "..."
+          : review.rvContent}
+      </p>
+
+      {/* 하단: 작성자 정보 + 통계 */}
+      <div className="review-card-footer">
+        <div className="author-info">
+          <div>
+            <span className="author-name" style={{ marginRight: "500px", fontWeight: "bold" }}>작성자 : {review.userName}</span>
+            <span className="review-date">{review.rvCreatedAt?.substring(0, 10)}</span>
+          </div>
+        </div>
+
+        <div className="review-meta">
+          <span><i className="fas fa-eye" /> {review.rvViewCount}</span>
+          <span><i className="fas fa-comment" /> {review.rvCommentCount}</span>
+          <span><i className="fas fa-heart" /> {review.rvLikesCount}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ────────────────────────────────
+   HospitalReviews 페이지
+──────────────────────────────── */
 function HospitalReviews() {
   const [reviews, setReviews] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어
   const [currentPage, setCurrentPage] = useState(1);
-  const reviewsPerPage = 5; // 한 페이지에 보여줄 개수
+  const reviewsPerPage = 5; // 한 페이지에 표시
   const navigate = useNavigate();
 
-  // JWT 토큰에서 현재 사용자(sub) 가져오기
+  // JWT 토큰에서 현재 사용자 가져오기
   const token = localStorage.getItem("accessToken");
   let currentUser = null;
   if (token) {
     try {
-      const payloadBase64 = token.split('.')[1];
+      const payloadBase64 = token.split(".")[1];
       const payloadJson = atob(payloadBase64);
       const payload = JSON.parse(payloadJson);
       currentUser = payload.sub;
-      console.log(currentUser);
     } catch (err) {
       console.error("토큰 디코딩 실패", err);
     }
   }
 
-  //최신순
-  const Last_order = async () => {
-    try {
-      const data = await authFetch(
-        "http://localhost:8080/api/v1/reviews?sort=latest"
-      );
-      setReviews(data);
-      setCurrentPage(1);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  //인기순
-  const Popular_order = async () => {
-    try {
-      const data = await authFetch(
-        "http://localhost:8080/api/v1/reviews?sort=popular"
-      );
-      setReviews(data);
-      setCurrentPage(1);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-
-  // 후기 삭제
-  const deletePost = async (rvNum) => {
-  const isDel = window.confirm("진짜 삭제합니까?");
-  if (!isDel) {
-    alert("삭제취소했습니다.");
-    return;
-  }
-
-  try {
-    const msg = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
-    console.log(msg);
-    alert("삭제 성공!");
-
-    // 삭제 성공 시 바로 화면에서 rv_deleted_yn = 1 처리
-    setReviews(prev =>
-      prev.map(review =>
-        review.rv_num === rvNum ? { ...review, rv_deleted_yn: 1 } : review
-      )
-    );
-  } catch (err) {
-    console.error("삭제 실패:", err);
-    alert(err.message || "삭제 실패했습니다.");
-  }
-};
-
-  // 후기 가져오기
+  /* ───────────── 후기 가져오기 ───────────── */
   useEffect(() => {
     const getReviews = async () => {
-      if (!token) return; 
-      
+      if (!token) return;
+
       try {
         const data = await authFetch("http://localhost:8080/api/v1/reviews");
         setReviews(data);
-        console.log(data);
       } catch (err) {
-        console.error("에러:", err);
+        console.error("후기 불러오기 실패:", err);
       }
     };
     getReviews();
-  }, []); // 토큰이 준비된 후에만 실행
+  }, [token]);
 
+  /* ───────────── 삭제 ───────────── */
+  const deletePost = async (rvNum) => {
+    const isDel = window.confirm("정말 삭제하시겠습니까?");
+    if (!isDel) return;
 
-  // 제목 기준으로 검색된 리뷰만 반환
+    try {
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
+      alert("삭제 성공!");
+      setReviews((prev) =>
+        prev.map((r) => (r.rvNum === rvNum ? { ...r, rvDeletedYn: 1 } : r))
+      );
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "삭제 실패했습니다.");
+    }
+  };
+
+  /* ───────────── 정렬 ───────────── */
+  const sortReviews = async (type) => {
+    try {
+      const data = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
+      setReviews(data);
+      setCurrentPage(1);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /* ───────────── 필터링 + 검색 ───────────── */
   const filteredReviews = reviews
-    .filter((review) => review.rv_deleted_yn === 0)
+    .filter((review) => review.rvDeletedYn === 0)
     .filter((review) =>
-      review.rv_title.toLowerCase().includes(searchTerm.toLowerCase())
+      review.rvTitle.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-  // 전체 페이지 수 계산
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
-
-  // 현재 페이지에 보여줄 데이터만 자르기
   const indexOfLast = currentPage * reviewsPerPage;
   const indexOfFirst = indexOfLast - reviewsPerPage;
   const currentReviews = filteredReviews.slice(indexOfFirst, indexOfLast);
 
-
   return (
     <>
-      <h3 className="ms-4">전체후기</h3>
+      <h3 className="ms-4">전체 후기</h3>
 
-      <div className="bg-dark py-3 px-4 mb-3">
-        <div className="container d-flex justify-content-center">
-          <input
-            type="text"
-            className="form-control me-2"
-            placeholder="검색어를 입력하세요"
-            style={{ maxWidth: "500px" }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button
-            className="btn btn-warning ms-3"
-            onClick={() => {}} // 필터링은 렌더링 시 처리됨
-          >
-            검색
-          </button>
-          <Link to="/reviews/create" className="btn btn-primary me-2">
-            후기추가
-          </Link>
+      {/* 모던한 검색 + 작성 + 정렬 툴바 */}
+      <div className="reviews-toolbar-modern py-3 mb-4">
+        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+          {/* 후기 작성 버튼 */}
+            <Link
+              to="/reviews/create"
+              className="btn-primary-s2"
+            >후기 작성하기
+            </Link>
+          {/* 검색창 */}
+          <div className="search-input-wrapper">
+                <i className="fas fa-search" />
+                <input
+                  type="text"
+                  placeholder="병원명, 증상, 후기 내용으로 검색"
+                  value={setSearchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            
+          </div>
+
+          
+
+          {/* 정렬 버튼 */}
+          <div className="sort-buttons-modern d-flex gap-2">
+            <button
+              className="btn-text-s2"
+              onClick={() => sortReviews("latest")}
+            >
+              최신순
+            </button>
+            <button
+              className="btn-text-s2"
+              onClick={() => sortReviews("popular")}
+            >
+              인기순
+            </button>
+          </div>
+
         </div>
       </div>
 
-      <div className="container">
-        <div className="d-flex justify-content-end mt-1 mb-3">
-          <a
-            href="#"
-            className="btn btn-primary btn-sm me-2"
-            onClick={() => Last_order()}
-          >최신순</a>
-          <a
-            href="#"
-            className="btn btn-primary btn-sm me-2"
-            onClick={() => Popular_order()}
-          >인기순</a>
-        </div>
-
-        {currentReviews.map((review, index) => (
-          <div
-            key={review.rv_num} // rv_num 없으면 index fallback
-            className="px-4 py-3 mb-3 mx-auto"
-            style={{ maxWidth: "1500px", border: "1px solid black", borderRadius: "5px" }}
-            onClick={() => navigate(`/reviews/${review.rv_num}`)}
-          >
-            <div className="d-flex align-items-center">
-              <img src={
-                    review.files && review.files.length > 0
-                      ? `http://localhost:8080${review.files[0].rf_path}`
-                      : "이미지없습"
-                  }
-                />
-              <div className="flex-grow-1 align-self-start">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <div>
-                    <span className="fw-bold me-2">{review.user_name}</span>
-                    <span>평점: {"⭐".repeat(review.rv_rating)}</span>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    {/* 작성자만 수정/삭제 버튼 보이기 */}
-                    {review.user_id === currentUser && (
-                      <>
-                        <Link
-                          to={`/reviews/revise/${review.rv_num}`}
-                          className="btn btn-warning btn-sm me-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          수정
-                        </Link>
-                        <a
-                          className="btn btn-danger btn-sm me-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deletePost(review.rv_num);
-                          }}
-                        >
-                          삭제
-                        </a>
-                      </>
-                    )}
-                    <span className="fw-bold">{review.rv_created_at}</span>
-                  </div>
-                </div>
-
-                <h5 className="fw-bold">{review.rv_title}</h5>
-                <div className="fs-5">{review.rv_content}</div>
-
-                <div className="d-flex justify-content-between mt-2">
-                  <div>
-                    조회수: {review.rv_view_count} &nbsp;&nbsp; 댓글수: {review.rv_comment_count}
-                  </div>
-                  <div>
-                    <a href="#" onClick={(e) => e.stopPropagation()}>{review.ho_name}</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* 후기 리스트 */}
+      <div className="reviews-grid">
+        {currentReviews.map((review) => (
+          <ReviewCard
+            key={review.rvNum}
+            review={review}
+            currentUser={currentUser}
+            navigate={navigate}
+            deletePost={deletePost}
+          />
         ))}
+        {currentReviews.length === 0 && <p>검색 결과가 없습니다.</p>}
+      </div>
 
-        <div className="d-flex justify-content-center mt-3">
-          <ul className="pagination">
-    
-            {/* Previous */}
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button
-                className="page-link"
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                Previous
+      {/* 페이지네이션 */}
+      <div className="d-flex justify-content-center mt-3">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+              Previous
+            </button>
+          </li>
+          {[...Array(totalPages)].map((_, i) => (
+            <li key={i} className={`page-item ${currentPage === i + 1 ? "active" : ""}`}>
+              <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                {i + 1}
               </button>
             </li>
-
-            {/* 페이지 번호 */}
-            {[...Array(totalPages)].map((_, index) => (
-              <li
-                key={index}
-                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-
-            {/* Next */}
-              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  Next
-                </button>
-              </li>
-
-          </ul>
-        </div>
-
+          ))}
+          <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+            <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+              Next
+            </button>
+          </li>
+        </ul>
       </div>
     </>
   );

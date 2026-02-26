@@ -20,9 +20,9 @@ function ReviewRevise() {
           `http://localhost:8080/api/v1/reviews/revise/${rvNum}`
         );
 
-        setTitle(data.rv_title);
-        setContent(data.rv_content);
-        setRating(data.rv_rating);
+        setTitle(data.rvTitle);
+        setContent(data.rvContent);
+        setRating(data.rvRating);
 
       } catch (err) {
         console.error(err);
@@ -39,9 +39,9 @@ function ReviewRevise() {
       {
         method: "PUT",
         body: JSON.stringify({
-          rv_title: title,
-          rv_content: content,
-          rv_rating: rating,
+          rvTitle: title,
+          rvContent: content,
+          rvRating: rating,
         }),
       }
     );
