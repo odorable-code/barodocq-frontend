@@ -5,7 +5,7 @@ import SIDO from "../data/sido.json";
 import SIGUNGU from "../data/sigungu.json";
 import EMD from "../data/eupmyeondong.json";
 
-export default function Hos_RegionSelect({
+export default function RegionSelect({
   isOpen = false,
   onClose = () => {},
   onConfirm = () => {},
