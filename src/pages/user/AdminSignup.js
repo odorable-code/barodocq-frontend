@@ -15,7 +15,7 @@ function AdminSignup() {
     adminPhone: "",     // 병원 연락처
     adminEmail: "",     // 병원 이메일
     adminAddr: "",      // 병원 주소
-    hoName: ""
+    hoName: ""          // 병원 이름
   });
 
   // ── UI 상태 ──────────────────────────────────────────────────────
@@ -56,7 +56,8 @@ function AdminSignup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ── 아이디 중복확인 ───────────────────────────────────────────────
+  // ── UNIQUE 값 검사 ───────────────────────────────────────────────
+  // ㅡㅡ아이디 중복 확인
   const distinctId = async () => {
     const { adminId } = formData;
     if (!adminId.trim()) { alert("아이디를 입력해주세요."); return; }
@@ -77,6 +78,80 @@ function AdminSignup() {
         const data = await response.json();
         if (data.isDuplicate) {
           alert("이미 사용중인 아이디입니다.");
+          setIsIdAvailable(false);
+        } else {
+          setIsIdAvailable(true);
+        }
+      } else {
+        alert("서버 응답 오류가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("서버 통신 오류가 발생했습니다.");
+    }
+  };
+
+  // ㅡㅡ이메일 중복 확인
+  const distinctEmail = async () => {
+    const { adminEmail } = formData;
+    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+
+    try {
+      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isDuplicate) {
+          alert("이미 사용중인 이메일입니다.");
+          setIsIdAvailable(false);
+        } else {
+          setIsIdAvailable(true);
+        }
+      } else {
+        alert("서버 응답 오류가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("서버 통신 오류가 발생했습니다.");
+    }
+  };
+
+  // ㅡㅡ사업자번호 중복 확인
+
+const distinctBusinessNum = async () => {
+    const { businessNum } = formData;
+    if (!businessNum.trim()) { alert("아이디를 입력해주세요."); return; }
+
+    try {
+      const response = await fetch(`/api/v1/check-id?userId=${businessNum}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isDuplicate) {
+          alert("이미 사용중인 이메일입니다.");
+          setIsIdAvailable(false);
+        } else {
+          setIsIdAvailable(true);
+        }
+      } else {
+        alert("서버 응답 오류가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("서버 통신 오류가 발생했습니다.");
+    }
+  };
+
+  // ㅡㅡ병원이름 중복 확인
+
+  const distinctHoName = async () => {
+    const { adminEmail } = formData;
+    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+
+    try {
+      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isDuplicate) {
+          alert("이미 사용중인 이메일입니다.");
           setIsIdAvailable(false);
         } else {
           setIsIdAvailable(true);
@@ -134,7 +209,7 @@ function AdminSignup() {
 
     setIsLoading(true);
     const submitData = { ...formData, termAgreement: true };
-
+    console.log(submitData);
     try {
       const response = await fetch("/api/v1/auth/admin/signup", {
         method: "POST",
