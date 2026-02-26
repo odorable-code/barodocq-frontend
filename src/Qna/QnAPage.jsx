@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "../assets/styles/QnAPage.css";
 import { authFetch } from "../utils/authFetch";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const QnAPage = () => {
   const [qnas, setQnas] = useState([]);

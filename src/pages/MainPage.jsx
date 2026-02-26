@@ -5,82 +5,79 @@ import "../assets/styles/MainPage.css";
    데이터 상수
 ───────────────────────────────────────── */
 const DEPT_CATEGORIES = [
-  { id: "all", label: "전체", icon: "th-large" },
-  { id: "pediatrics", label: "소아청소년과", icon: "baby" },
-  { id: "internal", label: "내과", icon: "heartbeat" },
-  { id: "surgery", label: "외과", icon: "cut" },
-  { id: "orthopedics", label: "정형외과", icon: "bone" },
-  { id: "ophthalmology", label: "안과", icon: "eye" },
-  { id: "dental", label: "치과", icon: "tooth" },
-  { id: "dermatology", label: "피부과", icon: "spa" },
-  { id: "ent", label: "이비인후과", icon: "ear-listen" },
-  { id: "neuro", label: "신경과", icon: "brain" },
+  { id: "all",           label: "전체",         icon: "th-large" },
+  { id: "pediatrics",    label: "소아청소년과",  icon: "baby" },
+  { id: "internal",      label: "내과",          icon: "heartbeat" },
+  { id: "surgery",       label: "외과",          icon: "cut" },
+  { id: "orthopedics",   label: "정형외과",      icon: "bone" },
+  { id: "ophthalmology", label: "안과",          icon: "eye" },
+  { id: "dental",        label: "치과",          icon: "tooth" },
+  { id: "dermatology",   label: "피부과",        icon: "spa" },
+  { id: "ent",           label: "이비인후과",    icon: "ear-listen" },
+  { id: "neuro",         label: "신경과",        icon: "brain" },
 ];
 
 const HOSPITAL_DATA = [
-  { id: 1, name: "서울아동병원", dept: "소아청소년과", deptId: "pediatrics", address: "서울 강남구 테헤란로 123", rating: 4.9, reviews: 312, wait: "15분", distance: "0.8km", badge: "추천", open: true },
-  { id: 2, name: "강남메디컬센터", dept: "내과", deptId: "internal", address: "서울 강남구 논현로 456", rating: 4.8, reviews: 245, wait: "20분", distance: "1.2km", badge: "인기", open: true },
-  { id: 3, name: "한강정형외과의원", dept: "정형외과", deptId: "orthopedics", address: "서울 용산구 이태원로 78", rating: 5.0, reviews: 198, wait: "5분", distance: "2.1km", badge: "즉시예약", open: true },
-  { id: 4, name: "밝은눈안과", dept: "안과", deptId: "ophthalmology", address: "서울 마포구 홍익로 90", rating: 4.7, reviews: 167, wait: "30분", distance: "1.5km", badge: null, open: false },
-  { id: 5, name: "스마일치과의원", dept: "치과", deptId: "dental", address: "서울 서초구 방배로 200", rating: 4.8, reviews: 289, wait: "10분", distance: "0.5km", badge: "이벤트", open: true },
-  { id: 6, name: "맑은피부과", dept: "피부과", deptId: "dermatology", address: "서울 강남구 청담동 55", rating: 4.6, reviews: 134, wait: "25분", distance: "1.8km", badge: null, open: true },
-  { id: 7, name: "우리아이클리닉", dept: "소아청소년과", deptId: "pediatrics", address: "서울 송파구 올림픽로 301", rating: 4.7, reviews: 156, wait: "10분", distance: "3.0km", badge: null, open: true },
-  { id: 8, name: "소화기내과의원", dept: "내과", deptId: "internal", address: "서울 영등포구 여의대방로 12", rating: 4.9, reviews: 203, wait: "0분", distance: "2.4km", badge: "즉시예약", open: true },
+  { id: 1, name: "서울아동병원",    dept: "소아청소년과", deptId: "pediatrics",    address: "서울 강남구 테헤란로 123",      rating: 4.9, reviews: 312, wait: "15분", distance: "0.8km", badge: "추천",   open: true  },
+  { id: 2, name: "강남메디컬센터",  dept: "내과",         deptId: "internal",      address: "서울 강남구 논현로 456",        rating: 4.8, reviews: 245, wait: "20분", distance: "1.2km", badge: "인기",   open: true  },
+  { id: 3, name: "한강정형외과의원",dept: "정형외과",     deptId: "orthopedics",   address: "서울 용산구 이태원로 78",       rating: 5.0, reviews: 198, wait: "5분",  distance: "2.1km", badge: "즉시예약",open: true  },
+  { id: 4, name: "밝은눈안과",      dept: "안과",         deptId: "ophthalmology", address: "서울 마포구 홍익로 90",         rating: 4.7, reviews: 167, wait: "30분", distance: "1.5km", badge: null,     open: false },
+  { id: 5, name: "스마일치과의원",  dept: "치과",         deptId: "dental",        address: "서울 서초구 방배로 200",        rating: 4.8, reviews: 289, wait: "10분", distance: "0.5km", badge: "이벤트", open: true  },
+  { id: 6, name: "맑은피부과",      dept: "피부과",       deptId: "dermatology",   address: "서울 강남구 청담동 55",         rating: 4.6, reviews: 134, wait: "25분", distance: "1.8km", badge: null,     open: true  },
+  { id: 7, name: "우리아이클리닉",  dept: "소아청소년과", deptId: "pediatrics",    address: "서울 송파구 올림픽로 301",      rating: 4.7, reviews: 156, wait: "10분", distance: "3.0km", badge: null,     open: true  },
+  { id: 8, name: "소화기내과의원",  dept: "내과",         deptId: "internal",      address: "서울 영등포구 여의대방로 12",   rating: 4.9, reviews: 203, wait: "0분",  distance: "2.4km", badge: "즉시예약",open: true  },
 ];
 
 const HOT_REVIEWS = [
-  { hospital: "강남메디컬센터", dept: "내과", reviewer: "이준호", avatar: "이", rating: 5, text: "대기 시간이 짧고 의사 선생님이 정말 친절하세요. AI 추천으로 처음 방문했는데 완전 만족!", time: "2시간 전", likes: 47 },
-  { hospital: "서울아동병원", dept: "소아청소년과", reviewer: "박민지", avatar: "박", rating: 5, text: "아이가 무서워하지 않도록 선생님이 배려해주셨어요. 시설도 깔끔하고 정말 좋았습니다.", time: "4시간 전", likes: 38 },
-  { hospital: "스마일치과의원", dept: "치과", reviewer: "김서연", avatar: "김", rating: 5, text: "치료 과정을 친절하게 설명해주시고 통증도 최소화해주셨어요. 다음에도 꼭 올 것 같아요!", time: "어제", likes: 29 },
-  { hospital: "밝은눈안과", dept: "안과", reviewer: "최다운", avatar: "최", rating: 4, text: "라식 상담 받았는데 과장 없이 솔직하게 말씀해주셔서 신뢰가 갔어요.", time: "어제", likes: 22 },
+  { hospital: "강남메디컬센터",  dept: "내과",         reviewer: "이준호", avatar: "이", rating: 5, text: "대기 시간이 짧고 의사 선생님이 정말 친절하세요. AI 추천으로 처음 방문했는데 완전 만족!", time: "2시간 전", likes: 47 },
+  { hospital: "서울아동병원",   dept: "소아청소년과", reviewer: "박민지", avatar: "박", rating: 5, text: "아이가 무서워하지 않도록 선생님이 배려해주셨어요. 시설도 깔끔하고 정말 좋았습니다.",       time: "4시간 전", likes: 38 },
+  { hospital: "스마일치과의원", dept: "치과",         reviewer: "김서연", avatar: "김", rating: 5, text: "치료 과정을 친절하게 설명해주시고 통증도 최소화해주셨어요. 다음에도 꼭 올 것 같아요!",   time: "어제",     likes: 29 },
+  { hospital: "밝은눈안과",     dept: "안과",         reviewer: "최다운", avatar: "최", rating: 4, text: "라식 상담 받았는데 과장 없이 솔직하게 말씀해주셔서 신뢰가 갔어요.",                       time: "어제",     likes: 22 },
 ];
 
 const HOSPITAL_EVENTS = [
-  { hospital: "스마일치과의원", title: "신규 환자 스케일링 50% 할인", badge: "D-3", color: "#14b8a6", icon: "tooth" },
-  { hospital: "맑은피부과", title: "봄맞이 피부 진단 무료 이벤트", badge: "D-7", color: "#0d9488", icon: "spa" },
-  { hospital: "밝은눈안과", title: "라식 수술 1+1 상담 이벤트", badge: "D-14", color: "#0f766e", icon: "eye" },
+  { hospital: "스마일치과의원", title: "신규 환자 스케일링 50% 할인",      badge: "D-3",  color: "#14b8a6", icon: "tooth" },
+  { hospital: "맑은피부과",     title: "봄맞이 피부 진단 무료 이벤트",     badge: "D-7",  color: "#0d9488", icon: "spa"   },
+  { hospital: "밝은눈안과",     title: "라식 수술 1+1 상담 이벤트",        badge: "D-14", color: "#0f766e", icon: "eye"   },
 ];
 
 const NEARBY_HOSPITALS = [
-  { name: "서울아동병원", dept: "소아청소년과", distance: "0.8km", open: true, wait: "15분" },
-  { name: "스마일치과의원", dept: "치과", distance: "0.5km", open: true, wait: "10분" },
-  { name: "강남메디컬센터", dept: "내과", distance: "1.2km", open: true, wait: "20분" },
-  { name: "밝은눈안과", dept: "안과", distance: "1.5km", open: false, wait: "-" },
-  { name: "한강정형외과의원", dept: "정형외과", distance: "2.1km", open: true, wait: "5분" },
+  { name: "서울아동병원",    dept: "소아청소년과", distance: "0.8km", open: true,  wait: "15분" },
+  { name: "스마일치과의원",  dept: "치과",         distance: "0.5km", open: true,  wait: "10분" },
+  { name: "강남메디컬센터",  dept: "내과",         distance: "1.2km", open: true,  wait: "20분" },
+  { name: "밝은눈안과",      dept: "안과",         distance: "1.5km", open: false, wait: "-"    },
+  { name: "한강정형외과의원",dept: "정형외과",     distance: "2.1km", open: true,  wait: "5분"  },
 ];
 
 const SCRAPED_HOSPITALS = [
-  { name: "강남메디컬센터", dept: "내과", rating: 4.8, memo: "정기검진용" },
-  { name: "서울아동병원", dept: "소아청소년과", rating: 4.9, memo: "아이 진료" },
-  { name: "스마일치과의원", dept: "치과", rating: 4.8, memo: "스케일링" },
+  { name: "강남메디컬센터",  dept: "내과",         rating: 4.8, memo: "정기검진용" },
+  { name: "서울아동병원",   dept: "소아청소년과", rating: 4.9, memo: "아이 진료"  },
+  { name: "스마일치과의원", dept: "치과",         rating: 4.8, memo: "스케일링"   },
 ];
 
 const MY_RECORDS = [
-  { date: "2026-02-20", hospital: "서울아동병원", dept: "소아청소년과", doctor: "김민수", status: "완료", diagnosis: "상기도감염" },
-  { date: "2026-02-15", hospital: "강남메디컬센터", dept: "내과", doctor: "이서연", status: "완료", diagnosis: "건강검진" },
-  { date: "2026-02-10", hospital: "한강정형외과의원", dept: "정형외과", doctor: "박준호", status: "완료", diagnosis: "무릎통증" },
-  { date: "2026-01-25", hospital: "밝은눈안과", dept: "안과", doctor: "최지혜", status: "완료", diagnosis: "시력검사" },
+  { date: "2026-02-20", hospital: "서울아동병원",    dept: "소아청소년과", doctor: "김민수", status: "완료", diagnosis: "상기도감염" },
+  { date: "2026-02-15", hospital: "강남메디컬센터",  dept: "내과",         doctor: "이서연", status: "완료", diagnosis: "건강검진"   },
+  { date: "2026-02-10", hospital: "한강정형외과의원",dept: "정형외과",     doctor: "박준호", status: "완료", diagnosis: "무릎통증"   },
+  { date: "2026-01-25", hospital: "밝은눈안과",      dept: "안과",         doctor: "최지혜", status: "완료", diagnosis: "시력검사"   },
 ];
 
 const VACCINES = [
-  { name: "독감 (인플루엔자)", date: "2025-10-15", nextDate: "2026-10-15", status: "완료", progress: 100, color: "#14b8a6" },
-  { name: "폐렴구균", date: "2024-03-20", nextDate: "2029-03-20", status: "완료", progress: 100, color: "#0d9488" },
-  { name: "파상풍 (Td)", date: "2020-06-10", nextDate: "2030-06-10", status: "예정", progress: 60, color: "#0f766e" },
-  { name: "A형간염", date: "-", nextDate: "2026-04-01", status: "미접종", progress: 0, color: "#94a3b8" },
+  { name: "독감 (인플루엔자)", date: "2025-10-15", nextDate: "2026-10-15", status: "완료",   progress: 100, color: "#14b8a6" },
+  { name: "폐렴구균",          date: "2024-03-20", nextDate: "2029-03-20", status: "완료",   progress: 100, color: "#0d9488" },
+  { name: "파상풍 (Td)",       date: "2020-06-10", nextDate: "2030-06-10", status: "예정",   progress: 60,  color: "#0f766e" },
+  { name: "A형간염",           date: "-",          nextDate: "2026-04-01", status: "미접종", progress: 0,   color: "#94a3b8" },
 ];
 
 /* ─────────────────────────────────────────
    MainPage Component
 ───────────────────────────────────────── */
 const MainPage = () => {
+  // ✅ heroStats ref 만 유지 (nav 관련 ref 모두 제거 — Header.jsx에서 관리)
   const heroStatsRef = useRef(null);
-  const navRef = useRef(null);
-  const hamburgerRef = useRef(null);
-  const navMenuRef = useRef(null);
-  const navButtonsRef = useRef(null);
 
   const [activeDept, setActiveDept] = useState("all");
-  const [activeTab, setActiveTab] = useState("review"); // review | event | nearby
+  const [activeTab,  setActiveTab]  = useState("review"); // review | event | nearby
 
   const filteredHospitals =
     activeDept === "all"
@@ -88,40 +85,45 @@ const MainPage = () => {
       : HOSPITAL_DATA.filter((h) => h.deptId === activeDept);
 
   useEffect(() => {
-    const handleScroll = () => {
-      navRef.current?.classList.toggle("scrolled", window.pageYOffset > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-
-    const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -80px 0px" };
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-        }
-      });
-    }, observerOptions);
+    /* ── 스크롤 reveal 애니메이션 ── */
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity    = "1";
+            entry.target.style.transform  = "translateY(0)";
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -80px 0px" }
+    );
 
     document
       .querySelectorAll(
         ".feature-card-s2, .dept-card-s2, .step-s2, .testimonial-card-s2, .hospital-card-new, .event-card-new"
       )
       .forEach((el) => {
-        el.style.opacity = "0";
-        el.style.transform = "translateY(24px)";
+        el.style.opacity    = "0";
+        el.style.transform  = "translateY(24px)";
         el.style.transition = "opacity 0.55s ease, transform 0.55s ease";
         revealObserver.observe(el);
       });
 
-    const formatNumber = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + "K+" : String(n));
+    /* ── 숫자 카운터 애니메이션 ── */
+    const formatNumber = (n) =>
+      n >= 1000 ? (n / 1000).toFixed(1) + "K+" : String(n);
+
     const animateCounter = (el, target, duration = 2000) => {
       let start = 0;
-      const inc = target / (duration / 16);
+      const inc   = target / (duration / 16);
       const timer = setInterval(() => {
         start += inc;
-        if (start >= target) { el.textContent = formatNumber(target); clearInterval(timer); }
-        else el.textContent = formatNumber(Math.floor(start));
+        if (start >= target) {
+          el.textContent = formatNumber(target);
+          clearInterval(timer);
+        } else {
+          el.textContent = formatNumber(Math.floor(start));
+        }
       }, 16);
     };
 
@@ -130,8 +132,11 @@ const MainPage = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.querySelectorAll(".stat-number").forEach((stat) => {
-              const t = parseInt(stat.textContent.replace(/[^0-9]/g, ""));
-              if (!isNaN(t)) { stat.textContent = "0"; animateCounter(stat, t); }
+              const t = parseInt(stat.textContent.replace(/[^0-9]/g, ""), 10);
+              if (!isNaN(t)) {
+                stat.textContent = "0";
+                animateCounter(stat, t);
+              }
             });
             statsObserver.unobserve(entry.target);
           }
@@ -139,26 +144,20 @@ const MainPage = () => {
       },
       { threshold: 0.5 }
     );
+
     if (heroStatsRef.current) statsObserver.observe(heroStatsRef.current);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       revealObserver.disconnect();
       statsObserver.disconnect();
     };
   }, []);
 
-  const toggleMobileMenu = () => {
-    hamburgerRef.current?.classList.toggle("active");
-    navMenuRef.current?.classList.toggle("active");
-    navButtonsRef.current?.classList.toggle("active");
-  };
-
   return (
     <div className="main-container-s2">
 
       {/* ══════════════════════════════
-          2. HERO
+          HERO
       ══════════════════════════════ */}
       <section className="hero-s2" id="home">
         <div className="hero-blob-s2 blob-1-s2" />
@@ -183,11 +182,15 @@ const MainPage = () => {
                     <i className="fas fa-search" />
                     <input type="text" placeholder="증상이나 진료과를 검색하세요" />
                   </div>
-                  <button className="btn-search-s2">검색하기 <i className="fas fa-arrow-right" /></button>
+                  <button className="btn-search-s2">
+                    검색하기 <i className="fas fa-arrow-right" />
+                  </button>
                 </div>
                 <div className="search-tags-s2">
                   {["감기", "소아청소년과", "내과", "두통", "피부과"].map((t) => (
-                    <span className="tag-s2" key={t}><i className="fas fa-fire" />{t}</span>
+                    <span className="tag-s2" key={t}>
+                      <i className="fas fa-fire" />{t}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -195,13 +198,15 @@ const MainPage = () => {
 
             <div className="hero-right-s2">
               <div className="stats-card-s2" ref={heroStatsRef}>
-                <StatItem icon="hospital" number="2500" label="등록 병원" color="#14b8a6" />
-                <StatItem icon="user-doctor" number="8500" label="전문 의료진" color="#0d9488" />
-                <StatItem icon="calendar-check" number="50000" label="월간 예약" color="#0f766e" />
+                <StatItem icon="hospital"       number="2500"  label="등록 병원"  color="#14b8a6" />
+                <StatItem icon="user-doctor"    number="8500"  label="전문 의료진" color="#0d9488" />
+                <StatItem icon="calendar-check" number="50000" label="월간 예약"  color="#0f766e" />
               </div>
               <div className="hero-illustration-s2">
                 <div className="illustration-circle-s2" />
-                <div className="illustration-icon-s2"><i className="fas fa-hospital-user" /></div>
+                <div className="illustration-icon-s2">
+                  <i className="fas fa-hospital-user" />
+                </div>
               </div>
             </div>
           </div>
@@ -209,23 +214,23 @@ const MainPage = () => {
       </section>
 
       {/* ══════════════════════════════
-          3. QUICK SEARCH BAR
+          QUICK SEARCH BAR
       ══════════════════════════════ */}
       <section className="quick-search-s2">
         <div className="container-s2">
           <div className="quick-search-wrapper">
-            <QuickSearchItem icon="shield-virus" label="응급실진료" />
-            <QuickSearchItem icon="certificate" label="일요일진료" />
-            <QuickSearchItem icon="moon" label="야간진료" />
-            <QuickSearchItem icon="circle-check" label="지금진료중" />
-            <QuickSearchItem icon="venus" label="여성의원" />
-            <QuickSearchItem icon="syringe" label="예방접종" />
+            <QuickSearchItem icon="shield-virus"  label="응급실진료" />
+            <QuickSearchItem icon="certificate"   label="일요일진료" />
+            <QuickSearchItem icon="moon"           label="야간진료"   />
+            <QuickSearchItem icon="circle-check"  label="지금진료중" />
+            <QuickSearchItem icon="venus"          label="여성의원"   />
+            <QuickSearchItem icon="syringe"        label="예방접종"   />
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════
-          4. 진료과 병원 찾기
+          진료과 병원 찾기
       ══════════════════════════════ */}
       <section className="hospital-search-s2" id="hospital-search">
         <div className="container-s2">
@@ -235,7 +240,7 @@ const MainPage = () => {
             <p className="section-desc-s2">원하는 진료과를 선택하면 주변 병원을 바로 찾아드려요</p>
           </div>
 
-          {/* 진료과 카테고리 탭 */}
+          {/* 진료과 탭 */}
           <div className="dept-tab-scroll">
             <div className="dept-tabs-s2">
               {DEPT_CATEGORIES.map((cat) => (
@@ -264,8 +269,7 @@ const MainPage = () => {
       </section>
 
       {/* ══════════════════════════════
-          5. 정보 대시보드
-             (후기 | 이벤트 | 주변병원 / 스크랩 | 내기록 | 예방접종)
+          내 건강 대시보드
       ══════════════════════════════ */}
       <section className="dashboard-s2" id="dashboard">
         <div className="container-s2">
@@ -274,16 +278,14 @@ const MainPage = () => {
             <h2 className="section-title-s2">내 건강 대시보드</h2>
           </div>
 
-          {/* 상단 그리드: 탭 패널(후기/이벤트/주변) + 사이드 2개 */}
+          {/* 상단: 탭 패널 + 스크랩 사이드 */}
           <div className="dashboard-top-grid">
-
-            {/* ── 탭 패널 ── */}
             <div className="dash-panel-main">
               <div className="dash-tab-bar">
                 {[
-                  { key: "review", icon: "fire", label: "핫한 병원후기" },
-                  { key: "event", icon: "tag", label: "병원 이벤트" },
-                  { key: "nearby", icon: "location-dot", label: "주변 병원" },
+                  { key: "review", icon: "fire",         label: "핫한 병원후기" },
+                  { key: "event",  icon: "tag",          label: "병원 이벤트"   },
+                  { key: "nearby", icon: "location-dot", label: "주변 병원"     },
                 ].map((t) => (
                   <button
                     key={t.key}
@@ -319,7 +321,7 @@ const MainPage = () => {
               )}
             </div>
 
-            {/* ── 스크랩 병원 사이드 ── */}
+            {/* 스크랩 사이드 */}
             <div className="dash-side-card">
               <div className="dash-side-header">
                 <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#14b8a6,#0d9488)" }}>
@@ -329,17 +331,14 @@ const MainPage = () => {
                 <button className="dash-side-more">전체보기 <i className="fas fa-chevron-right" /></button>
               </div>
               <div className="dash-side-body">
-                {SCRAPED_HOSPITALS.map((h, i) => (
-                  <ScrapHospitalRow key={i} {...h} />
-                ))}
+                {SCRAPED_HOSPITALS.map((h, i) => <ScrapHospitalRow key={i} {...h} />)}
               </div>
             </div>
           </div>
 
-          {/* 하단 그리드: 내 병원 기록 + 예방접종/백신 */}
+          {/* 하단: 내 병원 기록 + 예방접종 */}
           <div className="dashboard-bottom-grid">
-
-            {/* ── 내 병원 기록 ── */}
+            {/* 내 병원 기록 */}
             <div className="dash-record-card">
               <div className="dash-side-header">
                 <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#0d9488,#0f766e)" }}>
@@ -371,7 +370,7 @@ const MainPage = () => {
               </div>
             </div>
 
-            {/* ── 예방접종 / 백신 ── */}
+            {/* 예방접종 */}
             <div className="dash-vaccine-card">
               <div className="dash-side-header">
                 <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#0f766e,#115e59)" }}>
@@ -394,7 +393,7 @@ const MainPage = () => {
       </section>
 
       {/* ══════════════════════════════
-          6. FEATURES
+          FEATURES
       ══════════════════════════════ */}
       <section className="features-s2" id="services">
         <div className="container-s2">
@@ -404,18 +403,18 @@ const MainPage = () => {
             <p className="section-desc-s2">최첨단 기술로 더 나은 의료 경험을 제공합니다</p>
           </div>
           <div className="features-grid-s2">
-            <FeatureCard icon="wand-magic-sparkles" title="AI 맞춤 추천" desc="증상과 위치 기반으로 가장 적합한 병원을 인공지능이 추천합니다" color="#14b8a6" />
-            <FeatureCard icon="bolt" title="실시간 예약" desc="병원의 실시간 예약 가능 시간을 확인하고 즉시 예약하세요" color="#0d9488" />
-            <FeatureCard icon="star" title="검증된 리뷰" desc="실제 환자들의 진솔한 후기로 신뢰할 수 있는 선택을 하세요" color="#0f766e" />
-            <FeatureCard icon="bell" title="스마트 알림" desc="예약 시간부터 사후 관리까지 놓치지 않도록 알려드립니다" color="#14b8a6" />
-            <FeatureCard icon="shield-halved" title="안전한 보안" desc="의료 정보는 최고 수준의 보안 시스템으로 안전하게 보호됩니다" color="#0d9488" />
-            <FeatureCard icon="comments" title="24시간 지원" desc="언제든지 궁금한 점을 문의하실 수 있는 고객센터를 운영합니다" color="#0f766e" />
+            <FeatureCard icon="wand-magic-sparkles" title="AI 맞춤 추천"  desc="증상과 위치 기반으로 가장 적합한 병원을 인공지능이 추천합니다"          color="#14b8a6" />
+            <FeatureCard icon="bolt"                title="실시간 예약"  desc="병원의 실시간 예약 가능 시간을 확인하고 즉시 예약하세요"                 color="#0d9488" />
+            <FeatureCard icon="star"                title="검증된 리뷰"  desc="실제 환자들의 진솔한 후기로 신뢰할 수 있는 선택을 하세요"               color="#0f766e" />
+            <FeatureCard icon="bell"                title="스마트 알림"  desc="예약 시간부터 사후 관리까지 놓치지 않도록 알려드립니다"                  color="#14b8a6" />
+            <FeatureCard icon="shield-halved"       title="안전한 보안"  desc="의료 정보는 최고 수준의 보안 시스템으로 안전하게 보호됩니다"             color="#0d9488" />
+            <FeatureCard icon="comments"            title="24시간 지원"  desc="언제든지 궁금한 점을 문의하실 수 있는 고객센터를 운영합니다"             color="#0f766e" />
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════
-          7. HOW IT WORKS
+          HOW IT WORKS
       ══════════════════════════════ */}
       <section className="how-it-works-s2">
         <div className="container-s2">
@@ -427,15 +426,15 @@ const MainPage = () => {
           <div className="steps-container-s2">
             <Step num="1" icon="magnifying-glass" title="병원 검색" desc="증상과 위치를 입력하여 적합한 병원을 찾아보세요" color="#14b8a6" />
             <div className="step-connector-s2"><i className="fas fa-chevron-right" /></div>
-            <Step num="2" icon="calendar-days" title="예약 신청" desc="원하는 날짜와 시간을 선택하여 간편하게 예약하세요" color="#0d9488" />
+            <Step num="2" icon="calendar-days"    title="예약 신청" desc="원하는 날짜와 시간을 선택하여 간편하게 예약하세요" color="#0d9488" />
             <div className="step-connector-s2"><i className="fas fa-chevron-right" /></div>
-            <Step num="3" icon="user-nurse" title="진료 받기" desc="예약 시간에 방문하여 빠르게 진료를 받으세요" color="#0f766e" />
+            <Step num="3" icon="user-nurse"       title="진료 받기" desc="예약 시간에 방문하여 빠르게 진료를 받으세요" color="#0f766e" />
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════
-          8. TESTIMONIALS
+          TESTIMONIALS
       ══════════════════════════════ */}
       <section className="testimonials-s2">
         <div className="container-s2">
@@ -445,15 +444,15 @@ const MainPage = () => {
             <p className="section-desc-s2">바로닥큐를 이용한 분들의 생생한 후기입니다</p>
           </div>
           <div className="testimonials-grid-s2">
-            <TestimonialCard name="김서연" role="직장인" avatar="김" text="AI 추천 기능이 정말 정확해요. 제 증상에 딱 맞는 병원을 찾았고, 예약도 쉽게 할 수 있었습니다!" rating={5} />
-            <TestimonialCard name="이준호" role="프리랜서" avatar="이" text="리뷰를 보고 병원을 선택할 수 있어서 정말 좋았어요. 실제로 방문했을 때도 만족스러웠습니다." rating={5} />
-            <TestimonialCard name="박민지" role="대학생" avatar="박" text="예약 알림 기능 덕분에 병원 예약을 놓치지 않을 수 있었어요. 정말 편리한 서비스입니다!" rating={5} />
+            <TestimonialCard name="김서연" role="직장인"   avatar="김" text="AI 추천 기능이 정말 정확해요. 제 증상에 딱 맞는 병원을 찾았고, 예약도 쉽게 할 수 있었습니다!" rating={5} />
+            <TestimonialCard name="이준호" role="프리랜서" avatar="이" text="리뷰를 보고 병원을 선택할 수 있어서 정말 좋았어요. 실제로 방문했을 때도 만족스러웠습니다."       rating={5} />
+            <TestimonialCard name="박민지" role="대학생"   avatar="박" text="예약 알림 기능 덕분에 병원 예약을 놓치지 않을 수 있었어요. 정말 편리한 서비스입니다!"           rating={5} />
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════
-          9. CTA
+          CTA
       ══════════════════════════════ */}
       <section className="cta-s2">
         <div className="container-s2">
@@ -463,18 +462,23 @@ const MainPage = () => {
               <p>바로닥큐와 함께 더 건강한 내일을 만들어가세요</p>
             </div>
             <div className="cta-actions-s2">
-              <button className="btn-cta-primary-s2">무료로 시작하기 <i className="fas fa-arrow-right" /></button>
-              <button className="btn-cta-secondary-s2"><i className="fas fa-play" />소개 영상 보기</button>
+              <button className="btn-cta-primary-s2">
+                무료로 시작하기 <i className="fas fa-arrow-right" />
+              </button>
+              <button className="btn-cta-secondary-s2">
+                <i className="fas fa-play" />소개 영상 보기
+              </button>
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 };
 
 /* ─────────────────────────────────────────
-   서브 컴포넌트들
+   서브 컴포넌트
 ───────────────────────────────────────── */
 const StatItem = ({ icon, number, label, color }) => (
   <div className="stat-item-s2" style={{ "--stat-color": color }}>
@@ -495,11 +499,13 @@ const QuickSearchItem = ({ icon, label }) => (
 
 const HospitalCard = ({ name, dept, address, rating, reviews, wait, distance, badge, open }) => (
   <div className="hospital-card-new">
-    {badge && <span className={`hospital-badge ${badge === "즉시예약" ? "instant" : badge === "이벤트" ? "event" : "hot"}`}>{badge}</span>}
+    {badge && (
+      <span className={`hospital-badge ${badge === "즉시예약" ? "instant" : badge === "이벤트" ? "event" : "hot"}`}>
+        {badge}
+      </span>
+    )}
     <div className="hospital-card-top">
-      <div className="hospital-avatar-new">
-        <i className="fas fa-hospital" />
-      </div>
+      <div className="hospital-avatar-new"><i className="fas fa-hospital" /></div>
       <div className="hospital-meta">
         <h3>{name}</h3>
         <span className="hospital-dept-tag">{dept}</span>
@@ -533,9 +539,7 @@ const HospitalCard = ({ name, dept, address, rating, reviews, wait, distance, ba
 
 const HotReviewCard = ({ hospital, dept, reviewer, avatar, rating, text, time, likes }) => (
   <div className="hot-review-card">
-    <div className="hrv-left">
-      <div className="hrv-avatar">{avatar}</div>
-    </div>
+    <div className="hrv-left"><div className="hrv-avatar">{avatar}</div></div>
     <div className="hrv-body">
       <div className="hrv-top">
         <span className="hrv-hospital">{hospital}</span>
@@ -648,17 +652,6 @@ const TestimonialCard = ({ name, role, avatar, text, rating }) => (
     </div>
     <p className="testimonial-text-s2">{text}</p>
     <div className="testimonial-quote-s2"><i className="fas fa-quote-right" /></div>
-  </div>
-);
-
-const FooterLinks = ({ title, links }) => (
-  <div className="footer-column-s2">
-    <h4>{title}</h4>
-    <ul>
-      {links.map((link, i) => (
-        <li key={i}><a href="#">{link}</a></li>
-      ))}
-    </ul>
   </div>
 );
 

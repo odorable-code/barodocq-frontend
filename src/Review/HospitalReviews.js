@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authFetch } from "../utils/authFetch";
-import "./HospitalReviews.css";
+import "../assets/styles/HospitalReviews.css";
 
 /* ────────────────────────────────
    ReviewCard 컴포넌트

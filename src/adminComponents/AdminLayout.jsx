@@ -5,17 +5,17 @@ import "./Admin.css";
 
 export default function AdminLayout() {
   return (
-    <div className="admin-root">
-      <aside className="admin-sidebar">
+    <div className="adm-scope adm-root">
+      <aside className="adm-sidebar">
         <Sidebar />
       </aside>
 
-      <div className="admin-main">
-        <header className="admin-top">
+      <div className="adm-main">
+        <header className="adm-top">
           <TopHeader />
         </header>
 
-        <main className="admin-content">
+        <main className="adm-content">
           <Outlet />
         </main>
       </div>

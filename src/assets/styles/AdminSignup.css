@@ -1,145 +1,774 @@
-/* 컨테이너 설정 */
-.signup-container {
-  width: 1024px;
-  margin: 0 auto;
-  padding: 50px 0;
-  font-family: 'Pretendard', sans-serif;
-  color: #333;
+/* ════════════════════════════════
+   1. CSS 변수
+   MainPage / Login / UserSignup과 동일 + 병원 전용 추가
+════════════════════════════════ */
+.as-page {
+  /* ── MainPage 공통 토큰 ── */
+  --primary-mint:        #14b8a6;
+  --primary-teal:        #0d9488;
+  --primary-dark-teal:   #0f766e;
+  --bg-secondary:        #f0fdfa;
+  --bg-tertiary:         #ccfbf1;
+  --text-primary:        #0f172a;
+  --text-secondary:      #475569;
+  --text-muted:          #94a3b8;
+  --border-color:        #e2e8f0;
+  --shadow-sm:           0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:           0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg:           0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl:           0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-mint:         0 10px 30px rgba(20, 184, 166, 0.22);
+  --radius-sm:           0.5rem;
+  --radius-md:           0.75rem;
+  --radius-lg:           1rem;
+  --radius-xl:           1.25rem;
+  --radius-2xl:          1.75rem;
+  --radius-full:         9999px;
+  --transition-base:     300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:     200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── 병원(관리자) 전용 색상 — 딥 틸 계열 ── */
+  --hospital-primary:    #0d9488;
+  --hospital-dark:       #0f766e;
+  --hospital-darker:     #115e59;
+  --hospital-light:      #ccfbf1;
+  --hospital-shadow:     0 10px 30px rgba(13, 148, 136, 0.25);
 }
 
-/* 제목 영역 */
-.main-title {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 40px;
-}
 
-/* 로고 배지 */
-.logo-area {
+/* ════════════════════════════════
+   2. 페이지 레이아웃
+   UserSignup의 .su-page와 동일한 구조
+════════════════════════════════ */
+.as-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--bg-secondary) 0%, #ffffff 60%);
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  margin-bottom: 50px;
+  padding: 3rem 1.5rem 5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.logo-badge {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 10px 30px;
-  font-weight: 600;
-  font-size: 18px;
+
+/* ════════════════════════════════
+   3. 배경 블롭 애니메이션
+   Login / UserSignup과 동일
+════════════════════════════════ */
+.as-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.2;
+  pointer-events: none;
+  animation: as-blob-float 20s ease-in-out infinite;
 }
 
-/* 섹션 타이틀 및 구분선 */
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 40px 0 10px 0;
-  padding-left: 5px;
+/* 오른쪽 상단 — 병원 테마 딥 틸 블롭 */
+.as-blob-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--hospital-primary);
+  top: -15%;
+  right: -8%;
 }
 
-.line {
-  height: 2px;
-  background-color: #333;
-  margin-bottom: 25px;
+/* 왼쪽 하단 — 민트 블롭 */
+.as-blob-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--primary-mint);
+  bottom: -12%;
+  left: -6%;
+  animation-delay: 3s;
 }
 
-.line1 {
-  height: 1px;
-  background-color: #ddd;
-  margin-top: 5px;
+@keyframes as-blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(22px, -22px) scale(1.07); }
+  66%       { transform: translate(-16px, 16px) scale(0.94); }
 }
 
-/* 입력 그룹 공통 */
-.inputGroup, .idLine, .pwLine, .pw2Line, .emailLine, .phoneLine, .addressLine, .fileLine {
-  margin-bottom: 20px;
+
+/* ════════════════════════════════
+   4. 콘텐츠 래퍼
+════════════════════════════════ */
+.as-wrapper {
   width: 100%;
-}
-
-.input-field, .id, .pw, .pw2, .email, .phone, .address, .addressDetail {
-  width: 100%;
-  border: none;
-  outline: none;
-  padding: 12px 5px;
-  font-size: 16px;
-  background-color: transparent;
-}
-
-.input-field::placeholder, input::placeholder {
-  color: #aaa;
-}
-
-/* 아이디 중복확인 레이아웃 */
-.idLine {
+  max-width: 580px;
+  position: relative;
+  z-index: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
+  gap: 1.5rem;
+  animation: as-fadeInUp 0.65s ease;
 }
 
-.id {
+@keyframes as-fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ════════════════════════════════
+   5. 로고 (Login.js와 동일한 스타일)
+════════════════════════════════ */
+.as-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.as-logo:hover { opacity: 0.85; }
+
+/* 병원 테마: 딥 틸 그라디언트 아이콘 */
+.as-logo-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 1.3rem;
+  box-shadow: var(--hospital-shadow);
+}
+
+.as-logo-text {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+/* "독큐" 강조 — 병원 테마 색 */
+.as-logo-accent { color: var(--hospital-primary); }
+
+
+/* ════════════════════════════════
+   6. 병원 전용 배지
+   일반 사용자 가입과 구분하는 상단 배지
+════════════════════════════════ */
+.as-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.1rem;
+  background: var(--hospital-light);
+  border: 1.5px solid rgba(13, 148, 136, 0.25);
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--hospital-dark);
+  box-shadow: var(--shadow-sm);
+}
+.as-type-badge i { font-size: 0.85rem; }
+
+
+/* ════════════════════════════════
+   7. 스텝 인디케이터
+   UserSignup의 .su-step-indicator와 동일한 구조
+   색상만 병원 테마로 변경
+════════════════════════════════ */
+.as-step-indicator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.as-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
   flex: 1;
 }
 
-.distinctDiv {
-  margin-left: 10px;
+.as-step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+  background: #fff;
+  color: var(--text-muted);
+  border: 2px solid var(--border-color);
+  transition: var(--transition-base);
 }
 
-.distinct {
-  background-color: #fff;
-  border: 1px solid #333;
-  padding: 8px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.distinct:hover {
-  background-color: #333;
+/* 활성 스텝: 병원 테마 그라디언트 */
+.as-step-item.active .as-step-circle {
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
   color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.38);
 }
 
-/* 주소 및 파일 입력 보완 */
-.addressLine .address {
-  margin-top: 10px;
-}
-
-.file-input {
-  width: 100%;
-  padding: 10px 0;
-  cursor: pointer;
-}
-
-.label-text {
-  font-weight: 500;
-}
-
-/* 하단 버튼 (추가될 경우 대비) */
-.go {
-  width: 100%;
-  height: 55px;
-  background-color: #333;
+/* 완료 스텝 */
+.as-step-item.done .as-step-circle {
+  background: var(--hospital-dark);
   color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
+  border-color: transparent;
+}
+
+.as-step-item span {
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-top: 50px;
-  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
 }
-.go:hover {
-  background-color: #000;
+.as-step-item.active span { color: var(--hospital-primary); }
+
+/* 스텝 연결선 */
+.as-step-line {
+  height: 2px;
+  flex: 1;
+  background: var(--border-color);
+  margin: 0 0.5rem 1.3rem;
+  border-radius: var(--radius-full);
+  transition: var(--transition-base);
 }
-.term {
-  background-color: #f2f2f2;
-  padding: 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.8;
+/* 완료된 선: 병원 테마 그라디언트 */
+.as-step-line.done {
+  background: linear-gradient(90deg, var(--hospital-primary), var(--hospital-dark));
 }
 
-.term input[type="checkbox"] {
-  margin-right: 10px;
+
+/* ════════════════════════════════
+   8. 카드
+   UserSignup의 .su-card와 동일
+   상단 헤더 좌측 border에 병원 테마 라인 추가
+════════════════════════════════ */
+.as-card {
+  width: 100%;
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+}
+
+/* 카드 헤더 왼쪽에 병원 테마 세로 라인 강조 */
+.as-card-header {
+  padding: 2rem 2rem 1.5rem;
+  background: linear-gradient(135deg, var(--bg-secondary), #fff);
+  border-bottom: 2px solid var(--border-color);
+  border-left: 4px solid var(--hospital-primary); /* 병원 테마 포인트 */
+}
+
+.as-card-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-bottom: 0.4rem;
+}
+
+.as-card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+
+/* ════════════════════════════════
+   9. 폼 + 인풋 공통
+   UserSignup의 .su-form / .su-field / .su-input-wrap과 완전히 동일
+════════════════════════════════ */
+.as-form {
+  padding: 2rem;
+}
+
+.as-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: as-fadeInUp 0.4s ease;
+}
+
+/* 각 필드 */
+.as-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* 라벨 */
+.as-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.as-label i {
+  color: var(--hospital-primary); /* 병원 테마 색 */
+  font-size: 0.8rem;
+  width: 14px;
+  text-align: center;
+}
+.as-required {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-left: 0.1rem;
+}
+
+/* 인풋 래퍼 */
+.as-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: var(--transition-base);
+}
+
+/* 포커스: 병원 테마 색으로 변경 */
+.as-input-wrap:focus-within {
+  border-color: var(--hospital-primary);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+  background: #fff;
+}
+
+/* 유효 / 무효 상태 */
+.as-input-wrap.valid   { border-color: #10b981; background: #f0fdf4; }
+.as-input-wrap.invalid { border-color: #ef4444; background: #fef2f2; }
+
+.as-input-wrap input {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+.as-input-wrap input::placeholder { color: var(--text-muted); }
+.as-input-wrap input[type="date"]  { color: var(--text-primary); cursor: pointer; }
+
+
+/* ════════════════════════════════
+   10. 아이디 행 (인풋 + 중복확인 버튼)
+   UserSignup의 .su-input-row / .su-check-btn과 동일
+════════════════════════════════ */
+.as-input-row {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+}
+.as-input-row .as-input-wrap { flex: 1; }
+
+/* 중복확인 버튼 */
+.as-check-btn {
+  flex-shrink: 0;
+  padding: 0 1.1rem;
+  height: 47px;
+  border: 2px solid var(--hospital-primary);
+  background: transparent;
+  color: var(--hospital-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: var(--transition-base);
+}
+.as-check-btn:hover {
+  background: var(--hospital-primary);
+  color: #fff;
+}
+/* 확인 완료 상태: 초록 */
+.as-check-btn.checked {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: transparent;
+  color: #fff;
+  pointer-events: none;
+}
+
+
+/* ════════════════════════════════
+   11. 비밀번호 토글 버튼 / 아이콘
+════════════════════════════════ */
+.as-pw-toggle {
+  padding: 0 0.875rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+.as-pw-toggle:hover { color: var(--hospital-primary); }
+
+/* 인풋 오른쪽 아이콘 (일치 여부 표시) */
+.as-input-icon {
+  padding-right: 0.5rem;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.as-input-icon.valid   { color: #10b981; }
+.as-input-icon.invalid { color: #ef4444; }
+
+
+/* ════════════════════════════════
+   12. 비밀번호 강도 바
+   UserSignup의 .pw-strength-wrap과 동일
+════════════════════════════════ */
+.as-pw-strength { margin-top: 0.2rem; }
+
+.as-pw-strength-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.as-pw-bars {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.as-pw-bar {
+  height: 5px;
+  flex: 1;
+  border-radius: var(--radius-full);
+  transition: background 0.3s ease;
+}
+.as-pw-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 48px;
+  text-align: right;
+}
+
+
+/* ════════════════════════════════
+   13. 힌트 텍스트
+   UserSignup의 .su-hint와 동일
+════════════════════════════════ */
+.as-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.as-hint i { font-size: 0.75rem; }
+.as-hint.valid   { color: #10b981; }
+.as-hint.invalid { color: #ef4444; }
+
+
+/* ════════════════════════════════
+   14. 사업자등록번호 글자 수 카운터
+════════════════════════════════ */
+.as-biz-count {
+  padding-right: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+/* 10자리 완성 시 초록색 */
+.as-biz-count.done { color: #10b981; }
+
+
+/* ════════════════════════════════
+   15. 병원명 + 사업자번호 가로 배치
+════════════════════════════════ */
+.as-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+
+/* ════════════════════════════════
+   16. 약관 동의 (커스텀 체크박스)
+   UserSignup의 .su-terms와 완전히 동일한 구조
+   색상만 병원 테마로 교체
+════════════════════════════════ */
+.as-terms {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.as-terms-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.as-terms-title i { color: var(--hospital-primary); }
+
+/* 개별 약관 행 */
+.as-term-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  transition: var(--transition-base);
+}
+.as-term-row:hover { border-color: var(--hospital-primary); }
+.as-term-row.checked {
+  border-color: var(--hospital-primary);
+  background: #f0fdfa;
+}
+
+/* 전체 동의 행: 배경 강조 */
+.as-term-row.all {
+  background: var(--bg-tertiary);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+.as-term-row.all.checked {
+  background: var(--hospital-light);
+  border-color: var(--hospital-primary);
+}
+
+/* 커스텀 체크 박스 */
+.as-term-check {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff;
+  color: transparent;
+  font-size: 0.7rem;
+  transition: var(--transition-base);
+}
+/* 체크된 상태: 병원 테마 그라디언트 */
+.as-term-row.checked .as-term-check {
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  border-color: transparent;
+  color: #fff;
+}
+
+.as-term-row span {
+  flex: 1;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.as-term-row span strong { color: var(--hospital-dark); }
+
+/* 약관 보기 버튼 */
+.as-term-view {
+  flex-shrink: 0;
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.as-term-view:hover {
+  border-color: var(--hospital-primary);
+  color: var(--hospital-primary);
+}
+
+
+/* ════════════════════════════════
+   17. 버튼들
+════════════════════════════════ */
+
+/* 다음 단계 버튼 */
+.as-next-btn {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-base);
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.3);
+  letter-spacing: -0.2px;
+  margin-top: 0.5rem;
+}
+.as-next-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hospital-shadow);
+}
+.as-next-btn:active { transform: translateY(0); }
+
+/* 이전/제출 버튼 행 */
+.as-btn-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* 이전 버튼 */
+.as-back-btn {
+  padding: 0.9rem 1.5rem;
+  border: 2px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-base);
+  white-space: nowrap;
+}
+.as-back-btn:hover {
+  border-color: var(--hospital-primary);
+  color: var(--hospital-primary);
+}
+
+/* 병원 등록하기 (최종 제출) 버튼 */
+.as-submit-btn {
+  flex: 1;
+  padding: 0.9rem;
+  border: none;
+  background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-dark));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-base);
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.3);
+  letter-spacing: -0.2px;
+}
+.as-submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: var(--hospital-shadow);
+}
+.as-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+
+/* ════════════════════════════════
+   18. 카드 하단 / 사용자 가입 유도
+   UserSignup의 .su-footer / Login.js의 .login-signup-cta와 동일
+════════════════════════════════ */
+
+/* 카드 내부 하단 (로그인 링크) */
+.as-footer {
+  padding: 1.25rem 2rem;
+  background: var(--bg-secondary);
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+.as-login-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  color: var(--hospital-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.as-login-link:hover {
+  color: var(--hospital-dark);
+  gap: 0.5rem;
+}
+.as-login-link i { font-size: 0.75rem; }
+
+/* 카드 외부 하단 (일반 사용자 가입 유도) */
+.as-user-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+.as-user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  color: var(--primary-teal);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.as-user-link:hover {
+  color: var(--primary-mint);
+  gap: 0.5rem;
+}
+.as-user-link i { font-size: 0.75rem; }
+
+
+/* ════════════════════════════════
+   20. 반응형
+════════════════════════════════ */
+
+/* 태블릿 이하 */
+@media (max-width: 640px) {
+  .as-page        { padding: 2rem 1rem 3.5rem; }
+  .as-card-header { padding: 1.5rem 1.5rem 1.25rem; }
+  .as-form        { padding: 1.5rem; }
+  .as-card-title  { font-size: 1.3rem; }
+
+  /* 병원명 + 사업자번호: 1열로 전환 */
+  .as-field-row { grid-template-columns: 1fr; }
+
+  .as-user-cta {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+}
+
+/* 소형 모바일 */
+@media (max-width: 400px) {
+  .as-page { padding: 1.5rem 0.75rem 3rem; }
+  .as-form { padding: 1.25rem; }
+  .as-logo-text { font-size: 1.4rem; }
+  .as-card-title { font-size: 1.2rem; }
 }

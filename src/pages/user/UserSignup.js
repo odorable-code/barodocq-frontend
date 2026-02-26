@@ -1,298 +1,489 @@
 import "../../assets/styles/UserSignup.css";
-import { useState, useEffect } from "react";
-import { useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function UserSignup() {
-    // 1. 상태 선언
-    const [formData, setFormData] = useState({
-        userId: "", userPw: "", userPw2: "", userName: "", userPhone: "", userGender: "", email: "", userAddr: "", userBirth: ""
-    });
-    const [agreements, setAgreements] = useState({ termsAgreed: false, locationAgreed: false });
-    const [errors, setErrors] = useState({});
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [isTimeActive, setIsTimeActive] = useState(false);
+  const [formData, setFormData] = useState({
+    userId: "",
+    userPw: "",
+    userPw2: "",
+    userName: "",
+    userPhone: "",
+    userGender: "",
+    userAddr: "",
+    userBirth: "",
+    userEmail: "",
+  });
 
-    // 중복 확인 여부 상태 추가
-    const [isIdAvailable, setIsIdAvailable] = useState(false);
-    const navigate = useNavigate();
+  const [agreements, setAgreements] = useState({
+    termsAgreed: false,
+    locationAgreed: false,
+  });
 
-    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 카카오 로직
-    // 1. 카카오 디벨로퍼스에서 복사한 REST API 키
-    const REST_API_KEY = "7167ec309dc09273be6d7b09a108044c"; 
-  
-    // 2. 카카오 설정창에 방금 등록한 Redirect URI
-    const REDIRECT_URI = "http://localhost:3000/api/v1/auth/kakao"; 
+  const [isIdAvailable, setIsIdAvailable] = useState(null); // null | true | false
+  const [pwMatch, setPwMatch] = useState(null); // null | true | false
+  const [currentStep, setCurrentStep] = useState(1); // 1 | 2
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-    // 3. 카카오 인증 서버 주소 구성
-    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  /* ── 입력값 변경 ── */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    const handleKakaoLogin = () => {
-    // 내부 페이지 이동이 아니라 외부(카카오)로 나가야 하므로 href 사용
-    window.location.href = KAKAO_AUTH_URL;
+    if (name === "userId") setIsIdAvailable(null);
+
+    if (name === "userPw" || name === "userPw2") {
+      const pw  = name === "userPw"  ? value : formData.userPw;
+      const pw2 = name === "userPw2" ? value : formData.userPw2;
+      if (pw && pw2) setPwMatch(pw === pw2);
+      else setPwMatch(null);
+    }
+  };
+
+  /* ── 아이디 중복 확인 ── */
+  const distinctId = async () => {
+    const { userId } = formData;
+    if (!userId.trim()) { alert("아이디를 입력해주세요."); return; }
+
+    const onlyAlphaNum = /^[a-z0-9]+$/;
+    if (!onlyAlphaNum.test(userId)) {
+      alert("아이디는 영문 소문자와 숫자만 포함해야 합니다.");
+      return;
+    }
+    if (userId.length < 5 || userId.length > 10) {
+      alert("아이디는 5~10자 사이여야 합니다.");
+      return;
     }
 
-    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ네이버 로직
-    // 1. 네이버 디벨로퍼스에서 발급받은 Client ID
-    const NAVER_CLIENT_ID = "0GPWYHQbYuwrSJCSA068";
-
-    // 2. 네이버 설정창(애플리케이션)에 등록한 Callback URL
-    // 주의: 카카오와 마찬가지로 리액트에서 처리할 주소나 백엔드 주소를 정확히 적어야 합니다.
-    const NAVER_REDIRECT_URI = "http://localhost:3000/api/v1/auth/naver"; 
-
-    // 3. 상태 토큰 (CSRF 공격 방지용 랜덤 문자열 - 임의로 작성 가능)
-    const STATE = "random_state_string";
-
-    // 4. 네이버 인증 서버 주소 구성
-    const NAVER_AUTH_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=${STATE}`;
-
-    const handleNaverLogin = () => {
-    // 네이버 인증 화면으로 이동
-    window.location.href = NAVER_AUTH_URL;
-    };
-
-    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ구글 로직
-    const handleGoogleLogin = () => {
-    // 백엔드에서 설정한 구글 인증 URL로 이동합니다.
-    // 보통 백엔드가 구글 API와 통신하여 로그인 페이지를 띄워줍니다.
-    window.location.href = "http://localhost:8080/api/v1/auth/google";
-    };
-
-
-
-
-
-    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-
-    // 2. 입력값 변경 핸들러
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        if (name === "userId") setIsIdAvailable(false); // 아이디 고치면 다시 중복확인 해야 함
-    };
-
-    const handleNavigate = (path) => {
-    navigate(path); //8개의 url 이동 담당
-    }
-
-    // 3. 타이머 로직 (useEffect)
-    useEffect(() => {
-        let timer;
-        if (isTimeActive && timeLeft > 0) {
-            timer = setInterval(() => {
-                setTimeLeft((prev) => prev - 1);
-            }, 1000);
-        } else if (timeLeft === 0) {
-            setIsTimeActive(false);
-            clearInterval(timer);
-        }
-        return () => clearInterval(timer);
-    }, [isTimeActive, timeLeft]);
-
-    // 4. 시간 포맷 함수
-    const formatTime = (seconds) => {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-    };
-
-    // 5. 아이디 중복 확인
-    const distinctId = async () => {
-        const userId = formData.userId;
-
-        if (userId.trim().length === 0) {
-            alert("아이디를 입력해주세요.");
-            return;
-        }
-
-        const onlyAlphaNum = /^[a-z0-9]+$/;
-        if (!onlyAlphaNum.test(userId)) {
-            alert("아이디는 영문 소문자와 숫자만 포함할 수 있습니다.");
-            return;
-        }
-
-        if (userId.length < 5 || userId.length > 10) {
-            alert("아이디는 5자 이상 10자 이하로 입력해야 합니다.");
-            return;
-        }
-
-        try {
-        // 2. 서버에 GET 요청 보내기 http://localhost:8080
-        
-        const response = await fetch(`/api/v1/check-id?userId=${userId}`);
-
-        // 3. 응답이 정상인지 확인
-        if (response.ok) {
-            const data = await response.json(); // JSON 파싱 기다리기
-
-            if (data.isDuplicate) {
-                alert("이미 중복된 아이디가 존재합니다.");
-                setErrors({ ...errors, userId: "중복된 아이디입니다." });
-                setIsIdAvailable(false);
-            } else {
-                alert("사용 가능한 아이디입니다");
-                setErrors({ ...errors, userId: "" });
-                setIsIdAvailable(true);
-            }
+    try {
+      const response = await fetch(`/api/v1/check-id?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isDuplicate) {
+          alert("이미 사용중인 아이디입니다.");
+          setIsIdAvailable(false);
         } else {
-            alert("서버 응답에 문제가 있습니다.");
+          setIsIdAvailable(true);
         }
-    } catch (error) {
-        // 4. 네트워크 에러 처리
-        console.error(error);
-        alert("서버 통신 오류가 발생했습니다.");
+      }
+    } catch {
+      alert("서버 통신 오류가 발생했습니다.");
     }
-}
+  };
 
-    function clickSend(){
-            if(!isIdAvailable){
-                alert("먼저 아이디 중복 확인을 하세요.");
-                return;
-            }
-            setIsTimeActive(true);
-            setTimeLeft(180);
+  /* ── STEP 1 → 2 이동 ── */
+  const goToStep2 = () => {
+    const { userId, userPw, userPw2 } = formData;
+
+    if (!isIdAvailable) { alert("아이디 중복 확인을 해주세요."); return; }
+
+    const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!pwRegex.test(userPw)) {
+      alert("비밀번호는 8자 이상, 영문·숫자·특수문자를 포함해야 합니다.");
+      return;
+    }
+    if (userPw !== userPw2) { alert("비밀번호가 일치하지 않습니다."); return; }
+
+    setCurrentStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  /* ── 회원가입 제출 ── */
+  const signupSubmit = async (e) => {
+    e.preventDefault();
+    const { userPhone, userName, userGender, userBirth, userAddr, userEmail } = formData;
+
+    if (!userName.trim()) { alert("이름을 입력해주세요."); return; }
+
+    const phoneRegex = /^010\d{7,8}$/;
+    if (!phoneRegex.test(userPhone)) {
+      alert("올바른 휴대폰 번호를 입력해주세요. (예: 01012345678)");
+      return;
+    }
+    if (!userBirth) { alert("생년월일을 입력해주세요."); return; }
+    if (!userEmail.trim()) { alert("이메일을 입력해주세요."); return; }
+    if (!userGender) { alert("성별을 선택해주세요."); return; }
+    if (!userAddr.trim()) { alert("주소를 입력해주세요."); return; }
+
+    if (!(agreements.termsAgreed && agreements.locationAgreed)) {
+      alert("필수 약관에 동의해야 합니다.");
+      return;
     }
 
-    // 6. 가입하기 버튼 (유효성 검사 및 서버 전송)
-    const signupButton = async (e) => {
-        e.preventDefault();
-        // formData에서 값 추출
-        const { userPw, userPw2, userPhone, userId, userName, userGender, userBirth } = formData;
+    setIsLoading(true);
+    const submitData = { ...formData, termAgreement: true };
 
-        // 중복 확인 여부 먼저 체크
-        if (!isIdAvailable) {
-        alert("아이디 중복 확인을 해주세요.");
-        return;
-        }
+    try {
+      const response = await fetch("/api/v1/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitData),
+      });
 
-        if (!userPw.trim()) {
-            alert("비밀번호를 입력하세요.");
-            return; }
-            
-        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-        if (!pwRegex.test(userPw)) {
-            alert("비밀번호는 8자 이상, 영문, 숫자, 특수문자를 포함해야 합니다.");
-            return; }
+      if (response.ok) {
+        alert("회원가입이 완료되었습니다! 로그인해 주세요.");
+        navigate("/user/login");
+      } else {
+        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      }
+    } catch {
+      alert("네트워크 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        if (userPw !== userPw2) {
-            alert("비밀번호가 일치하지 않습니다.");
-            return; }
+  return (
+    <div className="su-page">
+      {/* ── 배경 블롭 ── */}
+      <div className="su-blob su-blob-1" />
+      <div className="su-blob su-blob-2" />
 
-        const phoneRegex = /^010\d{7,8}$/;
-        if (!phoneRegex.test(userPhone)) {
-            alert("올바른 휴대폰 번호를 입력해주세요.");
-            return; }
+      <div className="su-wrapper">
 
-        if (!(agreements.termsAgreed && agreements.locationAgreed)) {
-            alert("필수 약관에 모두 동의하셔야 가입이 가능합니다.");
-            return; }
-
-        // 서버 전송 로직
-        const submitData = {
-            userId: userId,
-            userPw: userPw,
-            userName: userName,
-            userPhone: userPhone,
-            userGender: userGender,
-            termAgreement: true,
-            userBirth: userBirth };
-
-            //http://localhost:8080
-        try {
-            const response = await fetch("/api/v1/auth/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(submitData),
-            });
-
-            if (response.ok) {
-                alert("회원가입이 완료되었습니다!");
-                navigate("/user/login");
-            } else {
-                alert("가입 실패");
-            }
-        } catch (error) {
-            alert("네트워크 오류가 발생했습니다."); }};
-
-    return (
-        <div className="container">
-            <div className="signup">회원가입</div>
-            <div className="line"></div>
-            <div className="container2">
-                <form onSubmit={signupButton}>
-                    <div className="idLine">
-                        <input className="id" name="userId" placeholder="아이디" value={formData.userId} onChange={handleChange} />
-                        <div className="distinctDiv">
-                            <button type="button" className="distinct" onClick={distinctId}>중복 확인</button>
-                        </div>
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="pwLine">
-                        <input type="password" value={formData.userPw} className="pw" name="userPw" placeholder="비밀번호" onChange={handleChange} />
-                        <div className="line1"></div>
-                    </div>
-
-                    <input type="password" value={formData.userPw2} className="pw2" name="userPw2" placeholder="비밀번호 확인" onChange={handleChange} />
-                    <div className="line1"></div>
-
-                    <div className="nameLine">
-                        <input className="name" name="userName" placeholder="이름" value={formData.userName} onChange={handleChange} />
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="phoneLine">
-                        <input className="phone" name="userPhone" placeholder="휴대폰번호" value={formData.userPhone} onChange={handleChange} />
-                        {/* <div className="sendCodeDiv">
-                            <button type="submit" className="sendCode" onClick={clickSend}>
-                                {isTimeActive ? formatTime(timeLeft) : "인증번호 전송"}
-                            </button>
-                        </div> */}
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="birthLine">
-                        <input className="email" name="userBirth" placeholder="생년월일" value={formData.userBirth} onChange={handleChange} required/>
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="emailLine">
-                        <input type="email" className="email" name="userEmail" placeholder="이메일 주소" value={formData.userEmail} onChange={handleChange} required/>
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="addressLine">
-                        <input className="address" name="userAddr" placeholder="주소" value={formData.userAddr} onChange={handleChange} required/>
-                        <div className="line1"></div>
-                    </div>
-
-                    <div className="gender">성별</div>
-                    <div className="checkbox">
-                        <input type="radio" name="userGender" id="male" checked={formData.userGender === "male"} onChange={() => setFormData({ ...formData, userGender: "male" })} />
-                        <label htmlFor="male">남성</label>
-                        <input type="radio" name="userGender" id="female" checked={formData.userGender === "female"} onChange={() => setFormData({ ...formData, userGender: "female" })} />
-                        <label htmlFor="female">여성</label>
-                    </div>
-
-                    <div className="term">
-                        <input type="checkbox" checked={agreements.termsAgreed && agreements.locationAgreed} onChange={(e) => setAgreements({ termsAgreed: e.target.checked, locationAgreed: e.target.checked })} />
-                        <span>전체 동의</span>
-                        <br />
-                        <input type="checkbox" checked={agreements.termsAgreed} onChange={(e) => setAgreements({ ...agreements, termsAgreed: e.target.checked })} />
-                        <span>약관1 (필수)</span>
-                        <br />
-                        <input type="checkbox" checked={agreements.locationAgreed} onChange={(e) => setAgreements({ ...agreements, locationAgreed: e.target.checked })} />
-                        <span>약관2 (필수)</span>
-                    </div>
-                    <button type="submit" className="go" >가입하기</button>
-                </form>
-
-                <div className="social">
-                <a className="kakao" onClick={handleKakaoLogin}></a>
-                <a className="naver" onClick={handleNaverLogin}></a>
-                <a className="google" onClick={handleGoogleLogin}></a>
-                </div>
+        {/* ── 진행 스텝 인디케이터 ── */}
+        <div className="su-step-indicator">
+          <div className={`su-step-item ${currentStep >= 1 ? "active" : ""} ${currentStep > 1 ? "done" : ""}`}>
+            <div className="su-step-circle">
+              {currentStep > 1 ? <i className="fas fa-check" /> : "1"}
             </div>
+            <span>계정 정보</span>
+          </div>
+          <div className={`su-step-line ${currentStep > 1 ? "done" : ""}`} />
+          <div className={`su-step-item ${currentStep >= 2 ? "active" : ""}`}>
+            <div className="su-step-circle">2</div>
+            <span>개인 정보</span>
+          </div>
         </div>
-    );
+
+        {/* ── 카드 ── */}
+        <div className="su-card">
+          <div className="su-card-header">
+            <h1 className="su-card-title">
+              {currentStep === 1 ? "계정 정보 입력" : "개인 정보 입력"}
+            </h1>
+            <p className="su-card-subtitle">
+              {currentStep === 1
+                ? "로그인에 사용할 아이디와 비밀번호를 설정해주세요"
+                : "서비스 이용에 필요한 개인 정보를 입력해주세요"}
+            </p>
+          </div>
+
+          <form className="su-form" onSubmit={signupSubmit}>
+
+            {/* ════════ STEP 1 ════════ */}
+            {currentStep === 1 && (
+              <div className="su-step-body">
+
+                {/* 아이디 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-user" />아이디
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-input-row">
+                    <div className={`su-input-wrap ${
+                      isIdAvailable === true ? "valid" : isIdAvailable === false ? "invalid" : ""
+                    }`}>
+                      <input
+                        name="userId"
+                        placeholder="영문 소문자 + 숫자, 5~10자"
+                        value={formData.userId}
+                        onChange={handleChange}
+                        autoComplete="username"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className={`su-check-btn ${isIdAvailable === true ? "checked" : ""}`}
+                      onClick={distinctId}
+                    >
+                      {isIdAvailable === true
+                        ? <><i className="fas fa-check" />확인완료</>
+                        : "중복확인"}
+                    </button>
+                  </div>
+                  {isIdAvailable === true && (
+                    <span className="su-hint valid"><i className="fas fa-circle-check" />사용 가능한 아이디입니다.</span>
+                  )}
+                  {isIdAvailable === false && (
+                    <span className="su-hint invalid"><i className="fas fa-circle-xmark" />이미 사용중인 아이디입니다.</span>
+                  )}
+                </div>
+
+                {/* 비밀번호 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-lock" />비밀번호
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-input-wrap">
+                    <input
+                      type="password"
+                      name="userPw"
+                      placeholder="8자 이상, 영문·숫자·특수문자 포함"
+                      value={formData.userPw}
+                      onChange={handleChange}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  <div className="su-pw-strength">
+                    <PwStrengthBar pw={formData.userPw} />
+                  </div>
+                </div>
+
+                {/* 비밀번호 확인 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-lock" />비밀번호 확인
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className={`su-input-wrap ${
+                    pwMatch === true ? "valid" : pwMatch === false ? "invalid" : ""
+                  }`}>
+                    <input
+                      type="password"
+                      name="userPw2"
+                      placeholder="비밀번호를 다시 입력해주세요"
+                      value={formData.userPw2}
+                      onChange={handleChange}
+                      autoComplete="new-password"
+                    />
+                    {pwMatch === true && <i className="fas fa-check su-input-icon valid" />}
+                    {pwMatch === false && <i className="fas fa-xmark su-input-icon invalid" />}
+                  </div>
+                  {pwMatch === false && (
+                    <span className="su-hint invalid"><i className="fas fa-circle-xmark" />비밀번호가 일치하지 않습니다.</span>
+                  )}
+                  {pwMatch === true && (
+                    <span className="su-hint valid"><i className="fas fa-circle-check" />비밀번호가 일치합니다.</span>
+                  )}
+                </div>
+
+                <button type="button" className="su-next-btn" onClick={goToStep2}>
+                  다음 단계 <i className="fas fa-arrow-right" />
+                </button>
+              </div>
+            )}
+
+            {/* ════════ STEP 2 ════════ */}
+            {currentStep === 2 && (
+              <div className="su-step-body">
+
+                {/* 이름 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-id-card" />이름
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-input-wrap">
+                    <input
+                      name="userName"
+                      placeholder="실명을 입력해주세요"
+                      value={formData.userName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                {/* 이름 + 생년월일 가로배치 */}
+                <div className="su-field-row">
+                  <div className="su-field">
+                    <label className="su-label">
+                      <i className="fas fa-phone" />휴대폰번호
+                      <span className="su-required">*</span>
+                    </label>
+                    <div className="su-input-wrap">
+                      <input
+                        name="userPhone"
+                        placeholder="01012345678"
+                        value={formData.userPhone}
+                        onChange={handleChange}
+                        maxLength={11}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="su-field">
+                    <label className="su-label">
+                      <i className="fas fa-cake-candles" />생년월일
+                      <span className="su-required">*</span>
+                    </label>
+                    <div className="su-input-wrap">
+                      <input
+                        type="date"
+                        name="userBirth"
+                        value={formData.userBirth}
+                        onChange={handleChange}
+                        max={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 이메일 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-envelope" />이메일
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-input-wrap">
+                    <input
+                      type="email"
+                      name="userEmail"
+                      placeholder="example@email.com"
+                      value={formData.userEmail}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                {/* 성별 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-venus-mars" />성별
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-gender-group">
+                    <label className={`su-gender-btn ${formData.userGender === "male" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userGender"
+                        value="male"
+                        onChange={handleChange}
+                        hidden
+                      />
+                      <i className="fas fa-mars" />남성
+                    </label>
+                    <label className={`su-gender-btn ${formData.userGender === "female" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userGender"
+                        value="female"
+                        onChange={handleChange}
+                        hidden
+                      />
+                      <i className="fas fa-venus" />여성
+                    </label>
+                  </div>
+                </div>
+
+                {/* 주소 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-location-dot" />주소
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-input-wrap">
+                    <input
+                      name="userAddr"
+                      placeholder="거주 주소를 입력해주세요"
+                      value={formData.userAddr}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                {/* 약관 동의 */}
+                <div className="su-terms">
+                  <div className="su-terms-title">
+                    <i className="fas fa-file-contract" />약관 동의
+                  </div>
+                  <label className={`su-term-row ${agreements.termsAgreed ? "checked" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={agreements.termsAgreed}
+                      onChange={(e) =>
+                        setAgreements({ ...agreements, termsAgreed: e.target.checked })
+                      }
+                    />
+                    <div className="su-term-check">
+                      <i className="fas fa-check" />
+                    </div>
+                    <span><strong>[필수]</strong> 서비스 이용약관 동의</span>
+                    <button type="button" className="su-term-view">보기</button>
+                  </label>
+                  <label className={`su-term-row ${agreements.locationAgreed ? "checked" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={agreements.locationAgreed}
+                      onChange={(e) =>
+                        setAgreements({ ...agreements, locationAgreed: e.target.checked })
+                      }
+                    />
+                    <div className="su-term-check">
+                      <i className="fas fa-check" />
+                    </div>
+                    <span><strong>[필수]</strong> 위치정보 서비스 이용약관 동의</span>
+                    <button type="button" className="su-term-view">보기</button>
+                  </label>
+                </div>
+
+                {/* 버튼 행 */}
+                <div className="su-btn-row">
+                  <button
+                    type="button"
+                    className="su-back-btn"
+                    onClick={() => setCurrentStep(1)}
+                  >
+                    <i className="fas fa-arrow-left" />이전
+                  </button>
+                  <button type="submit" className="su-submit-btn" disabled={isLoading}>
+                    {isLoading
+                      ? <><i className="fas fa-spinner fa-spin" />처리중...</>
+                      : <><i className="fas fa-user-plus" />가입하기</>}
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+
+          {/* ── 로그인 링크 ── */}
+          <div className="su-footer">
+            <span>이미 계정이 있으신가요?</span>
+            <Link to="/user/login" className="su-login-link">
+              로그인하기 <i className="fas fa-arrow-right" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+
+/* ── 비밀번호 강도 바 서브 컴포넌트 ── */
+function PwStrengthBar({ pw }) {
+  const getStrength = (pw) => {
+    if (!pw) return { level: 0, label: "", color: "" };
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Za-z]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
+    if (/[!@#$%^&*]/.test(pw)) score++;
+    if (score <= 1) return { level: 1, label: "매우 약함", color: "#ef4444" };
+    if (score === 2) return { level: 2, label: "약함", color: "#f97316" };
+    if (score === 3) return { level: 3, label: "보통", color: "#eab308" };
+    return { level: 4, label: "강함", color: "#14b8a6" };
+  };
+
+  const { level, label, color } = getStrength(pw);
+  if (!pw) return null;
+
+  return (
+    <div className="pw-strength-wrap">
+      <div className="pw-strength-bars">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="pw-bar"
+            style={{ background: i <= level ? color : "#e2e8f0" }}
+          />
+        ))}
+      </div>
+      <span className="pw-strength-label" style={{ color }}>{label}</span>
+    </div>
+  );
+}
+
 export default UserSignup;

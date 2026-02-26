@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { authFetch } from "../utils/authFetch";
+import "../assets/styles/ReviewRevise.css";
 
 function ReviewRevise() {
   const { rvNum } = useParams(); // URL에서 후기번호 가져오기
