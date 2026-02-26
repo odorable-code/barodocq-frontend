@@ -6,6 +6,7 @@ import ChatList from "./Chat/ChatList";
 import Layout from "./components/Layout";
 import Main from "./Main";
 import MyPage from "./MyPage";
+import HospitalSearch from "./pages/HospitalSearch";
 import HospitalDetail from "./pages/HospitalDetail";
 import MainPage from "./pages/MainPage";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
@@ -94,8 +95,7 @@ function App() {
 
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
-          {/*<Route path="hospitals"          element={<HospitalSearch />} />
-          <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />*/}
+          <Route path="hospitals"          element={<HospitalSearch />} />
           
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
