@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import HospitalDetail from "./pages/HospitalDetail";
@@ -15,7 +15,7 @@ import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
-import PharmacySearch from "./pages/PharmacySearch2";
+import PharmacySearch from "./pages/PharmacySearch";
 import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
 import ChatList from "./Chat/ChatList";
