@@ -1,7 +1,7 @@
 // HospitalReviews.js
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/HospitalReviews.css";
 
 /* ────────────────────────────────

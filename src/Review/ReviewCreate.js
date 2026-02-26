@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/ReviewCreate.css";
 
 function ReservationAndReview() {
@@ -25,7 +25,9 @@ function ReservationAndReview() {
     try {
       const response = await authFetch("http://localhost:8080/api/v1/reservations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"
+         },
         body: JSON.stringify({
           reDate: redate,
           reTime: retime,
@@ -53,41 +55,52 @@ function ReservationAndReview() {
 
   // 후기 등록
   const CreateReview = async () => {
-    if (!renum) {
-      alert("예약이 먼저 등록되어야 합니다!");
-      return;
-    }
+  if (!renum) {
+    alert("예약이 먼저 등록되어야 합니다!");
+    return;
+  }
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    // JSON Blob 제거하고 각 필드를 FormData에 직접 추가
-    formData.append("reNum", renum);
-    formData.append("userNum", usernum);
-    formData.append("hoNum", honum);
-    formData.append("rvTitle", title);
-    formData.append("rvContent", content);
-    formData.append("rvRating", rating);
-    formData.append("rvDeletedYn", 0);
+  //  review 객체를 하나로 묶음
+  const reviewData = {
+    reNum: renum,
+    userNum: usernum,
+    hoNum: honum,
+    rvTitle: title,
+    rvContent: content,
+    rvRating: rating,
+    rvDeletedYn: 0
+  };
 
-    // 이미지 파일 추가
-    files.forEach(file => {
-      if (file) formData.append("files", file);
+  //  JSON Blob으로 추가 
+  formData.append(
+    "review",
+    new Blob([JSON.stringify(reviewData)], {
+      type: "application/json"
+    })
+  );
+
+  //  파일들 추가
+  files.forEach(file => {
+    if (file) formData.append("files", file);
+  });
+
+  try {
+    const res = await authFetch("http://localhost:8080/api/v1/reviews", {
+      method: "POST",
+      body: formData
     });
 
-    try {
-      const res = await authFetch("http://localhost:8080/api/v1/reviews", {
-        method: "POST",
-        body: formData
-      });
+    const text = await res.text();
+    alert(text);
+    navigate("/reviews");
 
-      const text = await res.text(); // 서버가 문자열 반환한다고 가정
-      alert(text); // "후기 등록 성공"
-      navigate("/reviews");
-    } catch (err) {
-      console.error(err);
-      alert("후기 등록 실패");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("후기 등록 실패");
+  }
+};
 
   return (
     <div>

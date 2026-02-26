@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./MyPage.css";
 import { useAuth } from "./AuthContext";
-import { authFetch } from "./utils/authFetch";
+import { authFetch } from "./utils/AuthFetch";
 /* ─────────────────────────────────────────
    데이터 상수
 ───────────────────────────────────────── */
