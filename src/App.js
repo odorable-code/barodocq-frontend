@@ -43,7 +43,6 @@ function App() {
   /* ── 자동 로그인 (개발용) ── */
   useEffect(() => {
     localStorage.removeItem("accessToken");
-
     fetch("http://localhost:8080/api/v1/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
