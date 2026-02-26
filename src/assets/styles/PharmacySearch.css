@@ -84,10 +84,11 @@
 .phar-hero-inner {
   position: relative;
   z-index: 1;
-  display: flex;              /* ✅ 추가 */
-  flex-direction: column;     /* ✅ 추가 */
-  align-items: center;        /* 가운데 */
-  text-align: center;         /* 텍스트 가운데 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
 }
 
 /* 라벨 */
@@ -104,6 +105,7 @@
   color: var(--phar-teal);
   margin-bottom: 1.2rem;
   box-shadow: var(--phar-shadow-sm);
+  animation: phar-fade-up 0.5s ease both;
 }
 
 /* 타이틀 */
@@ -113,6 +115,7 @@
   line-height: 1.2;
   margin: 0 0 14px;
   color: var(--phar-text);
+  animation: phar-fade-up 0.6s ease 0.1s both;
 }
 
 .phar-hero-accent {
@@ -127,6 +130,8 @@
   color: var(--phar-text-sub);
   margin: 0 auto 0px;
   line-height: 1.7;
+  max-width: 620px;
+  animation: phar-fade-up 0.6s ease 0.2s both;
 }
 
 /* ── 검색 바 ── */
@@ -146,6 +151,8 @@
 
   box-shadow: var(--phar-shadow-md);
   transition: border-color var(--phar-transition), box-shadow var(--phar-transition);
+  margin: 0 auto; 
+  animation: phar-fade-up 0.6s ease 0.3s both;
 }
 
 .phar-search-bar:focus-within {
@@ -257,9 +264,11 @@
   justify-content: center; /* 버튼들 가운데 */
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   margin-top: 1.2rem;
   flex-wrap: wrap;
+  animation: phar-fade-up 0.6s ease 0.4s both; 
 }
 
 .phar-filter-icon {
@@ -294,10 +303,11 @@
 /* ── 통계 카드 ── */
 .phar-stat-row {
   display: flex;
+  justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
   flex-wrap: wrap;
-  justify-content: center; /* 카드들 가운데 */
+  animation: phar-fade-up 0.6s ease 0.5s both;
 }
 
 .phar-stat-card {
@@ -1081,4 +1091,8 @@
   .phar-modal-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+@keyframes phar-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

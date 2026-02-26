@@ -18,6 +18,7 @@ import ReviewCreate from "./Review/ReviewCreate";
 import PharmacySearch from "./pages/PharmacySearch";
 import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
+import ChatList from "./Chat/ChatList";
 
 // 관리자 페이지
 import AdminHospitals from "./adminComponents/AdminHospitals";
@@ -43,7 +44,6 @@ function App() {
   /* ── 자동 로그인 (개발용) ── */
   useEffect(() => {
     localStorage.removeItem("accessToken");
-
     fetch("http://localhost:8080/api/v1/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -98,6 +98,15 @@ function App() {
           <Route path="hospitals"          element={<HospitalSearch />} />
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
           <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />
+          
+            {/* 잘못된 경로는 메인으로 리다이렉트 */}
+            <Route path="*" element={<Navigate to="/" />} />
+            {/* 채팅방 */}
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/list" element={<ChatList />} />
+            
+            {/* 잘못된 경로는 메인으로 리다이렉트
+            <Route path="*" element={<Navigate to="/" />} /> */}
 
           {/* 약국 */}
           <Route path="pharmacy"           element={<PharmacySearch />} />

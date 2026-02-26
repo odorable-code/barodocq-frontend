@@ -7,7 +7,6 @@ function AdminSignup() {
 
   // ── 폼 입력값 상태 ──────────────────────────────────────────────
   const [formData, setFormData] = useState({
-    hospitalName: "",   // 병원명
     businessNum: "",    // 사업자등록번호 (숫자 10자)
     adminId: "",        // 관리자 아이디
     adminPw: "",        // 비밀번호
@@ -16,6 +15,7 @@ function AdminSignup() {
     adminPhone: "",     // 병원 연락처
     adminEmail: "",     // 병원 이메일
     adminAddr: "",      // 병원 주소
+    hoName: ""
   });
 
   // ── UI 상태 ──────────────────────────────────────────────────────
@@ -111,11 +111,11 @@ function AdminSignup() {
   // /api/v1/auth/signup 으로 POST 요청 (UserSignup과 동일한 엔드포인트)
   const signupButton = async (e) => {
     e.preventDefault();
-    const { adminPhone, adminName, adminAddr, adminEmail, hospitalName, businessNum } = formData;
+    const { adminPhone, adminName, adminAddr, adminEmail, hoName, businessNum } = formData;
 
     // 필수 항목 검사
     if (!adminName.trim())      { alert("담당자명을 입력해주세요."); return; }
-    if (!hospitalName.trim())   { alert("병원명을 입력해주세요."); return; }
+    if (!hoName.trim())   { alert("병원명을 입력해주세요."); return; }
     if (businessNum.length !== 10) { alert("사업자등록번호는 10자리 숫자여야 합니다."); return; }
     if (!adminEmail.trim())     { alert("병원 이메일을 입력해주세요."); return; }
     if (!adminAddr.trim())      { alert("병원 주소를 입력해주세요."); return; }
@@ -136,7 +136,7 @@ function AdminSignup() {
     const submitData = { ...formData, termAgreement: true };
 
     try {
-      const response = await fetch("/api/v1/auth/signup", {
+      const response = await fetch("/api/v1/auth/admin/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
@@ -366,9 +366,9 @@ function AdminSignup() {
                     </label>
                     <div className="as-input-wrap">
                       <input
-                        name="hospitalName"
+                        name="hoName"
                         placeholder="병원명을 입력해주세요"
-                        value={formData.hospitalName}
+                        value={formData.hoName}
                         onChange={handleChange}
                       />
                     </div>

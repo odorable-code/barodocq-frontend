@@ -15,8 +15,6 @@ const USER_INFO = {
   avatar: "은",
 };
 
-
-
 const RESERVATIONS = [
   { hospital: "서울아동병원",    dept: "소아청소년과", date: "2026-03-05", time: "14:30", status: "예정" },
   { hospital: "강남메디컬센터",  dept: "내과",         date: "2026-03-12", time: "10:00", status: "예정" },
@@ -73,6 +71,9 @@ const MyPage = () => {
   }, []);
 
   useEffect(() => {
+    // auth.user 가 있을 때만 API 호출
+    if (!auth?.user) return;  // ← 이 한 줄 추가
+
     async function fetchCount() {
       const result = await authFetch("/api/v1/hospitals/me/scraps/count");
       if (result.ok) {
@@ -90,7 +91,7 @@ const MyPage = () => {
     }
     fetchCount();
     fetchScraps();
-  }, []);
+  }, [auth?.user]);  // ← user가 바뀔 때만 재실행
   
   if (!auth) return null; 
   const { user } = auth;
