@@ -21,10 +21,10 @@ const QnAPage = () => {
   const fetchQnas = async (sort = "latest") => {
     try {
       // 서버에서 정렬, 검색, 페이지 처리 가능
-      const data = await authFetch(
+      const resp = await authFetch(
         `http://localhost:8080/api/v1/qnas?sort=${sort}`
       );
-
+      const data = await resp.json();
       const mappedData = data.map(q => ({
         id: q.qnNum,
         title: q.qnTitle || "제목 없음",
@@ -39,6 +39,7 @@ const QnAPage = () => {
       setQnas(mappedData);
       setCurrentPage(1);
     } catch (err) {
+      console.log(token)
       console.error("QNA 로드 실패:", err);
     }
   };

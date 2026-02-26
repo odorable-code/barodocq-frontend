@@ -118,7 +118,7 @@ function HospitalReviews() {
 
       try {
         const response = await authFetch("http://localhost:8080/api/v1/reviews");
-        const data = await response.json(); // ✅ 여기서 JSON으로 변환
+        const data = await response.json(); // 여기서 JSON으로 변환
         console.log("reviews from server (JSON):", data);
         setReviews(data);
       } catch (err) {
@@ -148,7 +148,8 @@ function HospitalReviews() {
   /* ───────────── 정렬 ───────────── */
   const sortReviews = async (type) => {
     try {
-      const data = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
+      const response = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
+      const data = await response.json();
       setReviews(data);
       setCurrentPage(1);
     } catch (err) {
