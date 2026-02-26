@@ -1,402 +1,420 @@
+// ═══════════════════════════════════════════════════
+//  ReviewDetail.jsx
+//  역할 : 후기 상세 페이지
+//  구성 : 좌(메인 콘텐츠) + 우(사이드바) 2컬럼 레이아웃
+//  기능 : 후기 조회 / 좋아요 토글 / 댓글 조회·작성
+// ═══════════════════════════════════════════════════
+
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/ReviewDetail.css";
 
-const ReviewDetail = () => {
-  const [likedReview, setLikedReview] = useState(false);
-  const [likedComments, setLikedComments] = useState([]);
+// 별점 숫자 → 한글 라벨 매핑
+const RATING_LABELS = ["", "별로예요", "그저 그래요", "보통이에요", "좋았어요", "최고예요!"];
 
-  // 후기 데이터
-  const reviewData = {
-    id: 1,
-    hospital: "서울아동병원",
-    dept: "소아청소년과",
-    author: "박민지",
-    avatar: "박",
-    rating: 5,
-    title: "아이가 무서워하지 않도록 세심하게 배려해주셨어요",
-    content: `3살 아이가 병원을 무서워해서 걱정이 많았습니다. 
-    
-그런데 선생님께서 아이 눈높이에 맞춰 천천히 설명해주시고, 진료 과정에서도 계속 아이에게 말을 걸어주시면서 불안감을 덜어주셨어요. 
+// ─────────────────────────────────────────────────
+function ReviewDetail() {
+  const { rvNum }  = useParams();   // URL 파라미터에서 후기 번호 추출
+  const navigate   = useNavigate();
 
-진료가 끝난 후에는 아이가 잘 참았다고 칭찬하시면서 스티커도 붙여주셨습니다. 덕분에 아이도 울지 않고 잘 받았고, 다음에 또 오고 싶다고 하네요.
+  // ── 데이터 상태 ───────────────────────────────
+  const [review,     setReview]     = useState(null);  // 후기 상세 데이터
+  const [files,      setFiles]      = useState([]);    // 첨부 이미지 목록
+  const [comments,   setComments]   = useState([]);    // 댓글 목록
+  const [newComment, setNewComment] = useState("");    // 입력 중인 댓글 텍스트
+  const [liked,      setLiked]      = useState(false); // 현재 유저의 좋아요 여부
 
-병원 시설도 깨끗하고 대기실에 아이들이 놀 수 있는 공간이 마련되어 있어서 좋았습니다. 접수부터 진료, 수납까지 모든 과정이 친절하고 신속했습니다.
 
-소아청소년과를 찾으시는 부모님들께 강력 추천드립니다!`,
-    date: "2026-02-23",
-    views: 892,
-    likes: 47,
-    comments: 12,
-    verified: true,
-    images: [
-      "https://via.placeholder.com/800x600/14b8a6/ffffff?text=Hospital+Image+1",
-      "https://via.placeholder.com/800x600/0d9488/ffffff?text=Hospital+Image+2",
-    ],
-    visitDate: "2026-02-20",
-    doctor: "김민수",
-    waitTime: "약 15분",
-    treatment: "감기 진료",
-  };
+  // ─────────────────────────────────────────────
+  //  댓글 목록 불러오기
+  //  - GET /api/v1/reviews/:rvNum/comments
+  //  - 서버 응답이 배열이면 그대로, 아니면 data.comments 사용
+  // ─────────────────────────────────────────────
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await authFetch(
+          `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
+        );
+        const data = await response.json();
+        const commentArray = Array.isArray(data) ? data : (data.comments || []);
+        setComments(commentArray);
+      } catch (err) {
+        console.error("댓글 불러오기 오류:", err);
+        setComments([]);
+      }
+    };
+    fetchComments();
+  }, [rvNum]);
 
-  // 댓글 데이터
-  const commentsData = [
-    {
-      id: 1,
-      author: "이서연",
-      avatar: "이",
-      content: "저희 아이도 여기서 진료 받았는데 정말 좋더라구요! 선생님이 너무 친절하세요.",
-      date: "2026-02-23",
-      likes: 5,
-    },
-    {
-      id: 2,
-      author: "최준호",
-      avatar: "최",
-      content: "후기 보고 예약했습니다. 기대되네요 ^^",
-      date: "2026-02-23",
-      likes: 2,
-    },
-    {
-      id: 3,
-      author: "정하윤",
-      avatar: "정",
-      content: "대기 시간은 얼마나 걸렸나요?",
-      date: "2026-02-22",
-      likes: 1,
-    },
-  ];
 
-  // 관련 후기
-  const relatedReviews = [
-    {
-      id: 2,
-      hospital: "우리아이클리닉",
-      dept: "소아청소년과",
-      author: "김서연",
-      rating: 5,
-      title: "예방접종 맞으러 갔는데 아이가 울지도 않았어요",
-      date: "2026-02-22",
-    },
-    {
-      id: 3,
-      hospital: "서울아동병원",
-      dept: "소아청소년과",
-      author: "송민재",
-      rating: 4,
-      title: "친절하고 꼼꼼하게 진료해주셨습니다",
-      date: "2026-02-21",
-    },
-  ];
+  // ─────────────────────────────────────────────
+  //  후기 상세 불러오기
+  //  - GET /api/v1/reviews/:rvNum
+  //  - 응답 구조: { review: {...}, files: [...] }
+  //  - rlLike === 1 이면 현재 유저가 좋아요 누른 상태
+  // ─────────────────────────────────────────────
+  useEffect(() => {
+    const fetchReview = async () => {
+      try {
+        const response = await authFetch(
+          `http://localhost:8080/api/v1/reviews/${rvNum}`
+        );
+        const data = await response.json();
+        setReview(data.review);
+        setLiked(data.review.rlLike === 1);
+        setFiles(data.files || []);
+      } catch (err) {
+        console.error("후기 불러오기 오류:", err);
+        alert("후기를 불러오지 못했습니다.");
+      }
+    };
+    fetchReview();
+  }, [rvNum]);
 
-  const toggleLikeReview = () => {
-    setLikedReview(!likedReview);
-  };
 
-  const toggleLikeComment = (commentId) => {
-    if (likedComments.includes(commentId)) {
-      setLikedComments(likedComments.filter((id) => id !== commentId));
-    } else {
-      setLikedComments([...likedComments, commentId]);
+  // ─────────────────────────────────────────────
+  //  좋아요 토글
+  //  - POST /api/v1/reviews/:rvNum/likes
+  //  - 토글 후 최신 좋아요 수 반영을 위해 후기 재조회
+  // ─────────────────────────────────────────────
+  const handleLike = async () => {
+    try {
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/likes`, {
+        method: "POST",
+      });
+      setLiked((prev) => !prev); // 낙관적 UI 업데이트
+
+      // 최신 좋아요 수 반영을 위해 후기 재조회
+      const updated = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`);
+      const data    = await updated.json();
+      setReview(data.review);
+      setFiles(data.files || []);
+    } catch (err) {
+      console.error("좋아요 오류:", err);
+      alert("좋아요 처리에 실패했습니다.");
     }
   };
 
+
+  // ─────────────────────────────────────────────
+  //  댓글 등록
+  //  - POST /api/v1/reviews/:rvNum/comments
+  //  - 등록 후 댓글 목록 재조회하여 최신화
+  // ─────────────────────────────────────────────
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return alert("댓글 내용을 입력하세요.");
+
+    try {
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rcContent: newComment }),
+      });
+
+      // 댓글 등록 후 목록 재조회
+      const updated = await authFetch(
+        `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
+      );
+      const data = await updated.json();
+      setComments(Array.isArray(data) ? data : (data.comments || []));
+      setNewComment(""); // 입력창 초기화
+    } catch (err) {
+      console.error("댓글 작성 오류:", err);
+      alert("댓글 작성에 실패했습니다.");
+    }
+  };
+
+
+  // ── 로딩 상태 ──────────────────────────────────
+  if (!review) {
+    return (
+      <div className="rd-loading">
+        <div className="rd-spinner" />
+        <p>후기를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+
+  // ─────────────────────────────────────────────
+  //  렌더링
+  // ─────────────────────────────────────────────
   return (
     <div className="review-detail-page">
-      <div className="container-s2">
+      <div className="rd-container">
+
+        {/* ════════════════════════════════
+            2컬럼 레이아웃
+            좌: 메인 콘텐츠 / 우: 사이드바
+        ════════════════════════════════ */}
         <div className="review-detail-layout">
-          {/* ══════════════════════════════
-              LEFT: 후기 본문
-          ══════════════════════════════ */}
-          <div className="review-main-content">
-            {/* 브레드크럼 */}
-            <div className="breadcrumb">
-              <a href="#">홈</a>
+
+          {/* ── 메인 콘텐츠 ── */}
+          <main className="review-main-content">
+
+            {/* 브레드크럼 네비게이션 */}
+            <nav className="breadcrumb">
+              <Link to="/">홈</Link>
               <i className="fas fa-chevron-right" />
-              <a href="#">후기 게시판</a>
+              <Link to="/reviews">병원 후기</Link>
               <i className="fas fa-chevron-right" />
               <span>후기 상세</span>
-            </div>
+            </nav>
 
-            {/* 후기 헤더 */}
+            {/* ── 후기 헤더: 병원명 + 수정 버튼 ── */}
             <div className="review-detail-header">
               <div className="hospital-info-detail">
                 <div className="hospital-badge-detail">
                   <i className="fas fa-hospital" />
                 </div>
                 <div>
-                  <h2>{reviewData.hospital}</h2>
-                  <span className="dept-tag-detail">{reviewData.dept}</span>
+                  <h2>{review.hoName || "병원명 없음"}</h2>
+                  <span className="dept-tag-detail">
+                    {review.deptName || "진료과 정보 없음"}
+                  </span>
                 </div>
               </div>
-              {reviewData.verified && (
-                <span className="verified-badge-detail">
-                  <i className="fas fa-check-circle" />
-                  인증된 후기
-                </span>
-              )}
-            </div>
-
-            {/* 제목 & 메타 */}
-            <div className="review-title-section">
-              <h1>{reviewData.title}</h1>
-              <div className="review-rating-detail">
-                {[...Array(5)].map((_, i) => (
-                  <i key={i} className={`fas fa-star ${i < reviewData.rating ? "filled" : ""}`} />
-                ))}
-                <span className="rating-text-detail">{reviewData.rating}.0</span>
+              {/* 실제 방문 인증 뱃지 */}
+              <div className="verified-badge-detail">
+                <i className="fas fa-circle-check" /> 실제 방문
               </div>
             </div>
 
+            {/* ── 제목 + 별점 ── */}
+            <div className="review-title-section">
+              <h1>{review.rvTitle}</h1>
+              <div className="review-rating-detail">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <i
+                    key={n}
+                    className={`fas fa-star ${n <= review.rvRating ? "filled" : ""}`}
+                  />
+                ))}
+                <span className="rating-text-detail">
+                  {review.rvRating}.0 — {RATING_LABELS[review.rvRating]}
+                </span>
+              </div>
+            </div>
+
+            {/* ── 메타 바: 작성자 + 통계 ── */}
             <div className="review-meta-bar">
               <div className="author-info-detail">
-                <div className="author-avatar-detail">{reviewData.avatar}</div>
+                <div className="author-avatar-detail">
+                  {review.userName?.charAt(0) ?? "?"}
+                </div>
                 <div>
-                  <strong>{reviewData.author}</strong>
-                  <span>{reviewData.date}</span>
+                  <strong>{review.userName}</strong>
+                  <span>{review.rvCreatedAt?.substring(0, 10)}</span>
                 </div>
               </div>
               <div className="meta-stats">
-                <span>
-                  <i className="fas fa-eye" />
-                  {reviewData.views}
-                </span>
-                <span>
-                  <i className="fas fa-comment" />
-                  {reviewData.comments}
-                </span>
+                <span><i className="fas fa-eye" /> {review.rvViewCount}</span>
+                <span><i className="fas fa-heart" /> {review.rvLikesCount}</span>
+                <span><i className="fas fa-comment" /> {review.rvCommentCount}</span>
               </div>
             </div>
 
-            {/* 진료 정보 카드 */}
-            <div className="treatment-info-card">
-              <h3>
-                <i className="fas fa-clipboard-check" />
-                진료 정보
-              </h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <span className="info-label">방문일</span>
-                  <span className="info-value">{reviewData.visitDate}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">담당의</span>
-                  <span className="info-value">{reviewData.doctor}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">대기시간</span>
-                  <span className="info-value">{reviewData.waitTime}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">진료내용</span>
-                  <span className="info-value">{reviewData.treatment}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 후기 본문 */}
-            <div className="review-body">
-              <p>{reviewData.content}</p>
-            </div>
-
-            {/* 이미지 갤러리 */}
-            {reviewData.images && reviewData.images.length > 0 && (
+            {/* ── 첨부 이미지 갤러리 ── */}
+            {files.length > 0 && (
               <div className="review-images-gallery">
-                {reviewData.images.map((img, idx) => (
-                  <div key={idx} className="gallery-item">
-                    <img src={img} alt={`후기 이미지 ${idx + 1}`} />
+                {files.map((file) => (
+                  <div key={file.rfNum} className="gallery-item">
+                    <img
+                      src={`http://localhost:8080${file.rfPath}`}
+                      alt="후기 이미지"
+                    />
                   </div>
                 ))}
               </div>
             )}
 
-            {/* 액션 버튼 */}
+            {/* ── 후기 본문 ── */}
+            <div className="review-body">
+              <p>{review.rvContent}</p>
+            </div>
+
+            {/* ── 액션 버튼: 좋아요 / 수정 / 목록 ── */}
             <div className="review-actions">
+              {/* 좋아요 버튼 — liked 여부에 따라 스타일 변경 */}
               <button
-                className={`btn-like-review ${likedReview ? "liked" : ""}`}
-                onClick={toggleLikeReview}
+                className={`btn-like-review ${liked ? "liked" : ""}`}
+                onClick={handleLike}
               >
-                <i className={likedReview ? "fas fa-heart" : "far fa-heart"} />
-                도움이 돼요 {reviewData.likes + (likedReview ? 1 : 0)}
+                <i className={`fas fa-heart`} />
+                {liked ? "좋아요 취소" : "좋아요"}
+                <span>({review.rvLikesCount})</span>
               </button>
-<<<<<<< HEAD
               <button onClick={() => navigate(`/reviews/revise/${rvNum}`)}>
                 <i className="fas fa-pen" /> 수정하기
               </button>
               <button onClick={() => navigate("/reviews")}>
                 <i className="fas fa-list" /> 목록으로
-=======
-              <button className="btn-share">
-                <i className="fas fa-share-alt" />
-                공유하기
-              </button>
-              <button className="btn-report">
-                <i className="fas fa-flag" />
-                신고하기
->>>>>>> parent of 5f9d377 (Merge branch 'main' into hos_search)
               </button>
             </div>
 
-            {/* 댓글 섹션 */}
+            {/* ════════════════════════════════
+                댓글 섹션
+            ════════════════════════════════ */}
             <div className="comments-section">
               <h3>
-                댓글 <span className="comment-count">{commentsData.length}</span>
+                <i className="fas fa-comments" />
+                댓글
+                <span className="comment-count">{comments.length}</span>
               </h3>
 
-              {/* 댓글 작성 */}
+              {/* 댓글 작성 폼 */}
               <div className="comment-write">
-                <div className="comment-avatar">💬</div>
-                <textarea placeholder="따뜻한 댓글을 남겨주세요" rows="3" />
-                <button className="btn-comment-submit">
-                  <i className="fas fa-paper-plane" />
-                  등록
+                <div className="comment-avatar">
+                  <i className="fas fa-user" />
+                </div>
+                <textarea
+                  placeholder="후기에 대한 댓글을 남겨주세요"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  rows={3}
+                  // Ctrl+Enter로도 등록 가능
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey && e.key === "Enter") handleCommentSubmit();
+                  }}
+                />
+                <button
+                  className="btn-comment-submit"
+                  onClick={handleCommentSubmit}
+                >
+                  <i className="fas fa-paper-plane" /> 등록
                 </button>
               </div>
 
-              {/* 댓글 리스트 */}
+              {/* 댓글 목록 */}
               <div className="comments-list">
-                {commentsData.map((comment) => (
-                  <CommentItem
-                    key={comment.id}
-                    comment={comment}
-                    liked={likedComments.includes(comment.id)}
-                    onToggleLike={() => toggleLikeComment(comment.id)}
-                  />
-                ))}
+                {comments.length === 0 ? (
+                  <div className="rd-no-comments">
+                    <i className="fas fa-comment-slash" />
+                    <p>첫 번째 댓글을 남겨보세요!</p>
+                  </div>
+                ) : (
+                  comments.map((c) => (
+                    <div key={c.rcNum ?? c.id} className="comment-item">
+                      {/* 아바타 — 작성자 이름 첫 글자 */}
+                      <div className="comment-avatar-small">
+                        {c.userName?.charAt(0) ?? c.userNum?.toString().charAt(0) ?? "?"}
+                      </div>
+                      <div className="comment-content-wrap">
+                        <div className="comment-header-small">
+                          <strong>{c.userName ?? `사용자 ${c.userNum}`}</strong>
+                          <span>{c.rcCreatedAt?.substring(0, 10)}</span>
+                        </div>
+                        <p className="comment-text">{c.rcContent}</p>
+                        <div className="comment-actions-small">
+                          <button>
+                            <i className="fas fa-thumbs-up" /> 도움돼요
+                          </button>
+                          <button>
+                            <i className="fas fa-flag" /> 신고
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-          </div>
+          </main>
 
-          {/* ══════════════════════════════
-              RIGHT: 사이드바
-          ══════════════════════════════ */}
+
+          {/* ── 사이드바 ── */}
           <aside className="review-sidebar">
-            {/* 작성자 카드 */}
+
+            {/* 작성자 정보 카드 */}
             <div className="sidebar-card author-card">
               <div className="author-header">
-                <div className="author-avatar-large">{reviewData.avatar}</div>
+                <div className="author-avatar-large">
+                  {review.userName?.charAt(0) ?? "?"}
+                </div>
                 <div>
-                  <strong>{reviewData.author}</strong>
+                  <strong>{review.userName}</strong>
                   <span>후기 작성자</span>
                 </div>
               </div>
               <div className="author-stats">
                 <div className="stat">
-                  <i className="fas fa-pen" />
+                  <i className="fas fa-star" />
                   <div>
-                    <strong>12</strong>
-                    <span>작성 후기</span>
+                    <strong>{review.rvRating}.0</strong>
+                    <span>평균 별점</span>
                   </div>
                 </div>
                 <div className="stat">
                   <i className="fas fa-heart" />
                   <div>
-                    <strong>284</strong>
-                    <span>받은 좋아요</span>
+                    <strong>{review.rvLikesCount}</strong>
+                    <span>좋아요</span>
                   </div>
                 </div>
               </div>
-              <button className="btn-view-profile">프로필 보기</button>
+              <button className="btn-view-profile">
+                <i className="fas fa-user" /> 프로필 보기
+              </button>
             </div>
 
             {/* 병원 정보 카드 */}
             <div className="sidebar-card hospital-card">
               <h4>
-                <i className="fas fa-hospital" />
-                병원 정보
+                <i className="fas fa-hospital" /> 방문 병원 정보
               </h4>
               <div className="hospital-detail-info">
-                <p className="hospital-name-side">{reviewData.hospital}</p>
+                <p className="hospital-name-side">{review.hoName}</p>
+                {/* 별점 표시 */}
                 <div className="hospital-rating-side">
-                  <i className="fas fa-star" />
-                  <strong>4.9</strong>
-                  <span>(312개 후기)</span>
-                </div>
-                <div className="hospital-address">
-                  <i className="fas fa-map-marker-alt" />
-                  <span>서울 강남구 테헤란로 123</span>
-                </div>
-                <div className="hospital-phone">
-                  <i className="fas fa-phone" />
-                  <span>02-1234-5678</span>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <i
+                      key={n}
+                      className={`fas fa-star ${n <= review.rvRating ? "" : "rd-star-empty"}`}
+                    />
+                  ))}
+                  <strong>{review.rvRating}.0</strong>
+                  <span>이 후기 기준</span>
                 </div>
               </div>
-              <button className="btn-hospital-detail">병원 상세보기</button>
-              <button className="btn-make-reservation">
-                <i className="fas fa-calendar-check" />
-                예약하기
+              <button
+                className="btn-make-reservation"
+                onClick={() => navigate("/hospitals")}
+              >
+                <i className="fas fa-calendar-plus" /> 예약하기
               </button>
             </div>
 
-            {/* 관련 후기 */}
-            <div className="sidebar-card related-reviews">
-              <h4>
-                <i className="fas fa-list" />
-                관련 후기
+            {/* 조회 통계 카드 */}
+            <div className="sidebar-card">
+              <h4 style={{ fontWeight: 800, marginBottom: "1rem", fontSize: "0.95rem" }}>
+                <i className="fas fa-chart-bar" style={{ color: "var(--primary-mint)", marginRight: "0.4rem" }} />
+                후기 통계
               </h4>
-              <div className="related-list">
-                {relatedReviews.map((review) => (
-                  <RelatedReviewItem key={review.id} review={review} />
-                ))}
+              <div className="author-stats">
+                <div className="stat">
+                  <i className="fas fa-eye" />
+                  <div>
+                    <strong>{review.rvViewCount}</strong>
+                    <span>조회수</span>
+                  </div>
+                </div>
+                <div className="stat">
+                  <i className="fas fa-comment" />
+                  <div>
+                    <strong>{review.rvCommentCount}</strong>
+                    <span>댓글수</span>
+                  </div>
+                </div>
               </div>
             </div>
+
           </aside>
         </div>
       </div>
     </div>
   );
-};
-
-/* ─────────────────────────────────────────
-   CommentItem Component
-───────────────────────────────────────── */
-const CommentItem = ({ comment, liked, onToggleLike }) => {
-  return (
-    <div className="comment-item">
-      <div className="comment-avatar-small">{comment.avatar}</div>
-      <div className="comment-content-wrap">
-        <div className="comment-header-small">
-          <strong>{comment.author}</strong>
-          <span>{comment.date}</span>
-        </div>
-        <p className="comment-text">{comment.content}</p>
-        <div className="comment-actions-small">
-          <button className={`btn-like-comment ${liked ? "liked" : ""}`} onClick={onToggleLike}>
-            <i className={liked ? "fas fa-heart" : "far fa-heart"} />
-            {comment.likes + (liked ? 1 : 0)}
-          </button>
-          <button className="btn-reply-comment">
-            <i className="fas fa-reply" />
-            답글
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ─────────────────────────────────────────
-   RelatedReviewItem Component
-───────────────────────────────────────── */
-const RelatedReviewItem = ({ review }) => {
-  return (
-    <div className="related-item">
-      <div className="related-header">
-        <span className="related-hospital">{review.hospital}</span>
-        <div className="related-rating">
-          {[...Array(review.rating)].map((_, i) => (
-            <i key={i} className="fas fa-star" />
-          ))}
-        </div>
-      </div>
-      <p className="related-title">{review.title}</p>
-      <div className="related-footer">
-        <span className="related-author">{review.author}</span>
-        <span className="related-date">{review.date}</span>
-      </div>
-    </div>
-  );
-};
+}
 
 export default ReviewDetail;
