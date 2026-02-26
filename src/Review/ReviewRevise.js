@@ -17,10 +17,10 @@ function ReviewRevise() {
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const data = await authFetch(
+        const response = await authFetch(
           `http://localhost:8080/api/v1/reviews/revise/${rvNum}`
         );
-
+        const data = await response.json();
         setTitle(data.rvTitle);
         setContent(data.rvContent);
         setRating(data.rvRating);
@@ -39,6 +39,7 @@ function ReviewRevise() {
       `http://localhost:8080/api/v1/reviews/revise/${rvNum}`,
       {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rvTitle: title,
           rvContent: content,
@@ -47,13 +48,16 @@ function ReviewRevise() {
       }
     );
 
-    // 성공 시 서버 메시지 보여주기
-    alert(res); // 서버에서 "후기 수정 성공" 보내면 그대로 나옴
+    // 서버가 text를 보내면
+    const result = await res.text(); 
+    // 서버가 JSON을 보내면
+    // const result = await res.json(); 
+
+    alert(result); 
     navigate("/reviews");
 
   } catch (err) {
     console.error(err);
-    // err.message에는 서버에서 보낸 텍스트 그대로 있음 ("자신의 후기만 수정할 수 있습니다." 등)
     alert(err.message);
   }
 };

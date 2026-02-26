@@ -8,35 +8,56 @@ function ReviewDetail() {
   const navigate = useNavigate();
 
   const [review, setReview] = useState(null);
+  const [files, setFiles] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState([]);
   const [liked, setLiked] = useState(false); // 기본값 false
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const data = await authFetch(
-          `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
-        );
-        setComments(data); // [{ id, user_name, content, created_at }]
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchComments = async () => {
+  //     try {
+  //       const data = await authFetch(
+  //         `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
+  //       );
+  //       console.log("comments from server:", data);
+  //       setComments(data); // [{ id, user_name, content, created_at }]
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
 
-    fetchComments();
-  }, [rvNum]);
+  //   fetchComments();
+  // }, [rvNum]);
+  useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const response = await authFetch(
+        `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
+      );
+      const data = await response.json();
+      console.log("comments from server:", data);
+      // 서버가 배열을 직접 내려주면 그대로, 아니면 data.comments
+      const commentArray = Array.isArray(data) ? data : data.comments || [];
+      setComments(commentArray);
+    } catch (err) {
+      console.error(err);
+      setComments([]); // 에러 시 빈 배열
+    }
+  };
+
+  fetchComments();
+}, [rvNum]);
 
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const data = await authFetch(
+        const response = await authFetch(
           `http://localhost:8080/api/v1/reviews/${rvNum}`
         );
-
-        setReview(data);  // 이미 JSON 객체로 반환됨
-        setLiked(data.rlLike === 1);//후기, 좋아요 상태 가져오기
-        console.log(data);
+        const data = await response.json();
+        setReview(data.review);// 이미 JSON 객체로 반환됨
+        setLiked(data.review.rlLike === 1);//후기, 좋아요 상태 가져오기
+        setFiles(data.files || []); // 필요하면 files 별도 state
       } catch (err) {
         console.error(err);
         alert("후기 불러오기 실패");
@@ -50,18 +71,24 @@ function ReviewDetail() {
 
   // 좋아요
   const handleLike = async () => {
-    try {
-      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/likes`, {
-        method: "POST",
-      });
-      setLiked(!liked);
-      const updated = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`);
-      setReview(updated);
-    } catch (err) {
-      console.error(err);
-      alert("좋아요 실패");
-    }
-  };
+  try {
+    await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/likes`, {
+      method: "POST",
+    });
+
+    setLiked(!liked);
+
+    const updated = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`);
+    const data = await updated.json();
+
+    // review는 data.review, files는 data.files
+    setReview(data.review);
+    setFiles(data.files || []); // files state도 별도로 유지
+  } catch (err) {
+    console.error(err);
+    alert("좋아요 실패");
+  }
+};
 
   return (
     
@@ -82,17 +109,17 @@ function ReviewDetail() {
         </button>
       </div>
 				<div className="mb-2">
-  				<strong>{review.review.userName}</strong> 평점: {"⭐".repeat(review.review.rvRating)}
+  				<strong>{review.userName}</strong> 평점: {"⭐".repeat(review.rvRating)}
 				</div>
 
       <div className="mb-2 text-muted">
-        작성일: {review.review.rvCreatedAt}
+        작성일: {review.rvCreatedAt}
       </div>
 
       <hr />
-      <h2>{review.review.rvTitle}</h2>
+      <h2>{review.rvTitle}</h2>
 
-      {review.files && review.files.map((file) => (
+      {files && files.map((file) => (
     <img
       key={file.rfNum}
       src={`http://localhost:8080${file.rfPath}`}
@@ -102,12 +129,12 @@ function ReviewDetail() {
   ))}
 			<h3 className="mb-3">{review.rvTitle}</h3>
       <div className="mb-4" style={{ whiteSpace: "pre-line" }}>
-        {review.review.rvContent}
+        {review.rvContent}
       </div>
 
       <div className="d-flex justify-content-between">
         <div>
-          조회수: {review.review.rvViewCount} | 좋아요수: {review.review.rvLikesCount} | 댓글수: {review.review.rvCommentCount}
+          조회수: {review.rvViewCount} | 좋아요수: {review.rvLikesCount} | 댓글수: {review.rvCommentCount}
         </div>
         <div>{review.hoName}</div>
       </div>
@@ -120,7 +147,7 @@ function ReviewDetail() {
         >
           👍 {liked ? "좋아요 취소" : "좋아요"}
         </button>
-        <span>{review.review.rvLikesCount}</span>
+        <span>{review.rvLikesCount}</span>
       </div>
       
       <div className="mt-4">
@@ -156,7 +183,8 @@ function ReviewDetail() {
 
               // 댓글 추가 후 다시 가져오기
               const updated = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/comments`);
-              setComments(updated);
+              const updatedd = await updated.json();
+              setComments(updatedd);
               setNewComment("");
             } catch (err) {
               console.error(err);

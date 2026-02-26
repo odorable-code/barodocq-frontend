@@ -117,7 +117,9 @@ function HospitalReviews() {
       if (!token) return;
 
       try {
-        const data = await authFetch("http://localhost:8080/api/v1/reviews");
+        const response = await authFetch("http://localhost:8080/api/v1/reviews");
+        const data = await response.json(); // ✅ 여기서 JSON으로 변환
+        console.log("reviews from server (JSON):", data);
         setReviews(data);
       } catch (err) {
         console.error("후기 불러오기 실패:", err);
