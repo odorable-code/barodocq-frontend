@@ -536,7 +536,7 @@
 .phar-card-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .phar-card {
@@ -1089,4 +1089,273 @@
 @keyframes phar-fade-up {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ════════════════════════════════════════
+   hdc 카드 스타일 (병원 카드와 공유)
+   PharmacySearch에서 동일 카드 UI 사용
+════════════════════════════════════════ */
+.hdc {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #e2f8f5;
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(13,148,136,.07);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  display: flex;
+  flex-direction: column;
+}
+.hdc:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(13,148,136,.16);
+  border-color: #99f6e4;
+}
+.hdc--closed { opacity: .75; filter: grayscale(25%); }
+
+/* ── 기존 .hdc__badges, .hdc__badge-- 관련 전부 교체 ── */
+
+.hdc__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 18px 6px;
+  min-height: 44px;        /* 뱃지 없어도 이 높이 고정 */
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* ── 배지 공통 베이스 ── */
+.hdc__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px 4px 9px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: all 0.18s ease;
+}
+
+.hdc__badge i {
+  font-size: 10px;
+}
+
+/* ── 활성 배지 — 민트·틸 테마 3종 ── */
+
+/* 24시간 — 메인 테마 틸·민트 (항상 열려있음, 신뢰감) */
+.hdc__badge--24h {
+  background: linear-gradient(135deg, #ccfbf1, #a7f3d0);
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+/* 야간 — 딥 인디고 (밤하늘, 야간 직관적) */
+.hdc__badge--night {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #3730a3;
+  border-color: #a5b4fc;
+}
+
+/* 일요일 — 앰버·오렌지 (휴일, 따뜻한 주말 느낌) */
+.hdc__badge--sunday {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+/* ── 비활성 — 회색 (해당 없음) ── */
+.hdc__badge--off {
+  background: #f8fafc !important;
+  color: #d1d5db !important;
+  border-color: #e5e7eb !important;
+}
+
+.hdc__badge--off i {
+  opacity: 0.45;
+}
+.hdc__body {
+  display: flex; gap: 18px;
+  padding: 16px 20px 12px;
+  flex: 1; 
+}
+
+.hdc__icon-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px; flex-shrink: 0;
+}
+.hdc__icon {
+  width: 60px; height: 60px; border-radius: 18px;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 26px;
+  box-shadow: 0 4px 16px rgba(13,148,136,.28);
+}
+.hdc__status {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+}
+.hdc__status--open   { background: #d1fae5; color: #065f46; }
+.hdc__status--closed { background: #f3f4f6; color: #6b7280; }
+
+.hdc__info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 5px;
+}
+
+.hdc__title-row {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 8px;
+}
+.hdc__name {
+  font-size: 17px; font-weight: 700; color: #0f172a;
+  margin: 0; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* ── 북마크 — 민트·틸 테마 ── */
+.hdc__bookmark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #e2f8f5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  color: #94a3b8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: color .18s, background .18s, transform .18s,
+              box-shadow .18s, border-color .18s;
+  z-index: 2;
+}
+.hdc__bookmark:hover {
+  color: #0d9488;
+  background: #f0fdfa;
+  border-color: #5eead4;
+  transform: scale(1.12);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.20);
+}
+
+/* 활성(저장됨) — 민트·틸 그라데이션 */
+.hdc__bookmark--on {
+  color: #fff;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.42);
+}
+
+.hdc__bookmark--on:hover {
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #fff;
+  transform: scale(1.12);
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.50);
+}
+
+.hdc__meta {
+  display: flex; align-items: center;
+  flex-wrap: wrap; gap: 4px;
+  font-size: 12.5px; color: #64748b;
+}
+.hdc__dot      { color: #cbd5e1; }
+.hdc__type     { font-weight: 600; color: #0d9488; }
+.hdc__distance { color: #64748b; }
+.hdc__distance i,
+.hdc__wait i   { margin-right: 3px; color: #0d9488; font-size: 11px; }
+.hdc__wait     { color: #f97316; font-weight: 600; }
+
+.hdc__rating {
+  display: flex; align-items: center; gap: 4px;
+}
+.hdc__stars      { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+.hdc__star--half { opacity: .55; }
+.hdc__score      { font-size: 13px; font-weight: 700; color: #0f172a; }
+.hdc__review-cnt { font-size: 12px; color: #94a3b8; }
+
+.hdc__addr,
+.hdc__phone,
+.hdc__hours {
+  font-size: 12.5px; color: #475569; margin: 0;
+  display: flex; align-items: flex-start;
+  gap: 5px; line-height: 1.5;
+}
+.hdc__addr i,
+.hdc__phone i,
+.hdc__hours i {
+  color: #14b8a6; font-size: 12px;
+  margin-top: 2px; flex-shrink: 0;
+}
+.hdc__phone a {
+  color: #0d9488; text-decoration: none; font-weight: 600;
+}
+.hdc__phone a:hover { text-decoration: underline; }
+
+.hdc__tags {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px;
+}
+.hdc__tag {
+  display: inline-block; font-size: 11.5px;
+  padding: 3px 10px; border-radius: 20px;
+  background: #f0fdfa; color: #0d9488;
+  border: 1px solid #99f6e4; font-weight: 500;
+  transition: background .15s, color .15s;
+}
+.hdc__tag:hover { background: #ccfbf1; }
+.hdc__tag--more {
+  background: none; border: 1px dashed #99f6e4;
+  color: #0d9488; cursor: pointer; font-weight: 600;
+}
+
+.hdc__actions {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px 16px;
+  border-top: 1px solid #f0fdfa; flex-wrap: wrap;
+}
+.hdc__btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 600;
+  padding: 7px 14px; border-radius: 10px;
+  cursor: pointer; border: none;
+  transition: background .18s, color .18s, transform .15s, box-shadow .18s;
+  text-decoration: none; white-space: nowrap;
+}
+.hdc__btn:active { transform: scale(.97); }
+.hdc__btn--ghost {
+  background: #f8fafc; color: #475569;
+  border: 1.5px solid #e2e8f0;
+}
+.hdc__btn--ghost:hover {
+  background: #f0fdfa; color: #0d9488; border-color: #99f6e4;
+}
+.hdc__btn--primary {
+  margin-left: auto;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff; box-shadow: 0 3px 12px rgba(13,148,136,.3);
+}
+.hdc__btn--primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  box-shadow: 0 5px 18px rgba(13,148,136,.4);
+  transform: translateY(-1px);
+}
+.hdc__btn--primary:disabled {
+  background: #e2e8f0; color: #94a3b8;
+  box-shadow: none; cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .hdc__body    { gap: 12px; padding: 14px 14px 10px; }
+  .hdc__icon    { width: 48px; height: 48px; font-size: 20px; border-radius: 14px; }
+  .hdc__name    { font-size: 15px; }
+  .hdc__actions { padding: 8px 14px 14px; gap: 6px; }
+  .hdc__btn     { font-size: 12px; padding: 6px 11px; }
+  .hdc__btn--primary { width: 100%; justify-content: center; margin-left: 0; }
 }
