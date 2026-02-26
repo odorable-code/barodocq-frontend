@@ -751,10 +751,6 @@
   justify-content: flex-end;
 }
 
-.qna-modal-footer .btn-write-qna {
-  margin-right: 10px; /* 오른쪽에 10px 공간 추가 */
-}
-
 .btn-modal-close {
   padding: 0.75rem 2rem;
   border: 2px solid var(--border-color);

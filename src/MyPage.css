@@ -40,6 +40,7 @@
   max-width: 860px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  margin-top: 50px;
 }
 
 /* ══════════════════════════════
@@ -50,7 +51,6 @@
   overflow: hidden;
   background: linear-gradient(135deg, var(--primary-mint) 0%, var(--primary-darker-teal) 100%);
   padding: 5rem 0 3rem;
-  margin-bottom: 50px;
 }
 
 .mp-hero-blob {

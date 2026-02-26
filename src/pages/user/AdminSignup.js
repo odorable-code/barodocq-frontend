@@ -7,6 +7,7 @@ function AdminSignup() {
 
   // ── 폼 입력값 상태 ──────────────────────────────────────────────
   const [formData, setFormData] = useState({
+    hospitalName: "",   // 병원명
     businessNum: "",    // 사업자등록번호 (숫자 10자)
     adminId: "",        // 관리자 아이디
     adminPw: "",        // 비밀번호
@@ -15,7 +16,10 @@ function AdminSignup() {
     adminPhone: "",     // 병원 연락처
     adminEmail: "",     // 병원 이메일
     adminAddr: "",      // 병원 주소
+<<<<<<< HEAD
     hoName: ""          // 병원 이름
+=======
+>>>>>>> parent of 5f9d377 (Merge branch 'main' into hos_search)
   });
 
   // ── UI 상태 ──────────────────────────────────────────────────────
@@ -186,11 +190,11 @@ const distinctBusinessNum = async () => {
   // /api/v1/auth/signup 으로 POST 요청 (UserSignup과 동일한 엔드포인트)
   const signupButton = async (e) => {
     e.preventDefault();
-    const { adminPhone, adminName, adminAddr, adminEmail, hoName, businessNum } = formData;
+    const { adminPhone, adminName, adminAddr, adminEmail, hospitalName, businessNum } = formData;
 
     // 필수 항목 검사
     if (!adminName.trim())      { alert("담당자명을 입력해주세요."); return; }
-    if (!hoName.trim())   { alert("병원명을 입력해주세요."); return; }
+    if (!hospitalName.trim())   { alert("병원명을 입력해주세요."); return; }
     if (businessNum.length !== 10) { alert("사업자등록번호는 10자리 숫자여야 합니다."); return; }
     if (!adminEmail.trim())     { alert("병원 이메일을 입력해주세요."); return; }
     if (!adminAddr.trim())      { alert("병원 주소를 입력해주세요."); return; }
@@ -211,7 +215,7 @@ const distinctBusinessNum = async () => {
     const submitData = { ...formData, termAgreement: true };
     console.log(submitData);
     try {
-      const response = await fetch("/api/v1/auth/admin/signup", {
+      const response = await fetch("/api/v1/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
@@ -441,9 +445,9 @@ const distinctBusinessNum = async () => {
                     </label>
                     <div className="as-input-wrap">
                       <input
-                        name="hoName"
+                        name="hospitalName"
                         placeholder="병원명을 입력해주세요"
-                        value={formData.hoName}
+                        value={formData.hospitalName}
                         onChange={handleChange}
                       />
                     </div>
