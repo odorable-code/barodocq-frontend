@@ -37,7 +37,6 @@ import "../assets/styles/Header.css";
 const NAV_ITEMS = [
   { path: "/pharmacy", label: "약국 찾기", icon: faPills },
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
-  { path: "/hospitalsearchpage", label: "병원 찾기2", icon: faStethoscope },
   { path: "/mypage", label: "마이페이지", icon: faUser },
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
   { path: "/community", label: "커뮤니티", icon: faComments },

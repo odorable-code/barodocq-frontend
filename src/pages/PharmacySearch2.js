@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import RegionSelect from "../components/RegionSelect";
 import "../assets/styles/PharmacySearch.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -197,9 +197,7 @@ export default function PharmacySearch() {
   /* 필터링 */
   const filtered = DUMMY_PHARMACIES.filter((p) => {
     const matchSearch =
-      !searchTerm ||
-      p.name.includes(searchTerm) ||
-      p.addr.includes(searchTerm);
+      !searchTerm || p.name.includes(searchTerm) || p.addr.includes(searchTerm);
     const matchFilter =
       activeFilter === "all" ||
       (activeFilter === "open" && p.status === "open") ||
@@ -212,7 +210,7 @@ export default function PharmacySearch() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    currentPage * PAGE_SIZE,
   );
 
   const handleSearch = () => {
@@ -271,7 +269,10 @@ export default function PharmacySearch() {
             >
               <FontAwesomeIcon icon={faLocationDot} />
               {regionLabel}
-              <FontAwesomeIcon icon={faChevronDown} className="phar-region-arrow" />
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className="phar-region-arrow"
+              />
             </button>
             <div className="phar-search-divider" />
             <div className="phar-search-input-wrap">
@@ -462,87 +463,158 @@ export default function PharmacySearch() {
 }
 
 /* ─────────────────────────────────────────
-   약국 카드
+   약국 카드 — 병원 카드(hdc) 구조 동일 적용
+   DUMMY_PHARMACIES 필드명에 맞게 정규화
 ───────────────────────────────────────── */
 function PharmacyCard({ data: p }) {
+  const [bookmarked, setBookmarked] = React.useState(false);
+
+  // ── 필드 정규화 (DUMMY_PHARMACIES 구조 대응) ──
+  const isOpen = p.status === "open";
+  const is24h = p.is24h ?? false;
+  const isNight = p.isNight ?? false;
+  const isSunday = p.isSunday ?? false;
+
+  // 영업시간 문자열 조합
+  const hours =
+    p.weekdayOpen && p.weekdayClose
+      ? `평일 ${p.weekdayOpen} ~ ${p.weekdayClose}${
+          p.saturdayOpen ? `  ·  토 ${p.saturdayOpen} ~ ${p.saturdayClose}` : ""
+        }`
+      : "";
+
+  // ── 별점 렌더 (약국은 rating 없으므로 기본값 표시 안 함) ──
+  const renderStars = (score) => {
+    const full = Math.floor(score);
+    const half = score - full >= 0.5;
+    const empty = 5 - full - (half ? 1 : 0);
+    return (
+      <>
+        {"★".repeat(full)}
+        {half && <span className="hdc__star--half">★</span>}
+        {"☆".repeat(empty)}
+      </>
+    );
+  };
+
   return (
-    <div className="phar-card">
-      {/* 썸네일 */}
-      <div className="phar-card-thumb">
-        {p.thumbnail ? (
-          <img src={p.thumbnail} alt={p.name} />
-        ) : (
-          <div className="phar-card-thumb-placeholder">
-            <FontAwesomeIcon icon={faPills} />
-          </div>
-        )}
-        {/* 영업 상태 배지 */}
-        <span className={`phar-status-badge ${p.status === "open" ? "open" : "closed"}`}>
-          {p.status === "open" && <span className="phar-status-dot" />}
-          {p.status === "open" ? "영업중" : "영업종료"}
+    <article className={`hdc ${isOpen ? "hdc--open" : "hdc--closed"}`}>
+      <button
+        className={`hdc__bookmark ${bookmarked ? "hdc__bookmark--on" : ""}`}
+        onClick={() => setBookmarked((b) => !b)}
+        aria-label="북마크"
+      >
+        <i className={bookmarked ? "fas fa-bookmark" : "far fa-bookmark"} />
+      </button>
+
+      {/* ── 상단 배지 줄 — 항상 3개 렌더링, 해당 없으면 --off로 회색 표시 ── */}
+      <div className="hdc__badges">
+        <span
+          className={`hdc__badge hdc__badge--24h${!is24h ? " hdc__badge--off" : ""}`}
+        >
+          <i className="fas fa-clock" /> 24시간
+        </span>
+        <span
+          className={`hdc__badge hdc__badge--night${!isNight ? " hdc__badge--off" : ""}`}
+        >
+          <i className="fas fa-moon" /> 야간
+        </span>
+        <span
+          className={`hdc__badge hdc__badge--sunday${!isSunday ? " hdc__badge--off" : ""}`}
+        >
+          <i className="fas fa-calendar-day" /> 일요일
         </span>
       </div>
 
-      {/* 내용 */}
-      <div className="phar-card-body">
-        {/* 이름 + 지도 버튼 */}
-        <div className="phar-card-name-row">
-          <h3 className="phar-card-name">{p.name}</h3>
-          <button className="phar-map-btn" title="지도에서 보기">
-            <FontAwesomeIcon icon={faMapLocationDot} />
-          </button>
-        </div>
-
-        {/* 거리 + 주소 */}
-        <div className="phar-card-addr-wrap">
-          <span className={`phar-dist-chip ${!p.distanceKm ? "unknown" : ""}`}>
-            <FontAwesomeIcon icon={faLocationDot} />
-            {p.distanceKm ? `${p.distanceKm}km` : "거리 미확인"}
+      {/* ── 메인 콘텐츠 ── */}
+      <div className="hdc__body">
+        {/* 왼쪽: 약국 아이콘 + 영업 상태 */}
+        <div className="hdc__icon-wrap">
+          <div className="hdc__icon">
+            {/* 약국 아이콘 (병원과 구분) */}
+            <i className="fas fa-prescription-bottle-alt" />
+          </div>
+          <span
+            className={`hdc__status ${isOpen ? "hdc__status--open" : "hdc__status--closed"}`}
+          >
+            {isOpen ? "영업중" : "영업종료"}
           </span>
-          <p className="phar-card-addr">{p.addr}</p>
         </div>
 
-        {/* 전화번호 */}
-        <p className="phar-card-phone">
-          <FontAwesomeIcon icon={faPhone} />
-          {p.phone}
-        </p>
+        {/* 오른쪽: 상세 정보 */}
+        <div className="hdc__info">
+          {/* 약국명 */}
+          <div className="hdc__title-row">
+            <h3 className="hdc__name">{p.name}</h3>
+          </div>
 
-        {/* 운영 시간 */}
-        <p className="phar-card-hours">
-          <FontAwesomeIcon icon={faClock} />
-          평일 {p.weekdayOpen} ~ {p.weekdayClose}
-          {p.saturdayOpen && (
-            <span className="phar-card-hours-sat">
-              &nbsp;· 토 {p.saturdayOpen} ~ {p.saturdayClose}
-            </span>
-          )}
-        </p>
-
-        {/* 태그 + 상세 버튼 */}
-        <div className="phar-card-footer">
-          <div className="phar-card-tags">
-            {p.is24h && <span className="phar-tag tag-24h">24시간</span>}
-            {p.isNight && !p.is24h && (
-              <span className="phar-tag tag-night">
-                <FontAwesomeIcon icon={faMoon} />
-                야간
+          {/* 유형 · 거리 */}
+          <div className="hdc__meta">
+            <span className="hdc__type">약국</span>
+            <span className="hdc__dot">·</span>
+            {p.distanceKm ? (
+              <span className="hdc__distance">
+                <i className="fas fa-location-dot" />
+                {p.distanceKm}km
               </span>
-            )}
-            {p.isSunday && (
-              <span className="phar-tag tag-sunday">
-                <FontAwesomeIcon icon={faCalendarDay} />
-                일요일
+            ) : (
+              <span className="hdc__distance" style={{ color: "#94a3b8" }}>
+                거리 미확인
               </span>
             )}
           </div>
-          <button className="phar-detail-btn">
-            상세보기
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
+
+          {/* 별점 — 약국 데이터에 rating이 있을 때만 표시 */}
+          {p.rating != null && (
+            <div className="hdc__rating">
+              <span className="hdc__stars">{renderStars(p.rating)}</span>
+              <span className="hdc__score">{p.rating.toFixed(1)}</span>
+              {p.reviews != null && (
+                <span className="hdc__review-cnt">({p.reviews}개 리뷰)</span>
+              )}
+            </div>
+          )}
+
+          {/* 주소 */}
+          <p className="hdc__addr">
+            <i className="fas fa-map-marker-alt" />
+            {p.addr}
+          </p>
+
+          {/* 전화번호 */}
+          {p.phone && (
+            <p className="hdc__phone">
+              <i className="fas fa-phone" />
+              <a href={`tel:${p.phone}`}>{p.phone}</a>
+            </p>
+          )}
+
+          {/* 영업시간 */}
+          {hours && (
+            <p className="hdc__hours">
+              <i className="fas fa-business-time" />
+              {hours}
+            </p>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* ── 하단 액션 버튼 ── */}
+      <div className="hdc__actions">
+        <button className="hdc__btn hdc__btn--ghost">
+          <i className="fas fa-map" /> 길찾기
+        </button>
+        <button
+          className="hdc__btn hdc__btn--ghost"
+          onClick={() => window.open(`tel:${p.phone}`)}
+        >
+          <i className="fas fa-phone-volume" /> 전화
+        </button>
+        <button className="hdc__btn hdc__btn--ghost">
+          <i className="fas fa-star" /> 리뷰
+        </button>
+      </div>
+    </article>
   );
 }
 
@@ -550,19 +622,29 @@ function PharmacyCard({ data: p }) {
    지역 선택 모달 (간이)
 ───────────────────────────────────────── */
 const REGIONS = [
-  "서울", "경기", "인천", "부산", "대구",
-  "광주", "대전", "울산", "세종", "강원",
-  "충북", "충남", "전북", "전남", "경북",
-  "경남", "제주",
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
 ];
 
 function RegionSelectModal({ onSelect, onClose }) {
   return (
     <div className="phar-modal-overlay" onClick={onClose}>
-      <div
-        className="phar-modal-box"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="phar-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="phar-modal-header">
           <h4>지역 선택</h4>
           <button className="phar-modal-close" onClick={onClose}>
