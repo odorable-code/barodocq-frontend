@@ -117,12 +117,8 @@ function HospitalReviews() {
       if (!token) return;
       try {
         const response = await authFetch("http://localhost:8080/api/v1/reviews");
-<<<<<<< HEAD
         const data = await response.json(); // 여기서 JSON으로 변환
         console.log("reviews from server (JSON):", data);
-=======
-        const data = await response.json();
->>>>>>> main
         setReviews(data);
       } catch (err) {
         console.error("후기 불러오기 실패:", err);
@@ -146,16 +142,14 @@ function HospitalReviews() {
 
   const sortReviews = async (type) => {
     try {
-<<<<<<< HEAD
-      const response = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
-      const data = await response.json();
-=======
+
+      // const response = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
+      // const data = await response.json();
       const res = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
       // ✅ 버그 수정
       // sortReviews에서 JSON 변환 누락 const data = await authFetch(...);
-      // setReviews(data);  →  const data = await res.json(); 로 수정
+      //setReviews(data);  →  const data = await res.json(); 로 수정
       const data = await res.json();
->>>>>>> main
       setReviews(data);
       setActiveSort(type);
       setCurrentPage(1);
