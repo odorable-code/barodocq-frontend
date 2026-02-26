@@ -30,6 +30,26 @@ const Chat = ( { hospitalName, userId, cr_num, ho_num, user_num }) => {
   });
 
   useEffect(() => {
+    const fetchHistory = async () => {
+        const response = await fetch(`http://localhost:8080/api/chat/history/${cr_num}`);
+        const data = await response.json();
+        setCm_contents(data);
+    };
+
+    if (cr_num) fetchHistory();
+
+    socketRef.current = new WebSocket("ws://localhost:8080/chat");
+    
+    socketRef.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.userId !== userId) {
+            setCm_contents((prev) => [...prev, data]);
+        }
+    };
+    return () => socketRef.current?.close();
+    }, [cr_num]);
+
+  useEffect(() => {
     setFormData(prev => ({
       ...prev,
       cr_num,
@@ -71,26 +91,6 @@ const Chat = ( { hospitalName, userId, cr_num, ho_num, user_num }) => {
       const data = JSON.parse(event.data); 
       	setCm_contents((prev) => [...prev, data]);
     };
-
-    useEffect(() => {
-    const fetchHistory = async () => {
-        const response = await fetch(`http://localhost:8080/api/chat/history/${cr_num}`);
-        const data = await response.json();
-        setCm_contents(data);
-    };
-
-    if (cr_num) fetchHistory();
-
-    socketRef.current = new WebSocket("ws://localhost:8080/chat");
-    
-    socketRef.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.userId !== userId) {
-            setCm_contents((prev) => [...prev, data]);
-        }
-    };
-    return () => socketRef.current?.close();
-    }, [cr_num]);
 
     // // [연결 종료]
     // socketRef.current.onclose = () => {
@@ -153,17 +153,10 @@ const Chat = ( { hospitalName, userId, cr_num, ho_num, user_num }) => {
       {/* 입력 영역 */}
       <div style={styles.cm_contentArea}>
         <input 
-<<<<<<< HEAD
-          style={styles.input}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()} //키보드가 눌렸을 때(onKeyDown), 그 키(e.key)가 'Enter'라면 handleSend() 함수를 실행해라 의미. if (e.key === 'Enter') { handleSend(); }를 줄여씀
-=======
           style={styles.cm_content}
           value={formData.cm_content}
           onChange={handleInputChange}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()} //.key는 KeyboradEvent의 표준 속성 > 엔터키를 누르면 e.key의 값은 "Enter"로 들어가서 어떤 키가 눌렸는지 문자열을 담아준다. 
->>>>>>> seoyeon
           placeholder="문의사항을 입력하세요..."
         />
         <button style={styles.sendBtn} onClick={handleSend}>

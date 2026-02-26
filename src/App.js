@@ -94,12 +94,11 @@ function App() {
           {/* 마이페이지 */}
           <Route path="mypage"             element={<MyPage />} />
 
-<<<<<<< HEAD
           {/* 병원 */}
           <Route path="hospitals"          element={<HospitalSearch />} />
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
           <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />
-=======
+          
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
             {/* 채팅방 */}
@@ -108,7 +107,6 @@ function App() {
             
             {/* 잘못된 경로는 메인으로 리다이렉트
             <Route path="*" element={<Navigate to="/" />} /> */}
->>>>>>> seoyeon
 
           {/* 약국 */}
           <Route path="pharmacy"           element={<PharmacySearch />} />

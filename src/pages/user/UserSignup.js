@@ -451,7 +451,6 @@ function UserSignup() {
     </div>
   );
 }
-}
 
 /* ── 비밀번호 강도 바 서브 컴포넌트 ── */
 function PwStrengthBar({ pw }) {

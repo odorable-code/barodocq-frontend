@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
 import { authFetch } from "../utils/AuthFetch";
->>>>>>> seoyeon
 import "../assets/styles/ReviewDetail.css";
-import { authFetch } from "../utils/AuthFetch";
 function ReviewDetail() {
   const { rvNum } = useParams();
   const navigate = useNavigate();
