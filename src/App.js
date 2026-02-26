@@ -1,40 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import HospitalDetail from "./pages/HospitalDetail";
-import HospitalSearch from "./pages/HospitalSearch";
-import Layout from "./components/Layout";
-import Main from "./Main";
-import MainPage from "./pages/MainPage";
-import QnAPage from "./Qna/QnAPage";
-import QnAWritePage from "./Qna/QnAWritePage";
-import HospitalSearchPage from "./pages/HospitalSearchPage";
-import ReservationDateSelect from "./pages/ReservationDateSelect";
-import ReservationDetail from "./pages/ReservationDetail";
-import HospitalReviews from "./Review/HospitalReviews";
-import ReviewDetail from "./Review/ReviewDetail";
-import ReviewRevise from "./Review/ReviewRevise";
-import ReviewCreate from "./Review/ReviewCreate";
-import PharmacySearch from "./pages/PharmacySearch2";
-import MyPage from "./MyPage";
 import Chat from "./Chat/Chat";
 import ChatList from "./Chat/ChatList";
+import Layout from "./components/Layout";
+import Main from "./Main";
+import MyPage from "./MyPage";
+import HospitalDetail from "./pages/HospitalDetail";
+import MainPage from "./pages/MainPage";
+import ReservationDateSelect from "./pages/ReservationDateSelect";
+import ReservationDetail from "./pages/ReservationDetail";
+import QnAPage from "./Qna/QnAPage";
+import QnAWritePage from "./Qna/QnAWritePage";
+import HospitalReviews from "./Review/HospitalReviews";
+import ReviewCreate from "./Review/ReviewCreate";
+import ReviewDetail from "./Review/ReviewDetail";
+import ReviewRevise from "./Review/ReviewRevise";
+import PharmacySearch from "./pages/PhamacySearch";
 
 // 관리자 페이지
+import AdminCustomers from "./adminComponents/AdminCustomers";
 import AdminHospitals from "./adminComponents/AdminHospitals";
 import AdminLayout from "./adminComponents/AdminLayout";
 import AdminMain from "./adminComponents/AdminMain";
 import AdminReservation from "./adminComponents/AdminReservation";
-import AdminCustomers from "./adminComponents/AdminCustomers";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Login from "./pages/user/Login";
-import Signup from "./pages/user/Signup";
-import UserSignup from "./pages/user/UserSignup";
 import AdminSignup from "./pages/user/AdminSignup";
 import FindId from "./pages/user/FindId";
 import FoundId from "./pages/user/FoundId";
+import Login from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
+import Signup from "./pages/user/Signup";
+import UserSignup from "./pages/user/UserSignup";
 
 function App() {
   const [showPopup,       setShowPopup]       = useState(false); // 예약 날짜 선택 팝업
@@ -95,9 +93,9 @@ function App() {
           <Route path="mypage"             element={<MyPage />} />
 
           {/* 병원 */}
-          <Route path="hospitals"          element={<HospitalSearch />} />
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
-          <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />
+          {/*<Route path="hospitals"          element={<HospitalSearch />} />
+          <Route path="hospitalsearchpage" element={<HospitalSearchPage />} />*/}
           
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />

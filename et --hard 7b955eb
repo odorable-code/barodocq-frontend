@@ -1,0 +1,182 @@
+[33mb9bd6dc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Revert "Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend"
+[33m11f1eb0[m[33m ([m[1;31morigin/hos_search[m[33m)[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33m99bf8a1[m 오류수정
+[33m78a91d1[m 1차 약국복구
+[33m9a079c9[m Revert "Merge branch 'hos_search'"
+[33m047e37e[m Merge branch 'hos_search'
+[33m7bfeff9[m 터짐수정중
+[33m7b955eb[m[33m ([m[1;31morigin/main-restore[m[33m, [m[1;32mmain-restore[m[33m)[m Merge branch 'main' of https://github.com/odorable-code/barodakq-frontend
+[33mc07c3ad[m Merge branch 'seoyeon'
+[33m4ab076f[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33m279d47b[m[33m ([m[1;31morigin/seoyeon[m[33m)[m 이메일, 사업자번호, 병원이름 중복확인 추가
+[33m31303ca[m 약국 찾기 UI 수정
+[33me762777[m[33m ([m[1;31morigin/community[m[33m)[m Merge branch 'main' into community
+[33m2b19ad8[m 후기고치기
+[33m5f9d377[m Merge branch 'main' into hos_search
+[33m2e29e7e[m 약국찾기 : 카카오매핑
+[33m4394f41[m Merge branch 'seoyeon'
+[33m5641a88[m 관리자 회원가입 구현 완성
+[33m158a019[m main marge
+[33m3584de1[m json변환(후기 QA)
+[33macef395[m Review페이지들 CSS수정
+[33mbce9f2d[m 다른 페이지처럼 병원찾기 페이지도 CSS 애니메이션 추가
+[33m258377c[m 마이페이지 테스트용 코드 추가(주석으로 설명 추가함), ReviewBoard, HospitalReview CSS수정
+[33m21c6d7f[m 에러 수정
+[33m75dca88[m ChatList
+[33m16d1af9[m AuthFetch(후기)
+[33m7e8df53[m authFetch > AuthFetch로 변경
+[33me5bb938[m AuthFetch(후기)
+[33me504635[m 약국찾기 페이지 UI 가운데 좌정렬->가운데정렬로 수정
+[33m49f863a[m authfetch폴더이동 오류해결
+[33meb9e06c[m Merge branch 'main' into community
+[33m5bb966d[m 후기
+[33m17eef3d[m Delete authFetch.js
+[33m8c16ee4[m Create AuthFetch.js
+[33m6bc2539[m Chat 화면 작업 중
+[33m8e806a7[m main->community
+[33m8662da9[m 예쁘게 좀 꾸미기
+[33m1e2a649[m[33m ([m[1;31morigin/MainPage[m[33m, [m[1;32mMainPage[m[33m)[m 페이지 추가 및 수정
+[33m13e2f2b[m 화면에서 서버로 챗 메시지 전송 및 채팅목록 js와 css 생성
+[33m0a0e5dc[m Merge branch 'hos_search'
+[33m6442a7c[m 병원 운영요일 완료
+[33md1c23bf[m 어드민 수정
+[33m1a55000[m 찜 목록 뿌리기
+[33mc435fbb[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33m88c7892[m 찜한 갯수
+[33m79593b5[m AuthContext 추가
+[33m197b1d5[m 파스칼 케이스로
+[33md9a37a5[m 코드 리뉴얼
+[33mab06875[m 약국찾기 UI 수정중
+[33m5ceacc4[m chat 작업 중
+[33m8671da3[m Chat 작업중이올시다
+[33mfa1ed3a[m 약국찾기 UI 수정
+[33m81751af[m Chat 프론트 작업 중
+[33mc0a6adc[m Merge branch 'main' into hos_search
+[33m3d4839e[m 어드민 수정중
+[33m8cc320f[m 마이페이지 작업완료, 헤더 수정
+[33ma378ce9[m 약국찾기 병원찾기 css 수정
+[33m5d61c46[m 병원찾기 수정, 회원가입 css 수정
+[33m64c4d01[m } 빠진거 추가
+[33m45805c8[m 중괄호 에러 수정
+[33mdd88ab2[m userSignup 이메일과 주소 추가
+[33m582aebf[m Merge branch 'main' into hos_search
+[33m92b4336[m 어드민 작업중
+[33m5cdbb82[m 오류 수정 및 css네임 태그 수정
+[33m97aa300[m userEmail과 userAddr 추가
+[33m53596d2[m main->community
+[33m176674f[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33m7540364[m 전역 css 충돌 수정, 추가 작업 필요, 확인된 페이지들만 수정완료
+[33mc80172c[m 회원가입 생년월일 추가
+[33m5044562[m 회원가입 생년월일 추가
+[33m1fe9b79[m 나의 예약 현황 조회 화면 구현, 수정 필요
+[33mde8afcb[m 헤더 수정, 임시로 넣어둔 링크 삭제
+[33m07fd47a[m 카카오&네이버 소셜 로그인 연동
+[33mb01eec6[m Merge branch 'main' into community
+[33mbf18724[m app 테스트로 메인으로 가는거 주석처리
+[33m1f31f78[m App.js에서 Mypage import
+[33m741b9dc[m 로그인, 비번재설정, 아이디 찾기 메인에 merge
+[33m5eb49b9[m Merge branch 'main' into community
+[33m6b3e07e[m mypage 소문자로 변경
+[33mb23b9f1[m 후기예쁘게 만들기(준비중)
+[33mae5f8ad[m App.js 경로 수정
+[33m1c36ed0[m 메인 merge
+[33m5a27b96[m 검색창 겹친거 제거
+[33m450f9de[m Merge branch 'main' into community
+[33m497f781[m 중복된 코드 제거
+[33m33f07c2[m 누락된 import 요소들 추가
+[33m874ccb3[m 비밀번호재설정과 아이디찾음 페이지 생성 및 아이디 찾기 완성
+[33m4bc833d[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33maff77f0[m Hos_Detail 디자인 초안, 수정 필요
+[33m487fe5a[m QnA_로그인필요없는 기능
+[33m01261ef[m Merge branch 'hos_search'
+[33m8f57a89[m 병원찾기 : 화면 교체 완료
+[33mcec4f26[m 약국찾기 페이지 제작
+[33m63f20cd[m App 소문자로 통일
+[33m3e3c24d[m 리뷰 관련 페이지4개 css 추가 및 작업, 네비바 오류 수정 및 리뷰 관련 편의 링크 추가
+[33m11efc38[m Merge branch 'main' into hos_search
+[33m30796a5[m 어드민 초안 작업중
+[33m2b5a555[m 파일 이름변경
+[33mb4ae7ce[m 어드민 초안 작업중
+[33m89706c4[m 자동검색 기능 및 로그인 화면 레이아웃 높이 조절
+[33m32bd98a[m qna
+[33maedc6da[m 로그인, 회원가입 화면 연결 및 로그인 동작 확인 완료
+[33mf87b79d[m 병합 후 불필요한 파일 제거
+[33m893098a[m main과 seoyeon 병합
+[33m0b302ec[m 프론트 초안
+[33m4363d3b[m qna수정중
+[33m7817ac5[m Merge branch 'hos_search'
+[33madfa22c[m 병원찾기 url체인지
+[33m4c8345b[m 병원찾기 디벨롭 + 지역모달 순서변경
+[33m9c534a1[m 약국 찾기 : 기능완료
+[33mb4b434c[m APP충돌
+[33m2351aac[m QnA만들기시작
+[33m26de91a[m 약국작업중
+[33m16078cb[m qna페이지css 수치 조정
+[33m01a5df2[m HospitalSearchPage수치 조정
+[33mf283d8e[m 리뷰보드 샘플 생성, 수정 많이 필요함
+[33m6589ddf[m 폰트어썸 추가
+[33mafe357d[m Merge branch 'main' of https://github.com/odorable-code/barodocq-frontend
+[33m75df028[m 병원찾기 페이지 만드는중
+[33mb186819[m Merge branch 'hos_search'
+[33m2e01a62[m 헤더 : 병원찾기 페이지 연결
+[33mf48dd39[m ignore app.js삭제
+[33md48972a[m 이거뭐지???New왜이렇게 많지?
+[33m2cd8478[m 후기(제1판)
+[33mac370d2[m Merge branch 'hos_search'
+[33mf45d8f3[m 병원상세 : 수정중
+[33m3b7f6b9[m 로고 누르면 홈으로 가게 수정
+[33md04ddeb[m 문의하기 메뉴 추가 및 링크 걸어둠
+[33mdca525a[m 문의하기 버튼 클릭시 QnAWrite페이지로 이동하게 경로 수정, 화면 작아질때 로그인 & 회원가입 버튼 안겹치게 수정
+[33m6a693b8[m (userId: "test", userPw: "test" 자동로그인)
+[33m3d4e7d0[m app ignore
+[33m140530a[m Merge branch 'QnA-Page'
+[33m89b0c85[m[33m ([m[1;31morigin/QnA-Page[m[33m, [m[1;32mQnA-Page[m[33m)[m QnA페이지 작업 완성
+[33mfa73b93[m 후기 이미지추가 댓글 조회,좋아요,댓글수
+[33m7078489[m 병원정보 : 정보 끌어오기 완료
+[33ma2da2c4[m 병원찾기 : 시군구 띄어쓰기 수정
+[33mb532b28[m 병원찾기 : 진료과/지역선택 필터 완료
+[33m141eed8[m 메인 페이지 작업완료
+[33m54aad9b[m fix
+[33mdf2ad45[m fix
+[33m80c7be9[m[33m ([m[1;31morigin/shh3482-branch1[m[33m, [m[1;32mshh3482-branch1[m[33m)[m 오타 수정
+[33m18b79b0[m 에러 수정중
+[33maa01744[m 메인에 있는거 머지완료, 수정작업 필요
+[33m2ccbaee[m Merge branch 'main' into shh3482-branch1
+[33m61be08d[m fix
+[33m3a443d4[m 병원찾기 : 병원정보 카드에 반영
+[33mb4609a7[m 후기이미지등록(실험용)
+[33mae3c951[m fix
+[33m36f42ac[m 후기전부 Review파일에 옮기기
+[33m2597870[m 로그인 후 후기
+[33m11168df[m 로그인 후 후기
+[33ma4ad15e[m 수정수정뿅은 사실뭐 없음
+[33m3b1785a[m 병원찾기 : 지역별, 진료과별 찾기 화면 완료
+[33me44e2a6[m 충돌제거
+[33mec2462a[m 메인 페이지 테스트 작업
+[33md82b140[m 메인 페이지 러프 작업
+[33maa8f070[m[33m ([m[1;31morigin/main-jobs[m[33m)[m 알림종 아이콘 넣응
+[33maac7a03[m 불필요한 import 삭제
+[33m0165339[m 예쁘게 줄바꿈
+[33ma35b123[m Merge branch 'ReservationDateSelect'
+[33ma4ea4dd[m[33m ([m[1;31morigin/ReservationDateSelect[m[33m, [m[1;32mReservationDateSelect[m[33m)[m 자잘한 오류 수정
+[33m97f8b3d[m 폰트어썸 무료버전 추가
+[33mcba109c[m 내비바로 분리 및 로고 삽입
+[33m8aa28b6[m 오류 수정중
+[33m0994e4e[m UI 수정 및 추가
+[33m5719983[m 메인에 머지하면서 발견한 오류들 수정
+[33mbdc5ccd[m ReservationDetail & ReservationDateSelect 머지작업 및 오류 수정
+[33m792e9d9[m Merge branch 'ReservationDetail'
+[33mf673076[m[33m ([m[1;31morigin/ReservationDetail[m[33m, [m[1;32mReservationDetail[m[33m)[m npm run시 화면 보이게 수정
+[33m0df0d78[m 마이페이지 추가
+[33m89f5b92[m 후기 기능 추가
+[33m7ddc8b6[m 버그 픽스
+[33m591883b[m 병원찾기메인 및 상세페이지 화면 초안
+[33m69da9f4[m X버튼 추가 오류 수정중
+[33mb8f3b60[m X버튼 추가, 빈화면 클릭시 나가기, 샘플 예약하기 버튼 추가
+[33me4a407d[m 예약 날짜 선택 제작
+[33m4ac6f26[m 반응형으로 디자인 수정
+[33m68c4fcf[m 예약현황 만들기 기본세팅 작업
+[33md77aa0c[m[33m ([m[1;31morigin/mypage[m[33m)[m 마이페이지 추가
+[33md63ff9e[m 메인페이지 추가
+[33m11eebdd[m start
+[33m49b6a01[m Initialize project using Create React App
