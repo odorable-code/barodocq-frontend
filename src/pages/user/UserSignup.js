@@ -8,11 +8,12 @@ function UserSignup() {
     userPw: "",
     userPw2: "",
     userName: "",
-    userPhone: "",
-    userGender: "",
     userAddr: "",
-    userBirth: "",
     userEmail: "",
+    userPhone: "",
+    userBirth: "",
+    userGender: "",
+    userAlert: ""
   });
 
   const [agreements, setAgreements] = useState({
@@ -385,6 +386,36 @@ function UserSignup() {
                   </div>
                 </div>
 
+                {/* 알림 허용 여부 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-venus-mars" />알림
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-gender-group">
+                    <label className={`su-gender-btn ${formData.userAlert === "isGranted" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userAlert"
+                        value="isGranted"
+                        onChange={handleChange}
+                        hidden
+                      />
+                      <i className="fas fa-mars" />허용
+                    </label>
+                    <label className={`su-gender-btn ${formData.userAlert === "isDenied" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userAlert"
+                        value="isDenied"
+                        onChange={handleChange}
+                        hidden
+                      />
+                      <i className="fas fa-venus" />비허용
+                    </label>
+                  </div>
+                </div>
+              
                 {/* 약관 동의 */}
                 <div className="su-terms">
                   <div className="su-terms-title">
