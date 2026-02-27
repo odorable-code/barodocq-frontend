@@ -410,45 +410,44 @@ const Header = ({ onOpenReservation }) => {
 
       {/* ════ 카톡식 채팅창 ════ */}
       {notifOpen && activeChatRoom && (
-        <Chat />
-        // <div className="hdr__cw" ref={chatRef}>
-        //   <div className="hdr__cw-head">
-        //     <button className="hdr__cw-back" onClick={() => setActiveChatRoom(null)}>
-        //       <FontAwesomeIcon icon={faArrowLeft} />
-        //     </button>
-        //     <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
-        //     <div className="hdr__cw-hinfo">
-        //       <span className="hdr__cw-hname">{activeChatRoom.hospital}</span>
-        //       <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
-        //     </div>
-        //     <button className="hdr__cw-more"><FontAwesomeIcon icon={faEllipsisVertical} /></button>
-        //   </div>
-        //   <div className="hdr__cw-body">
-        //     {(messages[activeChatRoom.id]||[]).map((msg,i) => (
-        //       <div key={i} className={`hdr__cw-msg hdr__cw-msg--${msg.from}`}>
-        //         {msg.from==="hospital" && <div className="hdr__cw-msg-avatar">{activeChatRoom.avatar}</div>}
-        //         <div className="hdr__cw-msg-wrap">
-        //           <div className="hdr__cw-bubble">{msg.text}</div>
-        //           <span className="hdr__cw-time">{msg.time}</span>
-        //         </div>
-        //       </div>
-        //     ))}
-        //     <div ref={chatEndRef} />
-        //   </div>
-        //   <div className="hdr__cw-input-wrap">
-        //     <input
-        //       type="text"
-        //       className="hdr__cw-input"
-        //       placeholder="메시지를 입력하세요..."
-        //       value={chatInput}
-        //       onChange={e => setChatInput(e.target.value)}
-        //       onKeyPress={e => e.key==="Enter" && sendMessage()}
-        //     />
-        //     <button className={`hdr__cw-send${chatInput.trim() ? " hdr__cw-send--active" : ""}`} onClick={sendMessage}>
-        //       <FontAwesomeIcon icon={faPaperPlane} />
-        //     </button>
-        //   </div>
-        // </div>
+        <div className="hdr__cw" ref={chatRef}>
+          {/* <div className="hdr__cw-head">
+            <button className="hdr__cw-back" onClick={() => setActiveChatRoom(null)}>
+              <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
+            <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
+            <div className="hdr__cw-hinfo">
+              <span className="hdr__cw-hname">{activeChatRoom.hospital}</span>
+              <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
+            </div>
+            <button className="hdr__cw-more"><FontAwesomeIcon icon={faEllipsisVertical} /></button>
+          </div>
+          <div className="hdr__cw-body">
+            {(messages[activeChatRoom.id]||[]).map((msg,i) => (
+              <div key={i} className={`hdr__cw-msg hdr__cw-msg--${msg.from}`}>
+                {msg.from==="hospital" && <div className="hdr__cw-msg-avatar">{activeChatRoom.avatar}</div>}
+                <div className="hdr__cw-msg-wrap">
+                  <div className="hdr__cw-bubble">{msg.text}</div>
+                  <span className="hdr__cw-time">{msg.time}</span>
+                </div>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+          <div className="hdr__cw-input-wrap">
+            <input
+              type="text"
+              className="hdr__cw-input"
+              placeholder="메시지를 입력하세요..."
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyPress={e => e.key==="Enter" && sendMessage()}
+            />
+            <button className={`hdr__cw-send${chatInput.trim() ? " hdr__cw-send--active" : ""}`} onClick={sendMessage}>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div> */}
+        </div>
       )}
     </header>
   );

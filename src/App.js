@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation  } from "react-router-dom";
 import axios from "axios";
 
 import HospitalDetail from "./pages/HospitalDetail";
@@ -38,6 +38,14 @@ import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   const [showPopup, setShowPopup] = useState(false); // 예약 날짜 선택 팝업
   const [showReservation, setShowReservation] = useState(false); // 나의 예약 현황 팝업
@@ -72,6 +80,7 @@ function App() {
   return (
     <AuthProvider>
     <BrowserRouter>
+    <ScrollToTop />
       {/* ── 전역 팝업 (라우트 외부, BrowserRouter 내부) ── */}
       {showReservation && (
         <ReservationDetail onClose={() => setShowReservation(false)} />
