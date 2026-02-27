@@ -150,6 +150,7 @@ function App() {
 
         {/* 최종 fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </BrowserRouter>
   );

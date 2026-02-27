@@ -22,10 +22,10 @@ export const WebSocketProvider = ({ children }) => {
       setCmContents((prev) => [...prev, data]);
     };
 
-		ws.onclose = () => console.log("연결이 끊겼습니다.");
+		ws.onclose = () => console.log("연결이 끊겼습니다."); //사용자가 채팅을 종료할 때
 
     setSocket(ws);
-    return () => ws.close();
+    return () => ws.close(); //연결이 끊어졌을 때 브라우저가 무슨 일을 할지 미리 정해두는 예약
   }, []);
 
   return (

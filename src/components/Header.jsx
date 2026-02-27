@@ -40,6 +40,11 @@ const NAV_ITEMS = [
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
   { path: "/hospitalsearchpage", label: "병원 찾기2", icon: faStethoscope },
   { path: "/mypage", label: "마이페이지", icon: faUser },
+<<<<<<< Updated upstream
+=======
+  { path: "/reservation", label: "예약하기", icon: faUser },
+  { path: "/testChat", label: "챗테스트", icon: faUser },
+>>>>>>> Stashed changes
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
   { path: "/community", label: "커뮤니티", icon: faComments },
   { path: "/qna", label: "Q&A", icon: faCircleQuestion },
@@ -654,7 +659,7 @@ const Header = ({ onOpenReservation }) => {
 
       {/* ════════ 카톡식 채팅창 ════════ */}
       {notifOpen && activeChatRoom && (
-        <Chat />
+        <Chat/>
       )}
     </header>
   );

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../assets/styles/HospitalDetail.css";
 import Chat from "../Chat/Chat";
+import { useSocket } from "../WebSocketContext";
+import { useAuth } from "../AuthContext";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
@@ -61,28 +63,43 @@ function Stars({ score = 0 }) {
 export default function Hos_Detail() {
   const { hospitalId } = useParams();
   const navigate       = useNavigate();
-
+  const { user } = useAuth();
   const [summary, setSummary] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const {
+    cmContent,
+    setCmContent,
+    cmContents,
+    setCmContents,
+    socket,
+    activeChatRoom,
+    setActiveChatRoom,
+    chatRef,
+    chatEndRef,
+  } = useSocket();
 
   useEffect(() => {
-    let ignore = false;
+    let ignore = false; // 데이터가 늦게 도착했을 때, 이미 떠나버린 페이지의 상태를 업데이트하려고 시도하다가 발생하는 에러(Memory Leak)를 막아주는 거절용 스위치
     async function loadData() {
       if (!hospitalId) return;
-      setLoading(true); setError("");
+      setLoading(true); // 시간이 걸릴 때 "데이터를 가져오는 중이니 잠시만 기다려주세요"라는 표시(예: 빙글빙글 도는 아이콘이나 로딩 메시지)를 보여주기 위해
+      setError(""); //에러 메시지 통을 깨끗하게 비워
       try {
-        const [sumRes, revRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/summary`),
-          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/reviews?limit=3`),
+        const [sumRes, revRes] = await Promise.all([ // 두 개의 fetch를 동시에 요청
+          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/summary`), // summary의 결과값이 sumRes에 들어감
+          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/reviews?limit=3`), // reviews의 결과값이 revRes에 들어감
         ]);
-        if (!sumRes.ok) throw new Error(`병원 정보 로드 실패 (${sumRes.status})`);
+        if (!sumRes.ok) throw new Error(`병원 정보 로드 실패 (${sumRes.status})`); 
         if (!revRes.ok) throw new Error(`리뷰 로드 실패 (${revRes.status})`);
         const [sumData, revData] = await Promise.all([sumRes.json(), revRes.json()]);
         if (!ignore) {
           setSummary({ ...sumData, hoNightYn: toBool(sumData.hoNightYn), hoHolidayYn: toBool(sumData.hoHolidayYn) });
           setReviews(Array.isArray(revData) ? revData : []);
+          console.log(sumData)
         }
       } catch (e) {
         if (!ignore) setError(e?.message || "에러 발생");
@@ -122,6 +139,60 @@ export default function Hos_Detail() {
     </div>
   );
 
+  const aaaaa = ()=>{
+
+    //로그인 여부 확인 후 처리 작업
+    const isLoggedIn = !!localStorage.getItem("accessToken"); //토큰이 있으면 true, 없으면 false. !!를 통해 값을 true 또는 false로 가져옴
+
+    if (!isLoggedIn) {
+    alert("로그인 후 이용 가능합니다.");
+    return; // 로그인이 안 되어 있으면 아래 코드를 실행하지 않고 함수를 여기서 종료합니다.
+    }
+
+    //통신으로 해당 병원과 회원 사이의 채팅방 정보를 가져옴(없으면 추가 후 가져옴)
+    //userNum 가져옴
+    const userNum = user.num;
+    console.log(userNum);
+
+    //setActiveChatRoom을 이용하여 선택된 채팅방 정보를 가져옴
+    //채팅방 정보: cr_num, ho_num, user_num, cm_sender_type, 
+    // setActiveChatRoom({
+    //   hospital : "dd"})
+    const ho_num = parseInt(location.pathname.replace(/\/details\//i, ""));
+
+    const getChatRoomInfo = async () => {
+      try {
+        const response = await fetch(`/api/chat/chatRoom`, {
+          method : "POST",
+          headers : {
+            'Content-Type' : 'application/json'
+          },
+          body : JSON.stringify({
+          crNum: crNum,
+          hoNum: hoNum,
+          userId: userId
+        })
+        });
+
+        const data = await response.json();
+
+      }catch (err) {
+        console.error("채팅방 정보 불러오기 실패", err);
+      }
+    };
+
+    setActiveChatRoom({
+      cr_num,
+      ho_num,
+      user_num,
+      cm_sender_type
+    })
+      
+    //통신으로 해당 병원과 회원 사이의 챙팅방 메세지 기록을 가져옴 => s
+    setCmContents([{cmContent : "안녕", cmCreatedAt: "2026-01-01"}])
+    setNotifOpen((v) => !v);
+    
+  }
   return (
     <div className="hd2">
 
@@ -217,7 +288,8 @@ export default function Hos_Detail() {
             <button className="hd2__actionBtn hd2__actionBtn--primary">
               <i className="fas fa-calendar-plus" />예약하기
             </button>
-            <button className="hd2__actionBtn hd2__actionBtn--ghost">
+            <button className="hd2__actionBtn hd2__actionBtn--ghost" 
+              onClick={aaaaa}>
               <i className="far fa-comment-dots" />1:1 문의
             </button>
           </div>
@@ -360,7 +432,9 @@ export default function Hos_Detail() {
               </div>
             )}
           </section>
-
+          {notifOpen && activeChatRoom &&  (
+            <Chat style={{top:"auto", bottom : "0", right : "10px"}} />
+          )}
         </main>
       </div>
     </div>
