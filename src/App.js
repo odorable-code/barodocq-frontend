@@ -12,7 +12,6 @@ import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import ReservationDetail from "./pages/ReservationDetail";
-import ReservationPage from "./pages/ReservationPage";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
@@ -20,6 +19,8 @@ import MyPage from "./MyPage";
 import PharmacySearch from "./pages/PhamacySearch";
 import Chat from "./Chat/Chat";
 import ChatList from "./Chat/ChatList";
+
+import { AuthProvider } from "./AuthContext";
 
 // 관리자 페이지
 import AdminCustomers from "./adminComponents/AdminCustomers";
@@ -38,9 +39,9 @@ import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
 
 function App() {
-  const [showPopup,       setShowPopup]       = useState(false); // 예약 날짜 선택 팝업
+  const [showPopup, setShowPopup] = useState(false); // 예약 날짜 선택 팝업
   const [showReservation, setShowReservation] = useState(false); // 나의 예약 현황 팝업
-  const [loading,         setLoading]         = useState(true);  // 자동 로그인 완료 여부
+  const [loading, setLoading] = useState(true); // 자동 로그인 완료 여부
 
   /* ── 자동 로그인 (개발용) ── */
   useEffect(() => {
@@ -50,7 +51,7 @@ function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: "admintest", userPw: "admintest" }),
     })
-      .then((res) => res.json())          // ← 중복 제거, 한 번만
+      .then((res) => res.json()) // ← 중복 제거, 한 번만
       .then((data) => {
         if (data.accessToken) {
           localStorage.setItem("accessToken", data.accessToken);
@@ -63,9 +64,13 @@ function App() {
       });
   }, []);
 
-  if (loading) return <div style={{ padding: "2rem", textAlign: "center" }}>로딩 중...</div>;
+  if (loading)
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>로딩 중...</div>
+    );
 
   return (
+    <AuthProvider>
     <BrowserRouter>
       {/* ── 전역 팝업 (라우트 외부, BrowserRouter 내부) ── */}
       {showReservation && (
@@ -90,52 +95,49 @@ function App() {
         >
           {/* 기본 진입 → 메인 */}
           <Route index element={<MainPage />} />
-          <Route path="mainpage"           element={<MainPage />} />
+          <Route path="mainpage" element={<MainPage />} />
 
           {/* 마이페이지 */}
-          <Route path="mypage"             element={<MyPage />} />
-
-          {/* 예약하기 */}
-          <Route path="reservation"             element={<ReservationPage />} />
+          <Route path="mypage" element={<MyPage />} />
 
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
-          <Route path="hospitals"          element={<HospitalSearch />} />
-          
-            {/* 잘못된 경로는 메인으로 리다이렉트 */}
-            <Route path="*" element={<Navigate to="/" />} />
-            {/* 채팅방 */}
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/chat/list" element={<ChatList />} />
-            
-            {/* 잘못된 경로는 메인으로 리다이렉트
+          <Route path="hospitals" element={<HospitalSearch />} />
+
+          {/* 잘못된 경로는 메인으로 리다이렉트 */}
+          <Route path="*" element={<Navigate to="/" />} />
+          {/* 채팅방 */}
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/list" element={<ChatList />} />
+
+          {/* 잘못된 경로는 메인으로 리다이렉트
             <Route path="*" element={<Navigate to="/" />} /> */}
 
           {/* 약국 */}
-          <Route path="pharmacy"           element={<PharmacySearch />} />
+          <Route path="pharmacy" element={<PharmacySearch />} />
 
           {/* 후기 */}
-          <Route path="reviews"            element={<HospitalReviews />} />
-          <Route path="reviews/create"     element={<ReviewCreate />} />
+          <Route path="reviews" element={<HospitalReviews />} />
+          <Route path="reviews/create" element={<ReviewCreate />} />
           <Route path="reviews/revise/:rvNum" element={<ReviewRevise />} />
-          <Route path="reviews/:rvNum"     element={<ReviewDetail />} />
+          <Route path="reviews/:rvNum" element={<ReviewDetail />} />
 
           {/* Q&A */}
-          <Route path="qna"                element={<QnAPage />} />
-          <Route path="qna/write"          element={<QnAWritePage />} />
+          <Route path="qna" element={<QnAPage />} />
+          <Route path="qna/write" element={<QnAWritePage />} />
 
           {/* 기타 */}
-          <Route path="main"               element={<Main />} />
-          <Route path="chat"               element={<Chat />} />
+          <Route path="main" element={<Main />} />
+          <Route path="chat" element={<Chat />} />
 
           {/* 인증 */}
-          <Route path="login"              element={<Login />} />
-          <Route path="signup"             element={<Signup />} />
-          <Route path="user/signup"        element={<UserSignup />} />
-          <Route path="admin/signup"       element={<AdminSignup />} />
-          <Route path="find/id"            element={<FindId />} />
-          <Route path="found/id"           element={<FoundId />} />
-          <Route path="resetPw"            element={<ResetPassword />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="user/signup" element={<UserSignup />} />
+          <Route path="admin/signup" element={<AdminSignup />} />
+          <Route path="find/id" element={<FindId />} />
+          <Route path="found/id" element={<FoundId />} />
+          <Route path="resetPw" element={<ResetPassword />} />
 
           {/* 잘못된 경로 → 메인으로 */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -145,16 +147,17 @@ function App() {
             관리자 영역
         ══════════════════════════ */}
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index                      element={<AdminMain />} />
-          <Route path="hospitals"           element={<AdminHospitals />} />
-          <Route path="reservations"        element={<AdminReservation />} />
-          <Route path="customers"           element={<AdminCustomers />} />
+          <Route index element={<AdminMain />} />
+          <Route path="hospitals" element={<AdminHospitals />} />
+          <Route path="reservations" element={<AdminReservation />} />
+          <Route path="customers" element={<AdminCustomers />} />
         </Route>
 
         {/* 최종 fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
