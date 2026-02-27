@@ -1,5 +1,4 @@
-
-import React, { useEffect, useMemo, useState, useCallback, useRef  } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import RegionSelect from "../components/RegionSelect";
 import KakaoMap from "../components/KakaoMap"; // ✅ 너가 준 공용 컴포넌트 경로에 맞게 수정
 import "../assets/styles/PharmacySearch.css";
@@ -20,8 +19,6 @@ import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
   faXmark,
-=======
->>>>>>> Stashed changes
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -37,10 +34,10 @@ const FILTER_OPTIONS = [
 ];
 
 const STAT_ITEMS = [
-  { icon: faPills, value: "12,400+", label: "전국 약국" },
-  { icon: faMoon, value: "1,820+", label: "야간운영 약국" },
+  { icon: faPills, value: "25,000+", label: "전국 약국" },
+  { icon: faMoon, value: "10,041+", label: "야간운영 약국" },
   { icon: faClock, value: "530+", label: "24시간 약국" },
-  { icon: faCalendarDay, value: "3,100+", label: "일요일운영 약국" },
+  { icon: faCalendarDay, value: "4,940+", label: "일요일운영 약국" },
 ];
 
 /* ─────────────────────────────────────────
@@ -68,6 +65,44 @@ const toHHMM = (t) => {
   return s;
 };
 
+const hhmmToMinutes = (hhmm) => {
+  if (!hhmm) return null;
+  const [h, m] = String(hhmm).split(":");
+  const hh = Number(h);
+  const mm = Number(m);
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+  return hh * 60 + mm;
+};
+
+const nowMinutes = () => {
+  const d = new Date();
+  return d.getHours() * 60 + d.getMinutes();
+};
+
+// ✅ "현재시간 기준 영업중/종료" 계산
+// - open/close가 없으면 unknown
+// - close가 open보다 작으면(예: 22:00~02:00) 자정 넘어가는 야간 케이스 처리
+const calcStatusByTime = (openHHMM, closeHHMM) => {
+  const o = hhmmToMinutes(openHHMM);
+  const c = hhmmToMinutes(closeHHMM);
+  if (o == null || c == null) return "unknown";
+
+  const now = nowMinutes();
+
+  // 같은 시간(혹은 00:00~00:00 같은 이상치)은 unknown 처리
+  if (o === c) return "unknown";
+
+  // 일반 케이스 (예: 10:00~19:00)
+  if (c > o) {
+    return now >= o && now < c ? "open" : "closed";
+  }
+
+  // 자정 넘어감 (예: 22:00~02:00)
+  // open 이후 ~ 24:00 OR 00:00 ~ close
+  return now >= o || now < c ? "open" : "closed";
+};
+
+
 const is24Hours = (openHHMM, closeHHMM) => {
   if (!openHHMM || !closeHHMM) return false;
   return (
@@ -75,6 +110,24 @@ const is24Hours = (openHHMM, closeHHMM) => {
     (closeHHMM === "23:59" || closeHHMM === "24:00" || closeHHMM === "23:58")
   );
 };
+
+const toBoolOpen = (v) => {
+  if (v === true) return true;
+  if (v === false) return false;
+
+  // 숫자/문자 1,0 처리
+  if (v === 1 || v === "1") return true;
+  if (v === 0 || v === "0") return false;
+
+  if (v == null) return null;
+
+  const s = String(v).trim().toUpperCase();
+  if (["Y", "YES", "TRUE", "T"].includes(s)) return true;
+  if (["N", "NO", "FALSE", "F"].includes(s)) return false;
+
+  return null;
+};
+
 
 // 거리계산(하버사인)
 const haversineKm = (lat1, lng1, lat2, lng2) => {
@@ -124,24 +177,32 @@ export default function PharmacySearch() {
         if (!res.ok) throw new Error(`API 실패: ${res.status}`);
 
         const data = await res.json();
+         console.log("API raw sample:", data?.[0]);
+      console.log(
+        "openYn / nightYn / holidayYn:",
+        data?.[0]?.phhOpenYn,
+        data?.[0]?.phNightYn,
+        data?.[0]?.phHolidayYn
+      );
+
 
         const normalized = (Array.isArray(data) ? data : []).map((x) => {
           const openTime = toHHMM(x.phhOpenTime);
           const closeTime = toHHMM(x.phhCloseTime);
 
-          const openYnValue = x.phhOpenYn;
-          const status =
-            openYnValue === null || openYnValue === undefined
-              ? "unknown"
-              : openYnValue === 1 || openYnValue === true
-              ? "open"
-              : "closed";
+          //현재시간 기준으로 status 결정
+          const status = calcStatusByTime(openTime, closeTime);
 
           const _is24h = is24Hours(openTime, closeTime);
 
           // lat/lng (String일 수 있으니 숫자로)
           const lat = x.phLat != null ? parseFloat(x.phLat) : null;
           const lng = x.phLng != null ? parseFloat(x.phLng) : null;
+
+           // ✅ 야간/일요일도 boolean/1/"1" 다 대응
+          const nightYn = toBoolOpen(x.phNightYn);
+          const holidayYn = toBoolOpen(x.phHolidayYn);
+          console.log("status check:", x.phName, openTime, closeTime, status);
 
           return {
             id: x.phNum,
@@ -161,6 +222,7 @@ export default function PharmacySearch() {
 
             lat: Number.isFinite(lat) ? lat : null,
             lng: Number.isFinite(lng) ? lng : null,
+            
 
             distanceKm: null,
           };
@@ -171,56 +233,11 @@ export default function PharmacySearch() {
         console.error(e);
         setError(e.message);
         setPharmacies([]);
-
-  const [myPos, setMyPos] = useState(DEFAULT_CENTER);
-  const [locError, setLocError] = useState(null);
-
-  const mapRef = useRef(null);
-  const markersRef = useRef([]);
-
-  /* ---------------- API FETCH ---------------- */
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch("http://localhost:8080/api/v1/pharmacy/cards");
-        if (!res.ok) throw new Error("API 호출 실패");
-
-        const data = await res.json();
-
-        const normalized = (Array.isArray(data) ? data : []).map((x) => ({
-          id: x.phNum,
-          name: x.phName,
-          addr: x.phAddr,
-          phone: x.phPhone,
-          thumbnail: x.phPhoto || null,
-          weekdayOpen: x.phhOpenTime?.slice(0, 5),
-          weekdayClose: x.phhCloseTime?.slice(0, 5),
-          is24h:
-            x.phhOpenTime === "00:00:00" &&
-            (x.phhCloseTime === "23:59:00" ||
-              x.phhCloseTime === "24:00:00"),
-          isNight: x.phNightYn === 1,
-          isSunday: x.phHolidayYn === 1,
-          status:
-            x.phhOpenYn === 1
-              ? "open"
-              : x.phhOpenYn === 0
-              ? "closed"
-              : "unknown",
-          lat: parseFloat(x.phLat),
-          lng: parseFloat(x.phLng),
-          distanceKm: null,
-        }));
-
-        setPharmacies(normalized);
-      } catch (e) {
-        setError(e.message);
       } finally {
         setIsLoading(false);
       }
     };
-
+    
     fetchPharmacies();
   }, []);
 
@@ -231,8 +248,8 @@ export default function PharmacySearch() {
     if (!navigator.geolocation) {
       setMyPos(DEFAULT_CENTER);
       setLocError("위치 기능을 지원하지 않아 서울시청 기준으로 보여집니다.");
-    fetchData();
-  }, []);
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -266,60 +283,6 @@ export default function PharmacySearch() {
         (p.name || "").includes(searchTerm) ||
         (p.addr || "").includes(searchTerm);
 
-        setMyPos({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-      },
-      () => {
-        setLocError("위치 권한이 없어 서울시청 기준으로 보여드려요.");
-      }
-    );
-  }, []);
-
-  /* ---------------- 카카오맵 초기화 ---------------- */
-  useEffect(() => {
-    if (!window.kakao) return;
-
-    window.kakao.maps.load(() => {
-      const container = document.getElementById("kakao-map");
-      if (!container) return;
-
-      const options = {
-        center: new window.kakao.maps.LatLng(
-          myPos.lat,
-          myPos.lng
-        ),
-        level: 5,
-      };
-
-      const map = new window.kakao.maps.Map(container, options);
-      mapRef.current = map;
-    });
-  }, [myPos]);
-
-  /* ---------------- 거리 계산 ---------------- */
-  const haversineKm = (lat1, lng1, lat2, lng2) => {
-    const toRad = (v) => (v * Math.PI) / 180;
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLng / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(a));
-  };
-
-  const filtered = useMemo(() => {
-    return pharmacies.filter((p) => {
-      const matchRegion = !regionQuery || p.addr?.includes(regionQuery);
-      const matchSearch =
-        !searchTerm ||
-        p.name?.includes(searchTerm) ||
-        p.addr?.includes(searchTerm);
-
       const matchFilter =
         activeFilter === "all" ||
         (activeFilter === "open" && p.status === "open") ||
@@ -333,7 +296,6 @@ export default function PharmacySearch() {
 
   const filteredSorted = useMemo(() => {
     const base = filtered.map((p) => {
-
       if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) {
         return { ...p, distanceKm: null };
       }
@@ -384,57 +346,10 @@ export default function PharmacySearch() {
   /* ─────────────────────────────────────────
      UI 핸들러
   ────────────────────────────────────────── */
-
-      if (!p.lat || !p.lng) return { ...p, distanceKm: null };
-      const d = haversineKm(myPos.lat, myPos.lng, p.lat, p.lng);
-      return { ...p, distanceKm: Number(d.toFixed(2)) };
-    });
-
-    return base.sort(
-      (a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999)
-    );
-  }, [filtered, myPos]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredSorted.length / PAGE_SIZE)
-  );
-
-  const paged = filteredSorted.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
-  /* ---------------- 지도 마커 ---------------- */
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !window.kakao) return;
-
-    markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
-
-    const bounds = new window.kakao.maps.LatLngBounds();
-
-    paged.forEach((p) => {
-      if (!p.lat || !p.lng) return;
-      const pos = new window.kakao.maps.LatLng(p.lat, p.lng);
-      const marker = new window.kakao.maps.Marker({
-        position: pos,
-        map,
-      });
-      markersRef.current.push(marker);
-      bounds.extend(pos);
-    });
-
-    if (paged.length > 0) map.setBounds(bounds);
-  }, [paged]);
-
-
   const handleSearch = () => {
     setSearchTerm(inputValue);
     setCurrentPage(1);
   };
-
 
   const handleFilterChange = (key) => {
     setActiveFilter(key);
@@ -459,7 +374,6 @@ export default function PharmacySearch() {
     setCurrentPage(1);
   };
 
-
   const getPageNumbers = () => {
     const pages = [];
     const start = Math.max(1, currentPage - 2);
@@ -470,7 +384,6 @@ export default function PharmacySearch() {
 
   return (
     <div className="phar-page">
-
       {/* ── 히어로 ── */}
       <section className="phar-hero">
         <div className="phar-hero-blob phar-blob1" />
@@ -563,12 +476,6 @@ export default function PharmacySearch() {
       <section className="phar-body">
         <div className="phar-container phar-body-grid">
           {/* 지도 */}
-
-      {/* 히어로 UI는 기존 그대로 사용 */}
-      {/* ... (UI 부분 동일) */}
-
-      <section className="phar-body">
-        <div className="phar-container phar-body-grid">
           <aside className="phar-map-col">
             <div className="phar-map-card">
               <div className="phar-map-header">
@@ -656,25 +563,6 @@ export default function PharmacySearch() {
                   <button
                     key={n}
                     className={`phar-page-btn ${currentPage === n ? "active" : ""}`}
-
-              <div id="kakao-map" style={{ width: "100%", height: "400px" }} />
-            </div>
-          </aside>
-
-          <div className="phar-result-col">
-            <div className="phar-result-header">
-              <strong>{filteredSorted.length}</strong>개의 약국
-            </div>
-
-            {paged.map((p) => (
-              <PharmacyCard key={p.id} data={p} />
-            ))}
-
-            {totalPages > 1 && (
-              <div className="phar-pagination">
-                {getPageNumbers().map((n) => (
-                  <button
-                    key={n}
                     onClick={() => setCurrentPage(n)}
                   >
                     {n}
@@ -723,24 +611,10 @@ function PharmacyCard({ data: p, onMoveMap }) {
   const isSunday = p.isSunday ?? false;
 
   const hours =
-    p.weekdayOpen && p.weekdayClose ? `평일 ${p.weekdayOpen} ~ ${p.weekdayClose}` : "";
+    p.weekdayOpen && p.weekdayClose ? ` ${p.weekdayOpen} ~ ${p.weekdayClose}` : "";
 
   return (
     <article className={`hdc ${isOpen ? "hdc--open" : "hdc--closed"}`}>
-      <div className="hdc__badges">
-        <span className={`hdc__badge hdc__badge--24h${!is24h ? " hdc__badge--off" : ""}`}>
-          <i className="fas fa-clock" /> 24시간
-        </span>
-        <span className={`hdc__badge hdc__badge--night${!isNight ? " hdc__badge--off" : ""}`}>
-          <i className="fas fa-moon" /> 야간
-        </span>
-        <span
-          className={`hdc__badge hdc__badge--sunday${!isSunday ? " hdc__badge--off" : ""}`}
-        >
-          <i className="fas fa-calendar-day" /> 일요일
-        </span>
-      </div>
-
       <div className="hdc__body">
         <div className="hdc__icon-wrap">
           <div className="hdc__icon">
@@ -788,38 +662,35 @@ function PharmacyCard({ data: p, onMoveMap }) {
             {p.addr}
           </p>
 
+          {p.phone && (
+            <p className="hdc__phone">
+              <i className="fas fa-phone" />
+              <a href={`tel:${p.phone}`}>{p.phone}</a>
+            </p>
+          )}
 
-
+          {hours && (
+            <p className="hdc__hours">
+              <i className="fas fa-business-time" />
+              {hours}
+            </p>
+          )}
         </div>
       </div>
 
+       <div className="hdc__badges">
+        <span className={`hdc__badge hdc__badge--24h${!is24h ? " hdc__badge--off" : ""}`}>
+          <i className="fas fa-clock" /> 24시간
+        </span>
+        <span className={`hdc__badge hdc__badge--night${!isNight ? " hdc__badge--off" : ""}`}>
+          <i className="fas fa-moon" /> 야간
+        </span>
+        <span
+          className={`hdc__badge hdc__badge--sunday${!isSunday ? " hdc__badge--off" : ""}`}
+        >
+          <i className="fas fa-calendar-day" /> 일요일
+        </span>
+      </div>
     </article>
-  );
-}
-
-      <RegionSelect
-        isOpen={showRegionModal}
-        onClose={() => setShowRegionModal(false)}
-        onConfirm={(r) => {
-          setRegionLabel(r?.label || "지역 선택");
-          setRegionQuery(r?.label || "");
-        }}
-      />
-    </div>
-  );
-}
-
-function PharmacyCard({ data: p }) {
-  return (
-    <div className="phar-card">
-      <h3>{p.name}</h3>
-      <p>{p.addr}</p>
-      <p>{p.phone}</p>
-      <p>
-        {p.distanceKm != null
-          ? `${p.distanceKm}km`
-          : "거리 미확인"}
-      </p>
-    </div>
   );
 }
