@@ -13,17 +13,33 @@ const QnAPage = () => {
   const itemsPerPage = 5;
 
   const token = localStorage.getItem("accessToken");
-  const isLoggedIn = !!token;
-
   const navigate = useNavigate();
+
+  let currentUser = null;
+  let userRole = null;
+
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      currentUser = payload.sub; // 유저 아이디
+      userRole = payload.role;   // 유저 role
+      console.log("currentUser:", currentUser, "role:", userRole);
+    } catch (err) {
+      console.error("토큰 디코딩 실패", err);
+    }
+  }
+
+const isLoggedIn = !!currentUser;
+const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허용
+
   // DB에서 가져오기
   const fetchQnas = async (sort = "latest") => {
     try {
       // 서버에서 정렬, 검색, 페이지 처리 가능
-      const data = await authFetch(
+      const resp = await authFetch(
         `http://localhost:8080/api/v1/qnas?sort=${sort}`
       );
-
+      const data = await resp.json();
       const mappedData = data.map(q => ({
         id: q.qnNum,
         title: q.qnTitle || "제목 없음",
@@ -38,6 +54,7 @@ const QnAPage = () => {
       setQnas(mappedData);
       setCurrentPage(1);
     } catch (err) {
+      console.log(token)
       console.error("QNA 로드 실패:", err);
     }
   };
@@ -115,11 +132,14 @@ const QnAPage = () => {
               </button>
             </div>
 
-            <button 
-              className={`btn-write-qna ${!isLoggedIn ? "disabled" : ""}`} 
-              onClick={handleWriteClick}>
-              <i className="fas fa-pen" /> 문의하기
-            </button>
+            {canWriteQnA && (
+              <button 
+                className="btn-write-qna"
+                onClick={handleWriteClick}
+              >
+                <i className="fas fa-pen" /> 문의하기
+              </button>
+            )}
 
             <input
               type="text"
@@ -187,7 +207,14 @@ const QnAPage = () => {
         </div>
       </section>
 
-      {selectedQnA && <QnAModal qna={selectedQnA} onClose={() => setSelectedQnA(null)} />}
+      {selectedQnA && (
+        <QnAModal
+          qna={selectedQnA}
+          onClose={() => setSelectedQnA(null)}
+          canWriteQnA={canWriteQnA}
+          handleWriteClick={handleWriteClick}
+        />
+      )}
     </div>
   );
 };
@@ -206,7 +233,7 @@ const QnACard = ({ title, author, date, views, status, hasAnswer, onSelect, isSe
   </div>
 );
 
-const QnAModal = ({ qna, onClose }) => (
+const QnAModal = ({ qna, onClose, canWriteQnA, handleWriteClick }) => (
   <div className="qna-modal-overlay" onClick={onClose}>
     <div className="qna-modal-content" onClick={(e) => e.stopPropagation()}>
       <div className="qna-modal-header">
@@ -229,6 +256,14 @@ const QnAModal = ({ qna, onClose }) => (
         {!qna.hasAnswer && <div className="qna-no-answer"><i className="fas fa-clock" /><p>답변을 준비 중입니다.</p></div>}
       </div>
       <div className="qna-modal-footer">
+        {!canWriteQnA && (
+              <button 
+                className="btn-write-qna"
+                onClick={handleWriteClick}
+              >
+                <i className="fas fa-pen" /> 답변등록
+              </button>
+            )}
         <button className="btn-modal-close" onClick={onClose}>닫기</button>
       </div>
     </div>
