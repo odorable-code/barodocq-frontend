@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 
-import HospitalDetail from "./pages/HospitalDetail";
-import HospitalSearch from "./pages/HospitalSearch";
-import HospitalReviews from "./Review/HospitalReviews";
+import Chat from "./Chat/Chat";
+import ChatList from "./Chat/ChatList";
 import Layout from "./components/Layout";
 import Main from "./Main";
+import MyPage from "./MyPage";
+import HospitalSearch from "./pages/HospitalSearch";
+import HospitalDetail from "./pages/HospitalDetail";
 import MainPage from "./pages/MainPage";
 import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
@@ -16,10 +18,7 @@ import ReservationPage from "./pages/ReservationPage";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
-import MyPage from "./MyPage";
 import PharmacySearch from "./pages/PhamacySearch";
-import Chat from "./Chat/Chat";
-import ChatList from "./Chat/ChatList";
 
 // 관리자 페이지
 import AdminCustomers from "./adminComponents/AdminCustomers";
@@ -101,6 +100,8 @@ function App() {
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
           <Route path="hospitals"          element={<HospitalSearch />} />
+          
+          {/*<Route path="hospitalsearchpage" element={<HospitalSearchPage />} />*/}
           
             {/* 잘못된 경로는 메인으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" />} />
