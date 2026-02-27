@@ -42,6 +42,20 @@ const pickFirstNumber = (...cands) => {
   return null;
 };
 
+const haversineKm = (lat1, lng1, lat2, lng2) => {
+  const toRad = (v) => (v * Math.PI) / 180;
+  const R = 6371;
+
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.sqrt(a));
+};
+
 const normalizeSidoToken = (name) => {
   if (!name) return "";
   return name
@@ -163,12 +177,13 @@ async function fetchHospitals(params = {}) {
   return Array.isArray(data) ? data : data?.content ?? [];
 }
 
-/* ─────────────────────────────────────────
-   HospitalSearch (최종 UI + API 기능 결합 버전)
-───────────────────────────────────────── */
+//병원 찾기
 export default function HospitalSearch() {
   const navigate = useNavigate();
   const headerRef = useRef(null);
+  const PAGE_SIZE = 15;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const loadMoreRef = useRef(null);
 
   // 검색/필터/정렬
   const [searchQuery, setSearchQuery] = useState("");
@@ -187,6 +202,32 @@ export default function HospitalSearch() {
   const [bookmarkedHospitals, setBookmarkedHospitals] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // 위치감지 병원거리 계산
+  const DEFAULT_CENTER = { lat: 37.5665, lng: 126.9780 }; // 서울시청
+  const [userPos, setUserPos] = useState(DEFAULT_CENTER);
+  const [geoError, setGeoError] = useState("");
+  const pin = "\u{1F4CD}"; // 맵핀
+
+  useEffect(() => {
+  if (!navigator.geolocation) {
+    setGeoError("이 브라우저는 위치 기능을 지원하지 않습니다.");
+    setUserPos(DEFAULT_CENTER); 
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+    },
+    (err) => {
+      // 권한 거부/타임아웃이면 fallback
+      setGeoError(err?.message || "위치 정보를 가져오지 못했어요.");
+      setUserPos(DEFAULT_CENTER);
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60_000 }
+  );
+}, []);
 
   const toggleFilter = (filterId) => {
     setActiveFilters((prev) =>
@@ -225,8 +266,6 @@ export default function HospitalSearch() {
 
     async function load() {
       const list = await fetchHospitals(queryParams);
-console.log("cards sample keys:", Object.keys(list?.[0] || {}));
-console.log("cards sample row:", list?.[0]);
       setLoading(true);
       setError("");
 
@@ -258,6 +297,8 @@ console.log("cards sample row:", list?.[0]);
                 id,
                 name: r.hoName ?? r.ho_name ?? "병원명",
                 dept: r.deptName ?? r.dept_name ?? "",
+                lat: pickFirstNumber(r.hoLat, r.ho_lat, r.lat),
+                lng: pickFirstNumber(r.hoLng, r.ho_lng, r.lng),
                 address: r.hoAddr ?? r.ho_addr ?? "",
                 phone: r.hoPhone ?? r.ho_phone ?? "",
                 rating: pickFirstNumber(r.rvRating, r.rv_rating, r.rating),
@@ -351,6 +392,9 @@ console.log("cards sample row:", list?.[0]);
             (acc.closedTextFromApi && String(acc.closedTextFromApi).trim()) ||
             (acc.closedDays.length ? acc.closedDays.join(", ") : "휴진일 정보 없음");
 
+          const hasCoord = acc.lat != null && acc.lng != null;
+          const distKm = hasCoord ? haversineKm(userPos.lat, userPos.lng, acc.lat, acc.lng) : null;
+
           return {
             ...acc,
             status,
@@ -359,6 +403,8 @@ console.log("cards sample row:", list?.[0]);
             tags,
             features,
             closedText,
+            distanceKm: distKm,
+            distance: distKm != null ? `${distKm.toFixed(1)}km` : (acc.distance ?? "0km"),
           };
         });
 
@@ -377,7 +423,7 @@ console.log("cards sample row:", list?.[0]);
     return () => {
       ignore = true;
     };
-  }, [queryParams]);
+  }, [queryParams], [userPos]);
 
   // ✅ 프론트 필터 (검색/지역 + 상세필터 적용)
   const filteredHospitals = useMemo(() => {
@@ -411,6 +457,7 @@ console.log("cards sample row:", list?.[0]);
 
   // ✅ 정렬
   const sortedHospitals = useMemo(() => {
+    
     const list = [...filteredHospitals];
 
     if (sortBy === "distance") {
@@ -429,6 +476,34 @@ console.log("cards sample row:", list?.[0]);
 
     return list;
   }, [filteredHospitals, sortBy]);
+
+    const visibleHospitals = useMemo(
+    () => sortedHospitals.slice(0, visibleCount),
+    [sortedHospitals, visibleCount]
+  );
+
+    const hasMore = visibleCount < sortedHospitals.length;
+
+  //스크롤 바닥 감지해서 15개씩 증가하기
+  useEffect(() => {
+  const el = loadMoreRef.current;
+  if (!el) return;
+
+  if (!hasMore) return; // 더 불러올 게 없으면 관찰 중단
+
+  const obs = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) {
+        setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, sortedHospitals.length));
+      }
+    },
+    { root: null, threshold: 0.1, rootMargin: "200px 0px" } // 미리 로딩되게 200px 여유
+  );
+
+  obs.observe(el);
+  return () => obs.disconnect();
+}, [hasMore, sortedHospitals.length]);
+
 
   // (선택) 스크롤 애니메이션: ✅ 최종 UI 카드(.hdc)에 적용
   useEffect(() => {
@@ -614,7 +689,7 @@ console.log("cards sample row:", list?.[0]);
             </div>
           ) : (
             <div className="hsp-cards-grid">
-              {sortedHospitals.map((h) => (
+              {visibleHospitals.map((h) => (
                 <HospitalDetailCard
                   key={h.id}
                   hospital={h}
@@ -624,6 +699,10 @@ console.log("cards sample row:", list?.[0]);
                   onGoDetail={() => navigate(`/details/${h.id}`)}
                 />
               ))}
+              {/*카드 마지막 */}
+              {hasMore && (
+                <div ref={loadMoreRef} style={{ height: 1 }} />
+              )}
             </div>
           )}
         </div>
@@ -826,7 +905,7 @@ function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserv
           <i className="fas fa-map" /> 길찾기
         </button>
         <button className="hdc__btn hdc__btn--ghost" type="button">
-          <i className="fas fa-phone-volume" /> 전화
+          <i className="fas fa-comment-dots" /> 1:1문의
         </button>
         <button className="hdc__btn hdc__btn--ghost" type="button">
           <i className="fas fa-star" /> 리뷰

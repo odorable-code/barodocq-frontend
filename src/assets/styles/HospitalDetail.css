@@ -204,13 +204,22 @@
 .hd2__strip {
   background: #fff;
   border-bottom: 1px solid var(--border-color);
-  padding: 1rem 1.5rem;
-  display: flex;
+  padding: 1rem 0;
   align-items: center;
   flex-wrap: wrap;
   gap: .5rem 1.5rem;
   font-size: .84rem;
   color: var(--text-secondary);
+  width: 100%
+}
+.hd2__strip-inner {
+  max-width: 1240px;      /* hero-inner와 맞추기*/
+  margin: 0 auto;
+  padding: 0 1.5rem;        /* hero-inner 좌우 padding이랑 동일하게 */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;        /* 줄바꿈 필요하면 유지 */
 }
 .hd2__strip-item {
   display: inline-flex;
@@ -375,6 +384,17 @@
   color: var(--text-secondary);
   line-height: 1.5;
 }
+.hd2__infoLine--week {
+  display: grid;
+  grid-template-columns: 20px auto;
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: start;
+}
+.hd2__week { grid-column: 2; margin-top: 2px; }
+.hd2__weekLine { font-size: 13px; line-height: 1.35; opacity: .95; }
+.hd2__infoLabel { font-weight: 500; }
+
 .hd2__infoIcon {
   color: var(--primary-mint);
   font-size: .8rem;
@@ -434,7 +454,9 @@
   background: var(--bg-card);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-xl);
+  padding: 16px;
   overflow: hidden;
+  justify-content: center;
   transition: var(--transition-base);
   position: relative;
 }
@@ -477,16 +499,66 @@
 
 .hd2__panelBody {
   padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* 패널 내부 여백 제거 */
+.hd2__panelBody.hd2__mapBox {
+  padding: 0;
+  margin: 0;
+}
+
+.hd2__addrBar{
+  margin-bottom: 16px;
+}
+
+/* 지도 박스 */
+.hd2__mapBox {
+  width: 100%;
+  max-width: 788px; /* 데스크탑 기준 */
+  height: 320px;
+  overflow: hidden;
+  background: #eef6f4;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.hd2__panelBody.hd2__mapBox{
+  width: min(788px, 100%);
+  height: 320px;
+  margin: 16px auto 0;     /* ⭐ 가로 중앙 */
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #eef6f4;
+  display: block;           /* flex 영향 제거 */
+  border: 0;                /* dashed 제거 */
+  border: 2px dashed var(--primary-mint);
+}
+
+/* ✅ 실제 지도(div) 꽉 채우기 */
+.hd2__panelBody.hd2__mapBox > div{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+👉 데스크
+
+/* 실제 카카오맵 div */
+.hd2__mapBox > div {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
 }
 
 /* 사진 플레이스홀더 */
-.hd2__photoBox,
-.hd2__mapBox {
+.hd2__photoBox{
   min-height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  margin: 0 auto;
   gap: .75rem;
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
@@ -666,6 +738,8 @@
   box-shadow: var(--shadow-mint);
 }
 .hd2__moreBtn i { font-size: .8rem; }
+
+
 
 /* ══════════════ 애니메이션 ══════════════ */
 @keyframes hd2-float {
