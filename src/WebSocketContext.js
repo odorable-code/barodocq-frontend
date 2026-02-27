@@ -5,9 +5,9 @@ const WebSocketContext = createContext();
 
 export const WebSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const [activeChatRoom, setActiveChatRoom] = useState(null); // 전역으로 관리!
-	const [cm_contents, setCm_contents] = useState([]);
-	const [cm_content, setCm_content] = useState("");
+  const [activeChatRoom, setActiveChatRoom] = useState(null);
+	const [cmContents, setCmContents] = useState([]);
+	const [cmContent, setCmContent] = useState("");
 	const chatRef = useRef(null);
 	const chatEndRef = useRef(null);
 
@@ -18,8 +18,8 @@ export const WebSocketProvider = ({ children }) => {
 
 		ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      // 서버에서 온 메시지를 목록에 추가
-      setCm_contents((prev) => [...prev, data]);
+      // 서버에서 온 메시지를 목록에 추가       
+      setCmContents((prev) => [...prev, data]);
     };
 
 		ws.onclose = () => console.log("연결이 끊겼습니다.");
@@ -30,8 +30,8 @@ export const WebSocketProvider = ({ children }) => {
 
   return (
     <WebSocketContext.Provider value={{
-				socket, activeChatRoom, setActiveChatRoom, cm_content, setCm_content, 
-				cm_contents, setCm_contents, chatRef, chatEndRef }}>
+				socket, activeChatRoom, setActiveChatRoom, cmContent, setCmContent, 
+				cmContents, setCmContents, chatRef, chatEndRef }}>
       {children}
     </WebSocketContext.Provider>
   );
