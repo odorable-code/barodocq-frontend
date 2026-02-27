@@ -733,14 +733,11 @@ const MyPage = () => {
   const [activeStatus, setActiveStatus] = useState("reservation");
   const [scrapCount, setScrapCount] = useState(0);
   const [scraps, setScraps] = useState([]);
-<<<<<<< HEAD
   const [reservations, setReservations] = useState(RESERVATIONS);
 
   // 모달 상태
   const [modal, setModal] = useState(null); // 'points' | 'reservationAll' | 'historyAll' | 'scrapAll' | 'notifications' | 'qna' | 'reviews' | 'chat' | 'editProfile' | 'changePassword' | 'security' | 'notices' | 'support' | 'terms' | 'logout' | 'withdraw' | 'cancelConfirm'
   const [cancelTarget, setCancelTarget] = useState(null);
-=======
->>>>>>> seoyeon
 
   const auth = useAuth();
 
