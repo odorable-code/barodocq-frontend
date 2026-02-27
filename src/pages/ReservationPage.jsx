@@ -15,9 +15,23 @@ export default function ReservationPage() {
   const [visitType, setVisitType] = useState("초진");
   const [memo, setMemo] = useState("");
 
+  // 부모 페이지에서 쓰는법!
+  // const [selectedHoNum, setSelectedHoNum] = useState(null);
+
+  // <button onClick={() => setSelectedHoNum(hos.hoNum)}>
+  //   예약하기
+  // </button>
+
+  // {selectedHoNum && (
+  //   <ReservationPage
+  //     hoNum={selectedHoNum}
+  //     onClose={() => setSelectedHoNum(null)}
+  //   />
+  // )}
+
   // 병원 정보 불러오기
   useEffect(() => {
-    axios.get(`${API}/hospitals/${hoNum}`)
+    axios.get(`${API}/api/v1/hospitals/${hoNum}`)
       .then(res => setHospital(res.data));
   }, [hoNum]);
 
@@ -25,7 +39,7 @@ export default function ReservationPage() {
   useEffect(() => {
     if (!selectedDate) return;
 
-    axios.get(`${API}/reservations/unavailable`, {
+    axios.get(`${API}/api/v1/reservations/unavailable`, {
       params: { hoNum, date: selectedDate }
     }).then(res => setReservedTimes(res.data));
   }, [selectedDate, hoNum]);
@@ -56,7 +70,7 @@ export default function ReservationPage() {
     }
 
     try {
-      await axios.post(`${API}/reservations`, {
+      await axios.post(`${API}/api/v1/reservations`, {
         hoNum,
         reDate: selectedDate,
         reTime: selectedTime,
@@ -152,3 +166,4 @@ export default function ReservationPage() {
     </div>
   );
 }
+
