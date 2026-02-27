@@ -50,7 +50,7 @@ const groupByMonth = (dates) => {
   return Array.from(map.entries());
 };
 
-export default function ReservationModal({ hoNum, onClose }) {
+export default function ReservationModal({ hoNum, deptNum, onClose }) {
   const [hospital,      setHospital]      = useState(null);
   const [loading,       setLoading]       = useState(true);
   const [selectedDate,  setSelectedDate]  = useState(null);
@@ -100,15 +100,17 @@ export default function ReservationModal({ hoNum, onClose }) {
       .finally(() => setLoading(false));
   }, [hoNum]);
 
-  /* 날짜 선택 시 예약 불가 시간 로드 */
   useEffect(() => {
-    if (!selectedDate) return;
-    axios.get(`${API}/api/v1/reservations/unavailable`, {
-      params: { hoNum, date: toDateStr(selectedDate) }
-    })
-      .then(res => setReservedTimes(res.data))
-      .catch(() => setReservedTimes([]));
-  }, [selectedDate, hoNum]);
+  if (!selectedDate) return;
+  axios.get(`${API}/api/v1/reservations/unavailable`, {
+    params: { hoNum, date: toDateStr(selectedDate) }
+  })
+    .then(res => 
+      // DB에서 "14:00:00" 형식으로 올 수 있으니 "HH:mm"으로 잘라서 맞춤
+      setReservedTimes(res.data.map(t => t.slice(0,5)))
+    )
+    .catch(() => setReservedTimes([]));
+}, [selectedDate, hoNum]);
 
   const isTimeDisabled = (time) => {
     if (reservedTimes.includes(time)) return true;
@@ -136,16 +138,22 @@ export default function ReservationModal({ hoNum, onClose }) {
     if (!selectedDate || !selectedTime) return;
     setSubmitting(true);
     try {
-      await axios.post(`${API}/api/v1/reservations`, {
+      const token = localStorage.getItem("accessToken");
+      const res = await axios.post(`${API}/api/v1/reservations`, {
         hoNum,
-        reDate: toDateStr(selectedDate),
-        reTime: selectedTime,
-        visitType,
-        memo,
+        deptNum,                        // ✅ prop에서 받은 deptNum
+        reDate:      toDateStr(selectedDate),
+        reTime:      selectedTime,
+        reVisitType: visitType,          // ✅ visitType → reVisitType
+        reMemo:      memo,               // ✅ memo → reMemo
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      console.log("예약 성공:", res.data);
       setDone(true);
-    } catch {
-      alert("이미 예약된 시간이거나 오류가 발생했습니다.");
+    } catch (err) {
+      console.error("예약 실패:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "이미 예약된 시간이거나 오류가 발생했습니다.");
     } finally {
       setSubmitting(false);
     }
@@ -163,7 +171,7 @@ export default function ReservationModal({ hoNum, onClose }) {
           <button className="rm-close" onClick={onClose}><i className="fas fa-xmark" /></button>
           <div className="rm-done-screen">
             <div className="rm-done-icon"><i className="fas fa-circle-check" /></div>
-            <div className="rm-done-badge">예약 완료</div>
+            <div className="rm-done-badge">예약대기</div>
             <h2>예약이 확정되었습니다!</h2>
             <div className="rm-done-info">
               <div className="rm-done-info-row">
