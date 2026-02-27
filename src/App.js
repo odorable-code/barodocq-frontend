@@ -12,7 +12,6 @@ import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import ReservationDetail from "./pages/ReservationDetail";
-import ReservationPage from "./pages/ReservationPage";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
 import ReviewCreate from "./Review/ReviewCreate";
@@ -97,9 +96,6 @@ function App() {
 
           {/* 마이페이지 */}
           <Route path="mypage" element={<MyPage />} />
-
-          {/* 예약하기 */}
-          <Route path="/reservation/:hoNum" element={<ReservationPage />} />
 
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
