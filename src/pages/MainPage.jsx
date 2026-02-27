@@ -165,15 +165,12 @@ const MainPage = () => {
         <div className="container-s2">
           <div className="hero-content-s2">
             <div className="hero-left-s2">
-              <span className="hero-label-s2">
-                <span className="label-icon-s2">✨</span>AI 병원 추천 플랫폼
-              </span>
               <h1 className="hero-title-s2">
                 건강한 내일을 위한<br />
                 <span className="gradient-text-s2">스마트한 선택</span>
               </h1>
               <p className="hero-subtitle-s2">
-                증상에 맞는 최적의 병원을 AI가 추천해드립니다.<br />
+                증상에 맞는 최적의 병원을 추천해드립니다.<br />
                 간편한 예약부터 진료 후기까지, 모든 것을 한곳에서
               </p>
               <div className="hero-search-s2">

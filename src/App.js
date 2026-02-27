@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import axios from "axios";
 
-import Chat from "./Chat/Chat";
-import ChatList from "./Chat/ChatList";
+import HospitalDetail from "./pages/HospitalDetail";
+import HospitalSearch from "./pages/HospitalSearch";
+import HospitalReviews from "./Review/HospitalReviews";
 import Layout from "./components/Layout";
 import Main from "./Main";
-import MyPage from "./MyPage";
-import HospitalSearch from "./pages/HospitalSearch";
-import HospitalDetail from "./pages/HospitalDetail";
 import MainPage from "./pages/MainPage";
-import ReservationDateSelect from "./pages/ReservationDateSelect";
-import ReservationDetail from "./pages/ReservationDetail";
 import QnAPage from "./Qna/QnAPage";
 import QnAWritePage from "./Qna/QnAWritePage";
-import HospitalReviews from "./Review/HospitalReviews";
-import ReviewCreate from "./Review/ReviewCreate";
+import ReservationDateSelect from "./pages/ReservationDateSelect";
+import ReservationDetail from "./pages/ReservationDetail";
+import ReservationPage from "./pages/ReservationPage";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
+import ReviewCreate from "./Review/ReviewCreate";
+import MyPage from "./MyPage";
 import PharmacySearch from "./pages/PhamacySearch";
+import Chat from "./Chat/Chat";
+import ChatList from "./Chat/ChatList";
 
 // 관리자 페이지
 import AdminCustomers from "./adminComponents/AdminCustomers";
@@ -92,6 +94,9 @@ function App() {
 
           {/* 마이페이지 */}
           <Route path="mypage"             element={<MyPage />} />
+
+          {/* 예약하기 */}
+          <Route path="reservation"             element={<ReservationPage />} />
 
           {/* 병원 */}
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
