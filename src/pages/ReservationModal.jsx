@@ -6,7 +6,16 @@ const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
-/* 09:00 ~ 17:00 (30분 간격, 12:00·12:30 점심 제외) */
+const generateDates = () => {
+  const dates = [];
+  for (let i = 0; i < 28; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    dates.push(d);
+  }
+  return dates;
+};
+
 const generateTimes = () => {
   const times = [];
   for (let h = 9; h <= 17; h++) {
@@ -24,52 +33,26 @@ const ALL_TIMES = generateTimes();
 const AM_TIMES  = ALL_TIMES.filter(t => parseInt(t) < 12);
 const PM_TIMES  = ALL_TIMES.filter(t => parseInt(t) >= 13);
 
-/* 날짜 포맷 "YYYY-MM-DD" — timezone 이슈 없이 로컬 기준 */
-const toDateStr = (d) => {
-  const y   = d.getFullYear();
-  const mo  = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${mo}-${day}`;
-};
+const toDateStr = (d) => d.toISOString().split("T")[0];
 
-/* 현재 HH:MM */
 const nowHHMM = () => {
   const n = new Date();
   return `${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")}`;
 };
 
-/* ── 달력 유틸 ──
-   해당 year/month 의 달력 셀 배열 반환
-   null  → 빈칸 (1일 이전 공백)
-   Date  → 실제 날짜 */
-const buildCalendarCells = (year, month) => {
-  const firstDow    = new Date(year, month, 1).getDay();   // 0=일
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < firstDow; i++) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
-  return cells;
+const groupByMonth = (dates) => {
+  const map = new Map();
+  dates.forEach((d) => {
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(d);
+  });
+  return Array.from(map.entries());
 };
 
-/* ─────────────────────────────────────────
-   ReservationModal
-───────────────────────────────────────── */
 export default function ReservationModal({ hoNum, onClose }) {
-  /* 오늘 자정 기준 */
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStr   = toDateStr(today);
-
-  /* 예약 가능 최대 날짜: 오늘 + 60일 */
-  const maxDate = new Date(today);
-  maxDate.setDate(maxDate.getDate() + 60);
-  const maxDateStr = toDateStr(maxDate);
-
-  /* ── state ── */
   const [hospital,      setHospital]      = useState(null);
   const [loading,       setLoading]       = useState(true);
-  const [calYear,       setCalYear]       = useState(today.getFullYear());
-  const [calMonth,      setCalMonth]      = useState(today.getMonth());   // 0-based
   const [selectedDate,  setSelectedDate]  = useState(null);
   const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedTime,  setSelectedTime]  = useState(null);
@@ -78,30 +61,21 @@ export default function ReservationModal({ hoNum, onClose }) {
   const [step,          setStep]          = useState(1);
   const [submitting,    setSubmitting]    = useState(false);
   const [done,          setDone]          = useState(false);
-  const overlayRef = useRef(null);
 
-  /* ── 이전 달 이동 가능 여부: 오늘이 속한 달 이전으론 불가 ── */
-  const canPrevMonth =
-    calYear > today.getFullYear() ||
-    (calYear === today.getFullYear() && calMonth > today.getMonth());
+  const overlayRef     = useRef(null);
+  const bodyRef        = useRef(null);       // rm-body 스크롤 컨테이너
+  const timeSectionRef = useRef(null);       // STEP2 시간 섹션
+  const step3Ref       = useRef(null);       // STEP3 확인 섹션
 
-  /* ── 다음 달 이동 가능 여부: maxDate 가 속한 달까지만 ── */
-  const canNextMonth = (() => {
-    const nY = calMonth === 11 ? calYear + 1 : calYear;
-    const nM = calMonth === 11 ? 0            : calMonth + 1;
-    return nY < maxDate.getFullYear() ||
-      (nY === maxDate.getFullYear() && nM <= maxDate.getMonth());
-  })();
-
-  const goPrevMonth = () => {
-    if (!canPrevMonth) return;
-    if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); }
-    else setCalMonth(m => m - 1);
-  };
-  const goNextMonth = () => {
-    if (!canNextMonth) return;
-    if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); }
-    else setCalMonth(m => m + 1);
+  /* rm-body 내부에서 특정 섹션으로 부드럽게 스크롤 */
+  const scrollToRef = (ref, delay = 160) => {
+    setTimeout(() => {
+      if (!ref.current || !bodyRef.current) return;
+      const bodyRect    = bodyRef.current.getBoundingClientRect();
+      const sectionRect = ref.current.getBoundingClientRect();
+      const scrollTop   = bodyRef.current.scrollTop + (sectionRect.top - bodyRect.top) - 12;
+      bodyRef.current.scrollTo({ top: Math.max(0, scrollTop), behavior: "smooth" });
+    }, delay);
   };
 
   /* body 스크롤 잠금 */
@@ -136,22 +110,28 @@ export default function ReservationModal({ hoNum, onClose }) {
       .catch(() => setReservedTimes([]));
   }, [selectedDate, hoNum]);
 
-  /* 시간 비활성 여부 */
   const isTimeDisabled = (time) => {
     if (reservedTimes.includes(time)) return true;
     if (!selectedDate) return false;
-    if (toDateStr(selectedDate) === todayStr && time <= nowHHMM()) return true;
+    if (toDateStr(selectedDate) === toDateStr(new Date()) && time <= nowHHMM()) return true;
     return false;
   };
 
-  /* 날짜 선택 핸들러 */
+  /* ── 날짜 선택 → STEP2로 + 시간 섹션 스크롤 ── */
   const handleSelectDate = (dateObj) => {
     setSelectedDate(dateObj);
     setSelectedTime(null);
     setStep(2);
+    scrollToRef(timeSectionRef);
   };
 
-  /* 예약 제출 */
+  /* ── 시간 선택 → STEP3로 + 확인 섹션 스크롤 ── */
+  const handleSelectTime = (t) => {
+    setSelectedTime(t);
+    setStep(3);
+    scrollToRef(step3Ref);
+  };
+
   const handleReserve = async () => {
     if (!selectedDate || !selectedTime) return;
     setSubmitting(true);
@@ -171,8 +151,8 @@ export default function ReservationModal({ hoNum, onClose }) {
     }
   };
 
-  /* 달력 셀 배열 */
-  const calCells = buildCalendarCells(calYear, calMonth);
+  const dates    = generateDates();
+  const todayStr = toDateStr(new Date());
 
   /* ── 완료 화면 ── */
   if (done) {
@@ -183,12 +163,25 @@ export default function ReservationModal({ hoNum, onClose }) {
           <button className="rm-close" onClick={onClose}><i className="fas fa-xmark" /></button>
           <div className="rm-done-screen">
             <div className="rm-done-icon"><i className="fas fa-circle-check" /></div>
-            <h2>예약 완료!</h2>
-            <p>
-              <strong>{hospital?.hoName}</strong> 예약이 완료되었습니다.<br />
-              <span>{toDateStr(selectedDate)} · {selectedTime} · {visitType}</span>
-            </p>
-            <button className="rm-btn rm-btn-primary" onClick={onClose}>확인</button>
+            <div className="rm-done-badge">예약 완료</div>
+            <h2>예약이 확정되었습니다!</h2>
+            <div className="rm-done-info">
+              <div className="rm-done-info-row">
+                <i className="fas fa-hospital" />
+                <span>{hospital?.hoName}</span>
+              </div>
+              <div className="rm-done-info-row">
+                <i className="fas fa-calendar-check" />
+                <span>{toDateStr(selectedDate)} · {selectedTime}</span>
+              </div>
+              <div className="rm-done-info-row">
+                <i className="fas fa-user-doctor" />
+                <span>{visitType}</span>
+              </div>
+            </div>
+            <button className="rm-btn rm-btn-primary rm-btn-full" onClick={onClose}>
+              <i className="fas fa-check" /> 확인
+            </button>
           </div>
         </div>
       </div>
@@ -202,23 +195,25 @@ export default function ReservationModal({ hoNum, onClose }) {
 
         {/* ─── 헤더 ─── */}
         <div className="rm-header">
-          <div className="rm-header-left">
-            <div className="rm-header-icon"><i className="fas fa-hospital" /></div>
-            <div>
-              {loading
-                ? <div className="rm-skeleton rm-skeleton-title" />
-                : <>
-                    <h2 className="rm-hospital-name">{hospital?.hoName ?? "병원 정보 없음"}</h2>
-                    <p className="rm-hospital-sub">
-                      <i className="fas fa-location-dot" />{hospital?.hoAddress}
-                      {hospital?.hoPhone && (
-                        <><span className="rm-dot">·</span>
-                          <i className="fas fa-phone" />{hospital?.hoPhone}</>
-                      )}
-                    </p>
-                  </>
-              }
-            </div>
+          <div className="rm-header-icon-wrap">
+            <i className="fas fa-hospital" />
+          </div>
+          <div className="rm-header-info">
+            {loading
+              ? <>
+                  <div className="rm-skeleton rm-skeleton-title" />
+                  <div className="rm-skeleton rm-skeleton-sub" />
+                </>
+              : <>
+                  <h2 className="rm-hospital-name">{hospital?.hoName ?? "병원 정보 없음"}</h2>
+                  <p className="rm-hospital-sub">
+                    {hospital?.hoAddress &&
+                      <span><i className="fas fa-location-dot" />{hospital.hoAddress}</span>}
+                    {hospital?.hoPhone &&
+                      <span><i className="fas fa-phone" />{hospital.hoPhone}</span>}
+                  </p>
+                </>
+            }
           </div>
           <button className="rm-close" onClick={onClose}><i className="fas fa-xmark" /></button>
         </div>
@@ -226,9 +221,9 @@ export default function ReservationModal({ hoNum, onClose }) {
         {/* ─── 스텝 인디케이터 ─── */}
         <div className="rm-steps">
           {[
-            { n: 1, label: "날짜 선택" },
-            { n: 2, label: "시간 선택" },
-            { n: 3, label: "예약 확인" },
+            { n: 1, label: "날짜" },
+            { n: 2, label: "시간" },
+            { n: 3, label: "확인" },
           ].map((s, i, arr) => (
             <div key={s.n} className="rm-step-wrap">
               <div className={`rm-step ${step >= s.n ? "done" : ""} ${step === s.n ? "active" : ""}`}>
@@ -245,115 +240,86 @@ export default function ReservationModal({ hoNum, onClose }) {
         </div>
 
         {/* ─── 바디 ─── */}
-        <div className="rm-body">
+        <div className="rm-body" ref={bodyRef}>
 
-          {/* ══ STEP 1 : 날짜 선택 (월간 달력) ══ */}
+          {/* ══ STEP 1 : 날짜 선택 ══ */}
           <div className={`rm-section ${step >= 1 ? "visible" : ""}`}>
             <div className="rm-section-header">
               <span className="rm-section-icon"><i className="fas fa-calendar-days" /></span>
               <h3>날짜를 선택하세요</h3>
-              <span className="rm-section-sub">오늘부터 60일 이내</span>
             </div>
 
-            {/* ── 월 네비게이션 ── */}
-            <div className="rm-cal-nav">
-              <button
-                className={`rm-cal-nav-btn ${!canPrevMonth ? "rm-cal-nav-btn--off" : ""}`}
-                onClick={goPrevMonth}
-                disabled={!canPrevMonth}
-                aria-label="이전 달"
-              >
-                <i className="fas fa-chevron-left" />
-              </button>
+            {groupByMonth(dates).map(([monthKey, monthDates]) => {
+              const [year, month] = monthKey.split("-");
+              const firstDow = monthDates[0].getDay();
+              return (
+                <div key={monthKey} className="rm-month-group">
+                  <div className="rm-month-label">
+                    <span className="rm-month-year">{year}년</span>
+                    <strong className="rm-month-num">{month}월</strong>
+                    <div className="rm-month-label-line" />
+                  </div>
 
-              <span className="rm-cal-nav-title">
-                {calYear}년 {String(calMonth + 1).padStart(2, "0")}월
-              </span>
+                  {/* 요일 헤더 */}
+                  <div className="rm-day-header-row">
+                    {DAY_KO.map((d, i) => (
+                      <span key={i} className={`rm-day-header-cell ${i === 0 ? "sun" : i === 6 ? "sat" : ""}`}>
+                        {d}
+                      </span>
+                    ))}
+                  </div>
 
-              <button
-                className={`rm-cal-nav-btn ${!canNextMonth ? "rm-cal-nav-btn--off" : ""}`}
-                onClick={goNextMonth}
-                disabled={!canNextMonth}
-                aria-label="다음 달"
-              >
-                <i className="fas fa-chevron-right" />
-              </button>
-            </div>
-
-            {/* ── 요일 헤더 ── */}
-            <div className="rm-cal-dow-row">
-              {DAY_KO.map((d, i) => (
-                <span
-                  key={d}
-                  className={[
-                    "rm-cal-dow",
-                    i === 0 ? "sunday"   : "",
-                    i === 6 ? "saturday" : "",
-                  ].filter(Boolean).join(" ")}
-                >
-                  {d}
-                </span>
-              ))}
-            </div>
-
-            {/* ── 날짜 그리드 ── */}
-            <div className="rm-cal-grid">
-              {calCells.map((d, idx) => {
-                /* 빈칸 */
-                if (!d) return <div key={`gap-${idx}`} className="rm-cal-cell rm-cal-cell--empty" />;
-
-                const ds       = toDateStr(d);
-                const dow      = d.getDay();
-                const isPast   = ds < todayStr;
-                const isOver   = ds > maxDateStr;
-                const disabled = isPast || isOver;
-                const sel      = selectedDate && toDateStr(selectedDate) === ds;
-                const isToday  = ds === todayStr;
-
-                return (
-                  <button
-                    key={ds}
-                    className={[
-                      "rm-cal-cell",
-                      sel      ? "rm-cal-cell--selected" : "",
-                      disabled ? "rm-cal-cell--disabled" : "",
-                      isToday  ? "rm-cal-cell--today"    : "",
-                      dow === 0 ? "rm-cal-cell--sunday"   : "",
-                      dow === 6 ? "rm-cal-cell--saturday" : "",
-                    ].filter(Boolean).join(" ")}
-                    disabled={disabled}
-                    onClick={() => !disabled && handleSelectDate(d)}
-                  >
-                    <span className="rm-cal-num">{d.getDate()}</span>
-                    {isToday && <span className="rm-cal-today-dot" />}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* ── 범례 ── */}
-            <div className="rm-cal-legend">
-              <span><em className="rm-leg rm-leg--today" />오늘</span>
-              <span><em className="rm-leg rm-leg--sel"   />선택</span>
-              <span><em className="rm-leg rm-leg--sun"   />일요일</span>
-              <span><em className="rm-leg rm-leg--sat"   />토요일</span>
-            </div>
+                  {/* 날짜 그리드 */}
+                  <div className="rm-date-grid">
+                    {Array.from({ length: firstDow }).map((_, i) => (
+                      <div key={`offset-${i}`} className="rm-date-offset" />
+                    ))}
+                    {monthDates.map((d) => {
+                      const ds      = toDateStr(d);
+                      const dow     = d.getDay();
+                      const past    = ds < todayStr;
+                      const sel     = selectedDate && toDateStr(selectedDate) === ds;
+                      const isToday = ds === todayStr;
+                      return (
+                        <button
+                          key={ds}
+                          className={[
+                            "rm-date-btn",
+                            sel       ? "selected"  : "",
+                            past      ? "disabled"  : "",
+                            isToday   ? "today"     : "",
+                            dow === 0 ? "sunday"    : "",
+                            dow === 6 ? "saturday"  : "",
+                          ].filter(Boolean).join(" ")}
+                          disabled={past}
+                          onClick={() => handleSelectDate(d)}
+                        >
+                          <span className="rm-date-num">{d.getDate()}</span>
+                          {isToday && <span className="rm-date-today-label">오늘</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* ══ STEP 2 : 시간 선택 ══ */}
           {step >= 2 && (
-            <div className="rm-section visible rm-section-animate">
+            <div className="rm-section visible rm-section-animate" ref={timeSectionRef}>
               <div className="rm-section-header">
                 <span className="rm-section-icon"><i className="fas fa-clock" /></span>
                 <h3>시간을 선택하세요</h3>
-                <span className="rm-section-sub">
-                  {selectedDate &&
-                    `${toDateStr(selectedDate)} (${DAY_KO[selectedDate.getDay()]})`}
-                </span>
+                {selectedDate && (
+                  <span className="rm-section-sub">
+                    {toDateStr(selectedDate)} ({DAY_KO[selectedDate.getDay()]})
+                  </span>
+                )}
               </div>
 
-              <div className="rm-time-group">
-                <p className="rm-time-group-label"><i className="fas fa-sun" /> 오전</p>
+              <div className="rm-time-block">
+                <div className="rm-time-block-label"><i className="fas fa-sun" /> 오전</div>
                 <div className="rm-time-grid">
                   {AM_TIMES.map(t => {
                     const dis = isTimeDisabled(t);
@@ -366,9 +332,9 @@ export default function ReservationModal({ hoNum, onClose }) {
                           res ? "reserved" : "",
                         ].filter(Boolean).join(" ")}
                         disabled={dis}
-                        onClick={() => { setSelectedTime(t); setStep(3); }}
+                        onClick={() => handleSelectTime(t)}
                       >
-                        {t}
+                        <span className="rm-time-label">{t}</span>
                         {res && <span className="rm-time-tag">예약됨</span>}
                       </button>
                     );
@@ -377,11 +343,12 @@ export default function ReservationModal({ hoNum, onClose }) {
               </div>
 
               <div className="rm-lunch-divider">
-                <i className="fas fa-utensils" /> 점심시간 (12:00 ~ 13:00)
+                <i className="fas fa-utensils" />
+                <span>점심시간 (12:00 ~ 13:00)</span>
               </div>
 
-              <div className="rm-time-group">
-                <p className="rm-time-group-label"><i className="fas fa-moon" /> 오후</p>
+              <div className="rm-time-block">
+                <div className="rm-time-block-label"><i className="fas fa-moon" /> 오후</div>
                 <div className="rm-time-grid">
                   {PM_TIMES.map(t => {
                     const dis = isTimeDisabled(t);
@@ -394,9 +361,9 @@ export default function ReservationModal({ hoNum, onClose }) {
                           res ? "reserved" : "",
                         ].filter(Boolean).join(" ")}
                         disabled={dis}
-                        onClick={() => { setSelectedTime(t); setStep(3); }}
+                        onClick={() => handleSelectTime(t)}
                       >
-                        {t}
+                        <span className="rm-time-label">{t}</span>
                         {res && <span className="rm-time-tag">예약됨</span>}
                       </button>
                     );
@@ -408,23 +375,24 @@ export default function ReservationModal({ hoNum, onClose }) {
 
           {/* ══ STEP 3 : 방문유형 + 요청사항 + 확인 ══ */}
           {step >= 3 && (
-            <div className="rm-section visible rm-section-animate">
-              {/* 예약 요약 배너 */}
+            <div className="rm-section visible rm-section-animate" ref={step3Ref}>
               <div className="rm-summary-banner">
-                <div className="rm-summary-row">
-                  <i className="fas fa-calendar-check" />
-                  <span>
-                    {selectedDate && toDateStr(selectedDate)}&nbsp;
-                    <strong>{selectedTime}</strong>
-                  </span>
+                <div className="rm-summary-left">
+                  <div className="rm-summary-icon"><i className="fas fa-calendar-check" /></div>
+                  <div className="rm-summary-text">
+                    <span className="rm-summary-date">
+                      {selectedDate && toDateStr(selectedDate)}
+                      <span className="rm-summary-dow">({selectedDate && DAY_KO[selectedDate.getDay()]})</span>
+                    </span>
+                    <strong className="rm-summary-time">{selectedTime}</strong>
+                  </div>
                 </div>
                 <button className="rm-edit-btn"
-                  onClick={() => { setSelectedTime(null); setStep(2); }}>
-                  <i className="fas fa-pen" /> 변경
+                  onClick={() => { setSelectedTime(null); setStep(2); scrollToRef(timeSectionRef, 50); }}>
+                  <i className="fas fa-pen-to-square" /> 변경
                 </button>
               </div>
 
-              {/* 방문 유형 */}
               <div className="rm-section-header" style={{ marginTop: "1.5rem" }}>
                 <span className="rm-section-icon"><i className="fas fa-user-doctor" /></span>
                 <h3>방문 유형</h3>
@@ -433,16 +401,16 @@ export default function ReservationModal({ hoNum, onClose }) {
                 {["초진", "재진"].map(v => (
                   <label key={v} className={`rm-visit-card ${visitType === v ? "selected" : ""}`}>
                     <input type="radio" name="visitType" value={v}
-                      checked={visitType === v}
-                      onChange={() => setVisitType(v)} />
-                    <i className={`fas fa-${v === "초진" ? "user-plus" : "rotate-left"}`} />
+                      checked={visitType === v} onChange={() => setVisitType(v)} />
+                    <div className="rm-visit-icon-wrap">
+                      <i className={`fas fa-${v === "초진" ? "user-plus" : "rotate-left"}`} />
+                    </div>
                     <strong>{v}</strong>
                     <span>{v === "초진" ? "처음 방문" : "재방문"}</span>
                   </label>
                 ))}
               </div>
 
-              {/* 요청 사항 */}
               <div className="rm-section-header" style={{ marginTop: "1.5rem" }}>
                 <span className="rm-section-icon"><i className="fas fa-file-lines" /></span>
                 <h3>요청 사항 <span className="rm-optional">(선택)</span></h3>
@@ -455,7 +423,6 @@ export default function ReservationModal({ hoNum, onClose }) {
                 rows={3}
               />
 
-              {/* 최종 예약 버튼 */}
               <button
                 className={`rm-btn rm-btn-primary rm-btn-full ${submitting ? "loading" : ""}`}
                 onClick={handleReserve}

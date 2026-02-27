@@ -20,6 +20,8 @@ import PharmacySearch from "./pages/PhamacySearch";
 import Chat from "./Chat/Chat";
 import ChatList from "./Chat/ChatList";
 
+import { AuthProvider } from "./AuthContext";
+
 // 관리자 페이지
 import AdminCustomers from "./adminComponents/AdminCustomers";
 import AdminHospitals from "./adminComponents/AdminHospitals";
@@ -68,6 +70,7 @@ function App() {
     );
 
   return (
+    <AuthProvider>
     <BrowserRouter>
       {/* ── 전역 팝업 (라우트 외부, BrowserRouter 내부) ── */}
       {showReservation && (
@@ -154,6 +157,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
