@@ -94,6 +94,9 @@ function App() {
           {/* 마이페이지 */}
           <Route path="mypage"             element={<MyPage />} />
 
+          {/* 예약하기 */}
+          <Route path="reservation"             element={<ReservationDateSelect />} />
+
           {/* 병원 */}
           <Route path="hospitals"          element={<HospitalSearch />} />
           <Route path="details/:hospitalId" element={<HospitalDetail />} />
