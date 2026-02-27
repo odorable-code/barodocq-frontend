@@ -61,7 +61,7 @@ const RECENT_REVIEWS = [
 const MyPage = () => {
   const [activeStatus, setActiveStatus] = useState("reservation");
   const [scrapCount, setScrapCount] = useState(0);
-  const [scraps, setScraps] = useState({});
+  const [scraps, setScraps] = useState([]);
 
   const auth = useAuth();
 
