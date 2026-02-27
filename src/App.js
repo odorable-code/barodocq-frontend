@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import axios from "axios";
 
 import HospitalDetail from "./pages/HospitalDetail";
 import HospitalSearch from "./pages/HospitalSearch";
@@ -11,6 +12,7 @@ import QnAWritePage from "./Qna/QnAWritePage";
 import HospitalSearchPage from "./pages/HospitalSearchPage";
 import ReservationDateSelect from "./pages/ReservationDateSelect";
 import ReservationDetail from "./pages/ReservationDetail";
+import ReservationPage from "./pages/ReservationPage";
 import HospitalReviews from "./Review/HospitalReviews";
 import ReviewDetail from "./Review/ReviewDetail";
 import ReviewRevise from "./Review/ReviewRevise";
@@ -95,7 +97,7 @@ function App() {
           <Route path="mypage"             element={<MyPage />} />
 
           {/* 예약하기 */}
-          <Route path="reservation"             element={<ReservationDateSelect />} />
+          <Route path="reservation"             element={<ReservationPage />} />
 
           {/* 병원 */}
           <Route path="hospitals"          element={<HospitalSearch />} />
