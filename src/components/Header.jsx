@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSocket } from "../WebSocketContext";
 import {
   faHeart,
   faMagnifyingGlass,
@@ -30,7 +31,7 @@ import {
   faMoon,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
-
+import Chat from "../Chat/Chat";
 /* ══════════════════════════════════════
    상수 데이터
 ══════════════════════════════════════ */
@@ -265,17 +266,19 @@ const Header = ({ onOpenReservation }) => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   /* ── 채팅 상태 ── */
-  const [activeChatRoom, setActiveChatRoom] = useState(null);
+  const { activeChatRoom, setActiveChatRoom } = useSocket();
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState(INIT_MESSAGES);
   const [reminders, setReminders] = useState(HEALTH_REMINDERS);
 
+  
+
   /* ── Refs ── */
   const bellRef = useRef(null);
   const panelRef = useRef(null);
-  const chatRef = useRef(null);
-  const chatEndRef = useRef(null);
-
+  const { chatRef, chatEndRef } = useSocket();
+  
+  
   /* ── 스크롤 감지 ── */
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.pageYOffset > 50);
@@ -309,7 +312,7 @@ const Header = ({ onOpenReservation }) => {
   /* ── 채팅 스크롤 bottom ── */
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChatRoom, messages]);
+  }, [activeChatRoom]);
 
   /* ── 검색 ── */
   const handleSearch = useCallback(() => {
@@ -321,33 +324,6 @@ const Header = ({ onOpenReservation }) => {
   }, [searchValue, navigate]);
 
   /* ── 메시지 전송 ── */
-  const sendMessage = useCallback(() => {
-    if (!chatInput.trim() || !activeChatRoom) return;
-    const now = new Date();
-    const t = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const userMsg = { from: "user", text: chatInput.trim(), time: t };
-    setMessages((prev) => ({
-      ...prev,
-      [activeChatRoom.id]: [...(prev[activeChatRoom.id] || []), userMsg],
-    }));
-    setChatInput("");
-    setTimeout(() => {
-      const replies = [
-        "확인했습니다. 잠시만 기다려 주세요. 😊",
-        "네, 알겠습니다! 바로 처리해 드리겠습니다.",
-        "감사합니다. 추가로 궁금하신 점이 있으시면 말씀해 주세요.",
-      ];
-      const reply = {
-        from: "hospital",
-        text: replies[Math.floor(Math.random() * replies.length)],
-        time: t,
-      };
-      setMessages((prev) => ({
-        ...prev,
-        [activeChatRoom.id]: [...(prev[activeChatRoom.id] || []), reply],
-      }));
-    }, 900);
-  }, [chatInput, activeChatRoom]);
 
   /* ── 리마인더 체크 토글 ── */
   const toggleReminder = (id) => {
@@ -425,7 +401,6 @@ const Header = ({ onOpenReservation }) => {
                 )}
               </button>
             </div>
-
             <Link to="/login" className="hdr__btn hdr__btn--ghost">
               <FontAwesomeIcon icon={faRightToBracket} />
               <span>로그인</span>
@@ -585,9 +560,6 @@ const Header = ({ onOpenReservation }) => {
                 </div>
               ))}
             </div>
-            <Link to="/chat" className="hdr__np-footer-link">
-              전체 채팅 보기 <FontAwesomeIcon icon={faChevronRight} />
-            </Link>
           </div>
 
           {/* ── 구분선 ── */}
@@ -682,61 +654,7 @@ const Header = ({ onOpenReservation }) => {
 
       {/* ════════ 카톡식 채팅창 ════════ */}
       {notifOpen && activeChatRoom && (
-        <div className="hdr__cw" ref={chatRef}>
-          {/* 헤더 */}
-          <div className="hdr__cw-head">
-            <button
-              className="hdr__cw-back"
-              onClick={() => setActiveChatRoom(null)}
-            >
-              <FontAwesomeIcon icon={faArrowLeft} />
-            </button>
-            <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
-            <div className="hdr__cw-hinfo">
-              <span className="hdr__cw-hname">{activeChatRoom.hospital}</span>
-              <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
-            </div>
-            <button className="hdr__cw-more">
-              <FontAwesomeIcon icon={faEllipsisVertical} />
-            </button>
-          </div>
-
-          {/* 메시지 영역 */}
-          <div className="hdr__cw-body">
-            {(messages[activeChatRoom.id] || []).map((msg, i) => (
-              <div key={i} className={`hdr__cw-msg hdr__cw-msg--${msg.from}`}>
-                {msg.from === "hospital" && (
-                  <div className="hdr__cw-msg-avatar">
-                    {activeChatRoom.avatar}
-                  </div>
-                )}
-                <div className="hdr__cw-msg-wrap">
-                  <div className="hdr__cw-bubble">{msg.text}</div>
-                  <span className="hdr__cw-time">{msg.time}</span>
-                </div>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* 입력창 */}
-          <div className="hdr__cw-input-wrap">
-            <input
-              type="text"
-              className="hdr__cw-input"
-              placeholder="메시지를 입력하세요..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <button
-              className={`hdr__cw-send${chatInput.trim() ? " hdr__cw-send--active" : ""}`}
-              onClick={sendMessage}
-            >
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </div>
-        </div>
+        <Chat />
       )}
     </header>
   );
