@@ -177,6 +177,35 @@ async function fetchHospitals(params = {}) {
   return Array.isArray(data) ? data : data?.content ?? [];
 }
 
+// 찜(scraps)기능 추가
+async function toggleHospitalScrap(hospitalId) {
+  const url = `${API_BASE_URL}/api/v1/hospitals/${hospitalId}/scraps`;
+
+  // 토큰/쿠키 방식에 맞춰 하나만 쓰면 됨
+  const accessToken = localStorage.getItem("accessToken"); // 너 프로젝트에서 쓰는 방식이면 유지
+
+  const res = await fetch(url, {
+    method: "POST",               // ✅ 백엔드가 토글형으로 구현돼있다고 가정
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+    credentials: "include",        // ✅ 쿠키 인증이면 필요 (JWT만이면 없어도 됨)
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`북마크(스크랩) 실패 (status: ${res.status})\n${text.slice(0, 200)}`);
+  }
+
+  // 백엔드가 상태를 내려주면 그걸 쓰고, 아니면 프론트에서 토글로 처리
+  // 예: { scrapped: true } or { isScrapped: true }
+  const data = await res.json().catch(() => null);
+  return data; // null일 수도 있음
+}
+
+
+
 //병원 찾기
 export default function HospitalSearch() {
   const navigate = useNavigate();
@@ -235,13 +264,41 @@ export default function HospitalSearch() {
     );
   };
 
-  const toggleBookmark = (hospitalId) => {
+  //찜 기능
+  const toggleBookmark = async (hospitalId) => {
+  // 1) 낙관적 업데이트 (UI 즉시 반응)
+  setBookmarkedHospitals((prev) => {
+    const next = new Set(prev);
+    next.has(hospitalId) ? next.delete(hospitalId) : next.add(hospitalId);
+    return next;
+  });
+
+  try {
+    const data = await toggleHospitalScrap(hospitalId);
+
+    // 2) 백엔드가 최종 상태를 내려주면 그걸로 동기화
+    const scrapped =
+      data?.scrapped ?? data?.isScrapped ?? data?.bookmarked ?? null;
+
+    if (scrapped !== null) {
+      setBookmarkedHospitals((prev) => {
+        const next = new Set(prev);
+        scrapped ? next.add(hospitalId) : next.delete(hospitalId);
+        return next;
+      });
+    }
+  } catch (e) {
+    // 3) 실패하면 롤백
     setBookmarkedHospitals((prev) => {
       const next = new Set(prev);
       next.has(hospitalId) ? next.delete(hospitalId) : next.add(hospitalId);
       return next;
     });
-  };
+
+    console.error(e);
+    alert(e?.message || "북마크 처리 중 오류가 발생했어요.");
+  }
+};
 
   const toNumOrNull = (v) => {
         if (v == null) return null;
@@ -423,7 +480,7 @@ export default function HospitalSearch() {
     return () => {
       ignore = true;
     };
-  }, [queryParams], [userPos]);
+  }, [queryParams, userPos]);
 
   // ✅ 프론트 필터 (검색/지역 + 상세필터 적용)
   const filteredHospitals = useMemo(() => {
