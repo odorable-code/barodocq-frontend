@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../assets/styles/HospitalSearchPage.css";
+import "../assets/styles/HospitalSearch.css";
 
 import RegionSelect from "../components/RegionSelect";
 import HospitalDeptSelect from "../components/HospitalDeptSelect";
 
 /* ─────────────────────────────────────────
    필터 태그 (API 기반)
+   - ✅ 위(최종 UI) 코드의 hsp UI 그대로 쓰되,
+     아래(API 기능) 태그 구성을 가져옴
 ───────────────────────────────────────── */
 const FILTER_TAGS = [
   { id: "open", label: "영업중", icon: "circle-check", color: "#10b981" },
@@ -19,7 +21,7 @@ const FILTER_TAGS = [
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 /* ─────────────────────────────────────────
-   util
+   util (아래 코드 기능 그대로)
 ───────────────────────────────────────── */
 const ynToBool = (v) => {
   if (v === true || v === false) return v;
@@ -29,6 +31,14 @@ const ynToBool = (v) => {
   const s = String(v).trim().toUpperCase();
   if (["Y", "YES", "TRUE", "T", "1"].includes(s)) return true;
   if (["N", "NO", "FALSE", "F", "0"].includes(s)) return false;
+  return null;
+};
+
+const pickFirstNumber = (...cands) => {
+  for (const v of cands) {
+    const n = Number(v);
+    if (v != null && Number.isFinite(n)) return n;
+  }
   return null;
 };
 
@@ -154,9 +164,9 @@ async function fetchHospitals(params = {}) {
 }
 
 /* ─────────────────────────────────────────
-   Page
+   HospitalSearch (최종 UI + API 기능 결합 버전)
 ───────────────────────────────────────── */
-export default function HospitalSearchPage() {
+export default function HospitalSearch() {
   const navigate = useNavigate();
   const headerRef = useRef(null);
 
@@ -192,7 +202,13 @@ export default function HospitalSearchPage() {
     });
   };
 
-  // ✅ API 파라미터
+  const toNumOrNull = (v) => {
+        if (v == null) return null;
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      };
+
+  // ✅ API 파라미터 (아래 코드 그대로)
   const queryParams = useMemo(() => {
     const params = {};
     if (searchQuery.trim()) params.q = searchQuery.trim();
@@ -203,11 +219,14 @@ export default function HospitalSearchPage() {
     return params;
   }, [searchQuery, selectedDept, region]);
 
-  // ✅ 백엔드 호출 + 병원 1개당 1카드로 정리
+  // ✅ 백엔드 호출 + 병원 1개당 1카드로 정리 (아래 코드 그대로)
   useEffect(() => {
     let ignore = false;
 
     async function load() {
+      const list = await fetchHospitals(queryParams);
+console.log("cards sample keys:", Object.keys(list?.[0] || {}));
+console.log("cards sample row:", list?.[0]);
       setLoading(true);
       setError("");
 
@@ -236,22 +255,35 @@ export default function HospitalSearchPage() {
                 : "https://via.placeholder.com/400x250/0ea5e9/ffffff?text=Hospital";
 
             byId.set(id, {
-              id,
-              name: r.hoName ?? r.ho_name ?? "병원명",
-              dept: r.deptName ?? r.dept_name ?? "",
-              address: r.hoAddr ?? r.ho_addr ?? "",
-              phone: r.hoPhone ?? r.ho_phone ?? "",
-              rating: r.rvRating ?? r.rv_rating ?? null,
-              reviews: r.rvReviewCount ?? r.rv_review_count ?? r.reviews ?? null,
-              distance: r.distance ?? "0km",
-              thumbnail,
+                id,
+                name: r.hoName ?? r.ho_name ?? "병원명",
+                dept: r.deptName ?? r.dept_name ?? "",
+                address: r.hoAddr ?? r.ho_addr ?? "",
+                phone: r.hoPhone ?? r.ho_phone ?? "",
+                rating: pickFirstNumber(r.rvRating, r.rv_rating, r.rating),
+                reviews: pickFirstNumber(
+                  r.rvReviewCount,
+                  r.rv_review_count,
+                  r.reviewCount,
+                  r.review_count,
+                  r.rvCnt,
+                  r.rv_cnt,
+                  r.rv_review_cnt,
+                  r.reviews,
+                  r.review_cnt,
+                  r.rvCount,
+                  r.rv_count
+                ),
+
+                distance: r.distance ?? "0km",
+                thumbnail,
 
               // 표시용
               openTime: "",
               lunchTime: "",
               closedDays: [],
 
-              // ✅ API에서 내려오는 텍스트(있으면 1순위로 쓰기)
+              // ✅ API 텍스트 우선 사용
               closedTextFromApi: r.closedDaysText ?? r.closed_days_text ?? "",
 
               tagsBase: { night, holiday, reservable, parking },
@@ -267,7 +299,7 @@ export default function HospitalSearchPage() {
 
           const acc = byId.get(id);
 
-          // 휴진 요일 모으기 (API 텍스트가 없을 때 대비)
+          // 휴진 요일 모으기 (API 텍스트 없을 때 대비)
           if (openYn === false && day) acc.closedDays.push(day);
 
           // 대표 운영시간(운영하는 요일의 시간을 하나 채택)
@@ -315,7 +347,6 @@ export default function HospitalSearchPage() {
           if (tags.includes("available")) features.push("예약가능");
           if (tags.includes("parking")) features.push("주차가능");
 
-          // ✅ 휴무 텍스트 우선순위: API 텍스트 > 프론트 계산(요일모음) > 안전문구
           const closedText =
             (acc.closedTextFromApi && String(acc.closedTextFromApi).trim()) ||
             (acc.closedDays.length ? acc.closedDays.join(", ") : "휴진일 정보 없음");
@@ -348,22 +379,32 @@ export default function HospitalSearchPage() {
     };
   }, [queryParams]);
 
-  // ✅ 프론트 필터
+  // ✅ 프론트 필터 (검색/지역 + 상세필터 적용)
   const filteredHospitals = useMemo(() => {
     let list = hospitals;
 
-    // 1) 검색어
-    const q = searchQuery.trim();
-    if (q) list = list.filter((h) => (h.name || "").toLowerCase().includes(q.toLowerCase()));
+    // 1) 검색어: 병원명 + 진료과도 같이 검색(위 최종 UI 코드 동작 유지)
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter((h) => {
+        const name = String(h.name || "").toLowerCase();
+        const dept = String(h.dept || "").toLowerCase();
+        return name.includes(q) || dept.includes(q);
+      });
+    }
 
     // 2) 진료과
     if (selectedDept && selectedDept !== "전체") {
       list = list.filter((h) => !h.dept || h.dept === selectedDept);
     }
 
-    // 3) 지역
+    // 3) 지역 (주소 텍스트 매칭)
     list = list.filter((h) => matchRegionByAddr(h.address, region));
 
+    // 4) 상세필터 (tag 기반)
+    if (activeFilters.length > 0) {
+      list = list.filter((h) => activeFilters.every((f) => (h.tags || []).includes(f)));
+    }
 
     return list;
   }, [hospitals, searchQuery, selectedDept, region, activeFilters]);
@@ -389,9 +430,12 @@ export default function HospitalSearchPage() {
     return list;
   }, [filteredHospitals, sortBy]);
 
-  // (선택) 스크롤 애니메이션
+  // (선택) 스크롤 애니메이션: ✅ 최종 UI 카드(.hdc)에 적용
   useEffect(() => {
-    const cards = document.querySelectorAll(".hsp-card");
+    const el = headerRef.current;
+    if (!el) return;
+
+    const cards = el.closest(".hsp-page")?.querySelectorAll(".hdc");
     if (!cards?.length) return;
 
     const obs = new IntersectionObserver(
@@ -418,11 +462,12 @@ export default function HospitalSearchPage() {
 
   return (
     <div className="hsp-page">
-      {/* ══════════ HERO ══════════ */}
+      {/* ══════════════════════════════
+          HERO (최종 UI 그대로)
+      ══════════════════════════════ */}
       <section className="hsp-hero" ref={headerRef}>
         <div className="hsp-hero-blob hsp-blob1" />
         <div className="hsp-hero-blob hsp-blob2" />
-
         <div className="container-s2">
           <div className="hsp-hero-inner">
             <h1 className="hsp-hero-title">
@@ -430,9 +475,7 @@ export default function HospitalSearchPage() {
               <br />
               <span className="gradient-text-s2">최적의 병원</span>을 찾아드려요
             </h1>
-            <p className="hsp-hero-sub">
-              진료과·위치·조건을 설정하면 가장 적합한 병원을 보여드려요
-            </p>
+            <p className="hsp-hero-sub">진료과·위치·조건을 설정하면 AI가 가장 적합한 병원을 추천해드립니다</p>
 
             {/* 검색바 */}
             <div className="hsp-searchbar">
@@ -440,7 +483,7 @@ export default function HospitalSearchPage() {
               <input
                 type="text"
                 className="hsp-searchbar-input"
-                placeholder="병원명으로 검색하세요"
+                placeholder="병원명, 진료과, 증상으로 검색하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -454,22 +497,13 @@ export default function HospitalSearchPage() {
               </button>
             </div>
 
-            {/* 진료과/지역 모달 버튼 */}
+            {/* 퀵 액션 버튼 */}
             <div className="quick-actions">
-              <button
-                type="button"
-                className="quick-action-btn primary"
-                onClick={() => setIsDeptOpen(true)}
-              >
+              <button type="button" className="quick-action-btn primary" onClick={() => setIsDeptOpen(true)}>
                 <i className="fas fa-stethoscope" />
                 <span>{selectedDept ? `${selectedDept} 보기` : "진료과별 찾기"}</span>
               </button>
-
-              <button
-                type="button"
-                className="quick-action-btn ghost"
-                onClick={() => setIsRegionOpen(true)}
-              >
+              <button type="button" className="quick-action-btn ghost" onClick={() => setIsRegionOpen(true)}>
                 <i className="fas fa-map-marked-alt" />
                 <span>
                   {(() => {
@@ -483,9 +517,12 @@ export default function HospitalSearchPage() {
         </div>
       </section>
 
-      {/* ══════════ 필터 바 ══════════ */}
+      {/* ══════════════════════════════
+          필터 바 (최종 UI 그대로 + API 필터 기능)
+      ══════════════════════════════ */}
       <section className="hsp-filter-bar">
         <div className="container-s2">
+          {/* 상세 필터 */}
           <div className="hsp-detail-filter">
             <button className="hsp-filter-toggle" onClick={() => setIsFilterOpen((p) => !p)} type="button">
               <i className="fas fa-sliders" />
@@ -513,7 +550,7 @@ export default function HospitalSearchPage() {
             )}
           </div>
 
-          {/* 결과/정렬 */}
+          {/* 결과 바 */}
           <div className="hsp-results-bar">
             <div className="hsp-results-info">
               <span className="hsp-results-count">{sortedHospitals.length}</span>
@@ -530,8 +567,7 @@ export default function HospitalSearchPage() {
                   }}
                   type="button"
                 >
-                  <i className="fas fa-rotate-left" />
-                  전체 초기화
+                  <i className="fas fa-rotate-left" /> 전체 초기화
                 </button>
               )}
             </div>
@@ -551,7 +587,9 @@ export default function HospitalSearchPage() {
         </div>
       </section>
 
-      {/* ══════════ 리스트 ══════════ */}
+      {/* ══════════════════════════════
+          병원 리스트 (최종 UI 카드 = HospitalDetailCard)
+      ══════════════════════════════ */}
       <section className="hsp-list-section">
         <div className="container-s2">
           {!loading && !error && sortedHospitals.length === 0 ? (
@@ -577,12 +615,13 @@ export default function HospitalSearchPage() {
           ) : (
             <div className="hsp-cards-grid">
               {sortedHospitals.map((h) => (
-                <HospitalCard
+                <HospitalDetailCard
                   key={h.id}
                   hospital={h}
                   isBookmarked={bookmarkedHospitals.has(h.id)}
                   onToggleBookmark={() => toggleBookmark(h.id)}
-                  onClick={() => navigate(`/details/${h.id}`)}
+                  onReserve={() => navigate(`/reservation/${h.id}`)}
+                  onGoDetail={() => navigate(`/details/${h.id}`)}
                 />
               ))}
             </div>
@@ -594,12 +633,12 @@ export default function HospitalSearchPage() {
       <HospitalDeptSelect
         isOpen={isDeptOpen}
         onClose={() => setIsDeptOpen(false)}
-        onConfirm={({ deptName }) => {
+        onConfirm={(result) => {
+          const deptName = result?.deptName ?? (typeof result === "string" ? result : "");
           setSelectedDept(deptName === "전체" ? "" : deptName);
           setIsDeptOpen(false);
         }}
       />
-
       <RegionSelect
         isOpen={isRegionOpen}
         onClose={() => setIsRegionOpen(false)}
@@ -613,123 +652,194 @@ export default function HospitalSearchPage() {
 }
 
 /* ─────────────────────────────────────────
-   Card
+   병원 카드 컴포넌트 (최종 UI 카드 그대로 + API 필드 연결만)
 ───────────────────────────────────────── */
-function HospitalCard({ hospital, isBookmarked, onToggleBookmark, onClick }) {
-  const rating = hospital.rating != null ? Number(hospital.rating) : null;
-  const reviews = hospital.reviews != null ? hospital.reviews : "-";
+function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserve, onGoDetail }) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  // 상태
+  const status = hospital.status || "closed";
+  const isOpenNow = status === "open";
+  const isBreakNow = status === "break";
+
+  // 태그(필터용) 기반 파생
+  const tagSet = new Set(hospital.tags || []);
+  const isNightCare = tagSet.has("night");
+  const isHolidayCare = tagSet.has("holiday");
+  const isPark = tagSet.has("parking");
+  const isReservable = tagSet.has("available");
+
+  /* 진료과목 태그(있으면) 최대 표시 수 */
+  const MAX_TAGS = expanded ? 999 : 4;
+
+  /* 별점 렌더 */
+  const renderStars = (score) => {
+    const s = Number(score || 0);
+    const full = Math.floor(s);
+    const half = s - full >= 0.5;
+    const empty = 5 - full - (half ? 1 : 0);
+    return (
+      <>
+        {"★".repeat(Math.max(0, full))}
+        {half && <span className="hdc__star--half">★</span>}
+        {"☆".repeat(Math.max(0, empty))}
+      </>
+    );
+  };
+
+  const rating = hospital.rating != null ? Number(hospital.rating) : 0;
+  const reviewCount = Number.isFinite(Number(hospital.reviews)) ? Number(hospital.reviews) : 0;
 
   return (
-    <div className="hsp-card" role="button" tabIndex={0} onClick={onClick}>
-      {/* 썸네일 */}
-      <div className="hsp-card-thumb">
-        <img src={hospital.thumbnail} alt={hospital.name} />
-        <div className="hsp-card-thumb-overlay" />
+    <article
+      className={`hdc ${isOpenNow ? "hdc--open" : "hdc--closed"}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => onGoDetail?.(hospital)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") onGoDetail?.(hospital);
+      }}
+    >
+      {/* ── 상단 배지 줄 ── */}
+      <div className="hdc__badges">
+        {isBreakNow && <span className="hdc__badge hdc__badge--res">🍚 휴게중</span>}
+        {isNightCare && <span className="hdc__badge hdc__badge--night">🌙 야간진료</span>}
+        {isHolidayCare && <span className="hdc__badge hdc__badge--emergency">📅 공휴일진료</span>}
+        {isPark && <span className="hdc__badge hdc__badge--park">🅿 주차가능</span>}
+        {isReservable && <span className="hdc__badge hdc__badge--res">📅 예약가능</span>}
+      </div>
 
-        <span
-          className={`hsp-status-badge ${
-            hospital.status === "open" ? "open" : hospital.status === "break" ? "break" : "closed"
-          }`}
-        >
-          <i className="fas fa-circle" />
-          {hospital.status === "open" ? "진료중" : hospital.status === "break" ? "휴게중" : "진료종료"}
-        </span>
+      {/* ── 메인 콘텐츠 ── */}
+      <div className="hdc__body">
+        {/* 왼쪽 : 병원 아이콘 */}
+        <div className="hdc__icon-wrap">
+          <div className="hdc__icon">
+            <i className="fas fa-hospital-alt" />
+          </div>
+          <span className={`hdc__status ${isOpenNow ? "hdc__status--open" : "hdc__status--closed"}`}>
+            {isOpenNow ? "진료중" : isBreakNow ? "휴게중" : "진료종료"}
+          </span>
+        </div>
 
+        {/* 오른쪽 : 정보 */}
+        <div className="hdc__info">
+          {/* 병원명 + 북마크 */}
+          <div className="hdc__title-row">
+            <h3 className="hdc__name">{hospital.name}</h3>
+            <button
+              className={`hdc__bookmark ${isBookmarked ? "hdc__bookmark--on" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleBookmark?.();
+              }}
+              aria-label="북마크"
+              type="button"
+            >
+              <i className={isBookmarked ? "fas fa-bookmark" : "far fa-bookmark"} />
+            </button>
+          </div>
+
+          {/* 유형 + 거리 */}
+          <div className="hdc__meta">
+            <span className="hdc__type">{hospital.dept ? "의원/클리닉" : "종합병원"}</span>
+            <span className="hdc__dot">·</span>
+            {hospital.distance && (
+              <span className="hdc__distance">
+                <i className="fas fa-location-dot" /> {hospital.distance}
+              </span>
+            )}
+          </div>
+
+          {/* 별점 */}
+          <div className="hdc__rating">
+            <span className="hdc__stars">{renderStars(rating || 0)}</span>
+            <span className="hdc__score">{rating ? rating.toFixed(1) : "-"}</span>
+            <span className="hdc__review-cnt">({reviewCount ?? 0}개 리뷰)</span>
+          </div>
+
+          {/* 주소 */}
+          <p className="hdc__addr">
+            <i className="fas fa-map-marker-alt" />
+            {hospital.address || "주소 정보 없음"}
+          </p>
+
+          {/* 전화 */}
+          {hospital.phone && (
+            <p className="hdc__phone" onClick={(e) => e.stopPropagation()}>
+              <i className="fas fa-phone" />
+              <a href={`tel:${hospital.phone}`}>{hospital.phone}</a>
+            </p>
+          )}
+
+          {/* 진료시간 */}
+          {hospital.openTime && (
+            <p className="hdc__hours">
+              <i className="fas fa-business-time" />
+              {hospital.openTime}
+            </p>
+          )}
+
+          {/* ✅ 휴게중이면 점심시간 표시(아래 기능 유지) */}
+          {isBreakNow && hospital.lunchTime && (
+            <p className="hdc__hours">
+              <i className="fas fa-utensils" />
+              점심시간: {hospital.lunchTime}
+            </p>
+          )}
+
+          {/* 휴진일 텍스트 */}
+          {hospital.closedText && (
+            <p className="hdc__hours">
+              <i className="fas fa-calendar-xmark" />
+              {hospital.closedText}
+            </p>
+          )}
+
+          {/* (선택) 특징 태그 */}
+          {hospital.features?.length > 0 && (
+            <div className="hdc__tags">
+              {hospital.features.slice(0, MAX_TAGS).map((f) => (
+                <span key={f} className="hdc__tag">
+                  {f}
+                </span>
+              ))}
+              {hospital.features.length > 4 && (
+                <button
+                  className="hdc__tag hdc__tag--more"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpanded((v) => !v);
+                  }}
+                  type="button"
+                >
+                  {expanded ? "접기 ▲" : `+${hospital.features.length - 4}개 더보기`}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── 하단 액션 버튼 ── */}
+      <div className="hdc__actions" onClick={(e) => e.stopPropagation()}>
+        <button className="hdc__btn hdc__btn--ghost" type="button">
+          <i className="fas fa-map" /> 길찾기
+        </button>
+        <button className="hdc__btn hdc__btn--ghost" type="button">
+          <i className="fas fa-phone-volume" /> 전화
+        </button>
+        <button className="hdc__btn hdc__btn--ghost" type="button">
+          <i className="fas fa-star" /> 리뷰
+        </button>
         <button
-          className={`hsp-bookmark-btn ${isBookmarked ? "active" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleBookmark();
-          }}
+          className="hdc__btn hdc__btn--primary"
+          onClick={() => onReserve?.(hospital)}
           type="button"
         >
-          <i className="fas fa-bookmark" />
+          <i className="fas fa-calendar-check" />
+          예약하기
         </button>
-
-        {hospital.distance && hospital.distance !== "0km" && (
-          <span className="hsp-distance-chip">
-            <i className="fas fa-location-dot" />
-            {hospital.distance}
-          </span>
-        )}
       </div>
-
-      {/* 바디 */}
-      <div className="hsp-card-body">
-        <div className="hsp-card-title-row">
-          <h3 className="hsp-card-name">{hospital.name}</h3>
-          <span className="hsp-dept-pill">{hospital.dept || "진료과 미정"}</span>
-        </div>
-
-        <div className="hsp-card-rating-row">
-          <div className="hsp-stars">
-            {[...Array(5)].map((_, i) => (
-              <i
-                key={i}
-                className={`fas fa-star ${rating != null && i < Math.floor(rating) ? "filled" : "empty"}`}
-              />
-            ))}
-            <span className="hsp-rating-val">{rating != null ? rating : "-"}</span>
-            <span className="hsp-rating-cnt">({reviews})</span>
-          </div>
-        </div>
-
-        <div className="hsp-card-address">
-          <i className="fas fa-location-dot" />
-          <span>{hospital.address || "주소 정보 없음"}</span>
-        </div>
-
-        <div className="hsp-card-info-grid">
-          <div className="hsp-info-chip">
-            <i className="fas fa-phone" />
-            <span>{hospital.phone || "전화번호 없음"}</span>
-          </div>
-          <div className="hsp-info-chip">
-            <i className="fas fa-clock" />
-            <span>{hospital.openTime || "운영시간 정보 없음"}</span>
-          </div>
-        </div>
-
-        {/* ✅ 휴게중이면 점심시간 표시 */}
-        {hospital.status === "break" && hospital.lunchTime && (
-          <div className="hsp-closed-days">
-            <i className="fas fa-utensils" />
-            <span>점심시간: {hospital.lunchTime}</span>
-          </div>
-        )}
-
-        {/* 휴진일/정기휴무 */}
-        <div className="hsp-closed-days">
-          <i className="fas fa-calendar-xmark" />
-          <span>{hospital.closedText}</span>
-        </div>
-
-        {/* 특징 태그 */}
-        {hospital.features?.length > 0 && (
-          <div className="hsp-features-row">
-            {hospital.features.map((f, i) => (
-              <span key={i} className="hsp-feature-tag">
-                {f}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="hsp-card-divider" />
-
-        <div className="hsp-card-actions" onClick={(e) => e.stopPropagation()}>
-          <button className="hsp-btn-reserve" type="button">
-            <i className="fas fa-calendar-check" />
-            <span>예약하기</span>
-          </button>
-          <button className="hsp-btn-icon" title="전화" type="button">
-            <i className="fas fa-phone" />
-          </button>
-          <button className="hsp-btn-icon" title="길찾기" type="button">
-            <i className="fas fa-route" />
-          </button>
-        </div>
-      </div>
-    </div>
+    </article>
   );
 }

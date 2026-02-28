@@ -1,80 +1,96 @@
-import { createContext, useContext,useEffect,useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { authFetch } from "./utils/AuthFetch";
-
 
 const AuthContext = createContext(null);
 
-function AuthProvider({children}) {
-	const [isLoading, setIsLoading] = useState(true);
-	const [user, setUser] = useState(null);
+function AuthProvider({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const TEST_MODE = false;
+  const [user, setUser] = useState(null);
 
-	useEffect(() => {
-    // 🔄 새로고침 되자마자 실행되는 '로그인 유지' 로직
+  const getMe = async () => {
+    try {
+      const resp = await authFetch("/api/v1/auth/me");
+      if (resp.ok) {
+        const res = await resp.json();
+        return res;
+      }
+    } catch (err) {
+      // 401은 정상적인 비로그인 상태이므로 콘솔 노이즈 제거
+      if (!err.message?.includes("401")) {
+        console.error(err);
+      }
+    }
+    return null;
+  };
+
+  const getMeAndSetUser = async () => {
+    const me = await getMe();
+    setUser(me);
+
+    // ✅ userNum을 localStorage에 저장 (ReservationModal 등에서 사용)
+    if (me?.num) {
+      localStorage.setItem("userNum", me.num);
+    } else {
+      localStorage.removeItem("userNum");
+    }
+
+    return me;
+  };
+
+  useEffect(() => {
     const initAuth = async () => {
+      if (TEST_MODE) {
+        setUser({
+          id: 1,
+          name: "테스트유저",
+          email: "test@test.com",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        // 여기에 기존에 만드신 getMeAndSetUser()와 비슷한 로직을 넣으세요
-        await getMeAndSetUser(); 
+        await getMeAndSetUser();
       } catch {
         setUser(null);
       } finally {
-        setIsLoading(false); // 🏁 확인이 끝나면 로딩 완료
+        setIsLoading(false);
       }
     };
+
     initAuth();
   }, []);
-	
-	const getMe = async () => {
-		try {
-			const resp = await authFetch("/api/v1/auth/me");
-			if (resp.ok) {
-					const res = await resp.json();                                                                             
-					return res;
-			}	
-		} catch (err) {
-			console.error(err);
-		}
-		return null;		
-	};
 
-	const getMeAndSetUser = async () => {
-		const me = await getMe();
-		console.log(me);
-		setUser(me);
-	}
+  const logout = async () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userNum");
+    try {
+      const resp = await authFetch("/api/v1/auth/logout", {
+        method: "POST",
+      });
+      if (!resp.ok) {
+        alert("로그아웃 실패");
+        return;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setUser(null);
+    alert("로그아웃 완료");
+  };
 
-	useEffect(() => {
-		getMeAndSetUser();
-	}, []);
-
-	const logout = async () => {
-		localStorage.removeItem("accessToken");
-		try {
-			const resp = await authFetch("/api/v1/auth/logout", {
-				method: "POST"
-			});
-			console.log(resp);
-			if (!resp.ok) {
-				alert("로그아웃 실패");
-				return;
-			}
-		} catch (err) {
-			console.error(err);
-		}
-		setUser(null);
-		alert("로그아웃 완료");
-	}
-	return (
-		<AuthContext.Provider value={{user, setUser, getMeAndSetUser, logout}}>
-			{!isLoading ? children : <p>Loading...</p>}
-		</AuthContext.Provider>
-	);
+  return (
+    <AuthContext.Provider value={{ user, setUser, getMeAndSetUser, logout }}>
+      {!isLoading ? children : <p>Loading...</p>}
+    </AuthContext.Provider>
+  );
 }
 
 const useAuth = () => {
   const context = useContext(AuthContext);
-  
-  // 만약 context가 null이면 빈 객체라도 반환해서 에러 방지
-  return context || {}; 
+  return context || {};
 };
 
-export { useAuth, AuthProvider }
+// ✅ AuthContext도 함께 export (useContext로 직접 쓸 경우 대비)
+export { useAuth, AuthProvider, AuthContext };
