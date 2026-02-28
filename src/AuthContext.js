@@ -5,15 +5,8 @@ const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-	const TEST_MODE = false;
+  const TEST_MODE = false;
   const [user, setUser] = useState(null);
-
-  // 로그인인척 위장하는 테스트용 코드
-  // const [user, setUser] = useState({
-  //   id: 1,
-  //   name: "테스트유저",
-  //   email: "test@test.com",
-  // });
 
   const getMe = async () => {
     try {
@@ -23,47 +16,59 @@ function AuthProvider({ children }) {
         return res;
       }
     } catch (err) {
-      console.error(err);
+      // 401은 정상적인 비로그인 상태이므로 콘솔 노이즈 제거
+      if (!err.message?.includes("401")) {
+        console.error(err);
+      }
     }
     return null;
   };
 
   const getMeAndSetUser = async () => {
     const me = await getMe();
-    console.log(me);
     setUser(me);
+
+    // ✅ userNum을 localStorage에 저장 (ReservationModal 등에서 사용)
+    if (me?.num) {
+      localStorage.setItem("userNum", me.num);
+    } else {
+      localStorage.removeItem("userNum");
+    }
+
+    return me;
   };
 
   useEffect(() => {
-  const initAuth = async () => {
-    if (TEST_MODE) {
-      setUser({
-        id: 1,
-        name: "테스트유저",
-        email: "test@test.com",
-      });
-      setIsLoading(false);
-      return;
-    }
+    const initAuth = async () => {
+      if (TEST_MODE) {
+        setUser({
+          id: 1,
+          name: "테스트유저",
+          email: "test@test.com",
+        });
+        setIsLoading(false);
+        return;
+      }
 
-    try {
-      await getMeAndSetUser();
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      try {
+        await getMeAndSetUser();
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  initAuth();
-}, []);
+    initAuth();
+  }, []);
+
   const logout = async () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("userNum");
     try {
       const resp = await authFetch("/api/v1/auth/logout", {
         method: "POST",
       });
-      console.log(resp);
       if (!resp.ok) {
         alert("로그아웃 실패");
         return;
@@ -74,6 +79,7 @@ function AuthProvider({ children }) {
     setUser(null);
     alert("로그아웃 완료");
   };
+
   return (
     <AuthContext.Provider value={{ user, setUser, getMeAndSetUser, logout }}>
       {!isLoading ? children : <p>Loading...</p>}
@@ -83,9 +89,8 @@ function AuthProvider({ children }) {
 
 const useAuth = () => {
   const context = useContext(AuthContext);
-
-  // 만약 context가 null이면 빈 객체라도 반환해서 에러 방지
   return context || {};
 };
 
-export { useAuth, AuthProvider };
+// ✅ AuthContext도 함께 export (useContext로 직접 쓸 경우 대비)
+export { useAuth, AuthProvider, AuthContext };

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../assets/styles/MainPage.css";
-import ReservationModal from "./ReservationModal";
+import ReservationModal from "../components/ReservationModal";
 
 /* ─────────────────────────────────────────
    데이터 상수
@@ -18,10 +18,12 @@ const DEPT_CATEGORIES = [
   { id: "neuro", label: "신경과", icon: "brain" },
 ];
 
+// ✅ deptNum을 DB의 departments 테이블 dept_num 값으로 수정
 const HOSPITAL_DATA = [
   {
     id: 1,
     name: "서울아동병원",
+    deptNum: 21,        // 소아청소년과
     dept: "소아청소년과",
     deptId: "pediatrics",
     address: "서울 강남구 테헤란로 123",
@@ -35,6 +37,7 @@ const HOSPITAL_DATA = [
   {
     id: 2,
     name: "강남메디컬센터",
+    deptNum: 1,         // 내과
     dept: "내과",
     deptId: "internal",
     address: "서울 강남구 논현로 456",
@@ -48,6 +51,7 @@ const HOSPITAL_DATA = [
   {
     id: 3,
     name: "한강정형외과의원",
+    deptNum: 17,        // 정형외과
     dept: "정형외과",
     deptId: "orthopedics",
     address: "서울 용산구 이태원로 78",
@@ -61,6 +65,7 @@ const HOSPITAL_DATA = [
   {
     id: 4,
     name: "밝은눈안과",
+    deptNum: 26,        // 안과
     dept: "안과",
     deptId: "ophthalmology",
     address: "서울 마포구 홍익로 90",
@@ -74,6 +79,7 @@ const HOSPITAL_DATA = [
   {
     id: 5,
     name: "스마일치과의원",
+    deptNum: 40,        // 치과
     dept: "치과",
     deptId: "dental",
     address: "서울 서초구 방배로 200",
@@ -87,6 +93,7 @@ const HOSPITAL_DATA = [
   {
     id: 6,
     name: "맑은피부과",
+    deptNum: 24,        // 피부과
     dept: "피부과",
     deptId: "dermatology",
     address: "서울 강남구 청담동 55",
@@ -100,6 +107,7 @@ const HOSPITAL_DATA = [
   {
     id: 7,
     name: "우리아이클리닉",
+    deptNum: 21,        // 소아청소년과
     dept: "소아청소년과",
     deptId: "pediatrics",
     address: "서울 송파구 올림픽로 301",
@@ -113,6 +121,7 @@ const HOSPITAL_DATA = [
   {
     id: 8,
     name: "소화기내과의원",
+    deptNum: 2,         // 소화기내과
     dept: "내과",
     deptId: "internal",
     address: "서울 영등포구 여의대방로 12",
@@ -193,142 +202,57 @@ const HOSPITAL_EVENTS = [
 ];
 
 const NEARBY_HOSPITALS = [
-  {
-    name: "서울아동병원",
-    dept: "소아청소년과",
-    distance: "0.8km",
-    open: true,
-    wait: "15분",
-  },
-  {
-    name: "스마일치과의원",
-    dept: "치과",
-    distance: "0.5km",
-    open: true,
-    wait: "10분",
-  },
-  {
-    name: "강남메디컬센터",
-    dept: "내과",
-    distance: "1.2km",
-    open: true,
-    wait: "20분",
-  },
-  {
-    name: "밝은눈안과",
-    dept: "안과",
-    distance: "1.5km",
-    open: false,
-    wait: "-",
-  },
-  {
-    name: "한강정형외과의원",
-    dept: "정형외과",
-    distance: "2.1km",
-    open: true,
-    wait: "5분",
-  },
+  { name: "서울아동병원", dept: "소아청소년과", distance: "0.8km", open: true, wait: "15분" },
+  { name: "스마일치과의원", dept: "치과", distance: "0.5km", open: true, wait: "10분" },
+  { name: "강남메디컬센터", dept: "내과", distance: "1.2km", open: true, wait: "20분" },
+  { name: "밝은눈안과", dept: "안과", distance: "1.5km", open: false, wait: "-" },
+  { name: "한강정형외과의원", dept: "정형외과", distance: "2.1km", open: true, wait: "5분" },
 ];
 
 const SCRAPED_HOSPITALS = [
   { name: "강남메디컬센터", dept: "내과", rating: 4.8, memo: "정기검진용" },
-  {
-    name: "서울아동병원",
-    dept: "소아청소년과",
-    rating: 4.9,
-    memo: "아이 진료",
-  },
+  { name: "서울아동병원", dept: "소아청소년과", rating: 4.9, memo: "아이 진료" },
   { name: "스마일치과의원", dept: "치과", rating: 4.8, memo: "스케일링" },
 ];
 
 const MY_RECORDS = [
-  {
-    date: "2026-02-20",
-    hospital: "서울아동병원",
-    dept: "소아청소년과",
-    doctor: "김민수",
-    status: "완료",
-    diagnosis: "상기도감염",
-  },
-  {
-    date: "2026-02-15",
-    hospital: "강남메디컬센터",
-    dept: "내과",
-    doctor: "이서연",
-    status: "완료",
-    diagnosis: "건강검진",
-  },
-  {
-    date: "2026-02-10",
-    hospital: "한강정형외과의원",
-    dept: "정형외과",
-    doctor: "박준호",
-    status: "완료",
-    diagnosis: "무릎통증",
-  },
-  {
-    date: "2026-01-25",
-    hospital: "밝은눈안과",
-    dept: "안과",
-    doctor: "최지혜",
-    status: "완료",
-    diagnosis: "시력검사",
-  },
+  { date: "2026-02-20", hospital: "서울아동병원", dept: "소아청소년과", doctor: "김민수", status: "완료", diagnosis: "상기도감염" },
+  { date: "2026-02-15", hospital: "강남메디컬센터", dept: "내과", doctor: "이서연", status: "완료", diagnosis: "건강검진" },
+  { date: "2026-02-10", hospital: "한강정형외과의원", dept: "정형외과", doctor: "박준호", status: "완료", diagnosis: "무릎통증" },
+  { date: "2026-01-25", hospital: "밝은눈안과", dept: "안과", doctor: "최지혜", status: "완료", diagnosis: "시력검사" },
 ];
 
 const VACCINES = [
-  {
-    name: "독감 (인플루엔자)",
-    date: "2025-10-15",
-    nextDate: "2026-10-15",
-    status: "완료",
-    progress: 100,
-    color: "#14b8a6",
-  },
-  {
-    name: "폐렴구균",
-    date: "2024-03-20",
-    nextDate: "2029-03-20",
-    status: "완료",
-    progress: 100,
-    color: "#0d9488",
-  },
-  {
-    name: "파상풍 (Td)",
-    date: "2020-06-10",
-    nextDate: "2030-06-10",
-    status: "예정",
-    progress: 60,
-    color: "#0f766e",
-  },
-  {
-    name: "A형간염",
-    date: "-",
-    nextDate: "2026-04-01",
-    status: "미접종",
-    progress: 0,
-    color: "#94a3b8",
-  },
+  { name: "독감 (인플루엔자)", date: "2025-10-15", nextDate: "2026-10-15", status: "완료", progress: 100, color: "#14b8a6" },
+  { name: "폐렴구균", date: "2024-03-20", nextDate: "2029-03-20", status: "완료", progress: 100, color: "#0d9488" },
+  { name: "파상풍 (Td)", date: "2020-06-10", nextDate: "2030-06-10", status: "예정", progress: 60, color: "#0f766e" },
+  { name: "A형간염", date: "-", nextDate: "2026-04-01", status: "미접종", progress: 0, color: "#94a3b8" },
 ];
 
 /* ─────────────────────────────────────────
    MainPage Component
 ───────────────────────────────────────── */
 const MainPage = () => {
-  // ✅ heroStats ref 만 유지 (nav 관련 ref 모두 제거 — Header.jsx에서 관리)
   const heroStatsRef = useRef(null);
-
   const [activeDept, setActiveDept] = useState("all");
-  const [activeTab, setActiveTab] = useState("review"); // review | event | nearby
-  const [selectedHoNum, setSelectedHoNum] = useState(null);
+  const [activeTab, setActiveTab] = useState("review");
+  const [selectedHospital, setSelectedHospital] = useState(null);
 
   const filteredHospitals =
     activeDept === "all"
       ? HOSPITAL_DATA
       : HOSPITAL_DATA.filter((h) => h.deptId === activeDept);
 
+  const handleReserveOpen = (hoNum, deptNum) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+    setSelectedHospital({ hoNum, deptNum });
+  };
+
   useEffect(() => {
-    /* ── 스크롤 reveal 애니메이션 ── */
     const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -352,7 +276,6 @@ const MainPage = () => {
         revealObserver.observe(el);
       });
 
-    /* ── 숫자 카운터 애니메이션 ── */
     const formatNumber = (n) =>
       n >= 1000 ? (n / 1000).toFixed(1) + "K+" : String(n);
 
@@ -398,9 +321,7 @@ const MainPage = () => {
 
   return (
     <div className="main-container-s2">
-      {/* ══════════════════════════════
-          HERO
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ HERO ══════════════════════════════ */}
       <section className="hero-s2" id="home">
         <div className="hero-blob-s2 blob-1-s2" />
         <div className="hero-blob-s2 blob-2-s2" />
@@ -421,48 +342,27 @@ const MainPage = () => {
                 <div className="search-container-s2">
                   <div className="search-field-s2">
                     <i className="fas fa-search" />
-                    <input
-                      type="text"
-                      placeholder="증상이나 진료과를 검색하세요"
-                    />
+                    <input type="text" placeholder="증상이나 진료과를 검색하세요" />
                   </div>
                   <button className="btn-search-s2">
                     검색하기 <i className="fas fa-arrow-right" />
                   </button>
                 </div>
                 <div className="search-tags-s2">
-                  {["감기", "소아청소년과", "내과", "두통", "피부과"].map(
-                    (t) => (
-                      <span className="tag-s2" key={t}>
-                        <i className="fas fa-fire" />
-                        {t}
-                      </span>
-                    ),
-                  )}
+                  {["감기", "소아청소년과", "내과", "두통", "피부과"].map((t) => (
+                    <span className="tag-s2" key={t}>
+                      <i className="fas fa-fire" />
+                      {t}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-
             <div className="hero-right-s2">
               <div className="stats-card-s2" ref={heroStatsRef}>
-                <StatItem
-                  icon="hospital"
-                  number="2500"
-                  label="등록 병원"
-                  color="#14b8a6"
-                />
-                <StatItem
-                  icon="user-doctor"
-                  number="8500"
-                  label="전문 의료진"
-                  color="#0d9488"
-                />
-                <StatItem
-                  icon="calendar-check"
-                  number="50000"
-                  label="월간 예약"
-                  color="#0f766e"
-                />
+                <StatItem icon="hospital" number="2500" label="등록 병원" color="#14b8a6" />
+                <StatItem icon="user-doctor" number="8500" label="전문 의료진" color="#0d9488" />
+                <StatItem icon="calendar-check" number="50000" label="월간 예약" color="#0f766e" />
               </div>
               <div className="hero-illustration-s2">
                 <div className="illustration-circle-s2" />
@@ -475,9 +375,7 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          QUICK SEARCH BAR
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ QUICK SEARCH BAR ══════════════════════════════ */}
       <section className="quick-search-s2">
         <div className="container-s2">
           <div className="quick-search-wrapper">
@@ -491,20 +389,14 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          진료과 병원 찾기
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ 진료과 병원 찾기 ══════════════════════════════ */}
       <section className="hospital-search-s2" id="hospital-search">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">FIND HOSPITAL</span>
             <h2 className="section-title-s2">진료과로 병원 찾기</h2>
-            <p className="section-desc-s2">
-              원하는 진료과를 선택하면 주변 병원을 바로 찾아드려요
-            </p>
+            <p className="section-desc-s2">원하는 진료과를 선택하면 주변 병원을 바로 찾아드려요</p>
           </div>
-
-          {/* 진료과 탭 */}
           <div className="dept-tab-scroll">
             <div className="dept-tabs-s2">
               {DEPT_CATEGORIES.map((cat) => (
@@ -519,14 +411,12 @@ const MainPage = () => {
               ))}
             </div>
           </div>
-
-          {/* 병원 카드 그리드 */}
           <div className="hospital-grid-s2">
             {filteredHospitals.map((h) => (
               <HospitalCard
                 key={h.id}
                 {...h}
-                onReserve={(hoNum) => setSelectedHoNum(hoNum)}
+                onReserve={(hoNum, deptNum) => handleReserveOpen(hoNum, deptNum)}
               />
             ))}
             {filteredHospitals.length === 0 && (
@@ -536,17 +426,13 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          내 건강 대시보드
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ 내 건강 대시보드 ══════════════════════════════ */}
       <section className="dashboard-s2" id="dashboard">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">MY HEALTH BOARD</span>
             <h2 className="section-title-s2">내 건강 대시보드</h2>
           </div>
-
-          {/* 상단: 탭 패널 + 스크랩 사이드 */}
           <div className="dashboard-top-grid">
             <div className="dash-panel-main">
               <div className="dash-tab-bar">
@@ -565,19 +451,14 @@ const MainPage = () => {
                   </button>
                 ))}
               </div>
-
               {activeTab === "review" && (
                 <div className="dash-panel-body">
-                  {HOT_REVIEWS.map((r, i) => (
-                    <HotReviewCard key={i} {...r} />
-                  ))}
+                  {HOT_REVIEWS.map((r, i) => <HotReviewCard key={i} {...r} />)}
                 </div>
               )}
               {activeTab === "event" && (
                 <div className="dash-panel-body event-list">
-                  {HOSPITAL_EVENTS.map((e, i) => (
-                    <EventCard key={i} {...e} />
-                  ))}
+                  {HOSPITAL_EVENTS.map((e, i) => <EventCard key={i} {...e} />)}
                 </div>
               )}
               {activeTab === "nearby" && (
@@ -587,261 +468,131 @@ const MainPage = () => {
                     <span>지도 로딩 중...</span>
                   </div>
                   <div className="nearby-list">
-                    {NEARBY_HOSPITALS.map((h, i) => (
-                      <NearbyHospitalRow key={i} {...h} />
-                    ))}
+                    {NEARBY_HOSPITALS.map((h, i) => <NearbyHospitalRow key={i} {...h} />)}
                   </div>
                 </div>
               )}
             </div>
-
-            {/* 스크랩 사이드 */}
             <div className="dash-side-card">
               <div className="dash-side-header">
-                <span
-                  className="dash-side-icon"
-                  style={{
-                    background: "linear-gradient(135deg,#14b8a6,#0d9488)",
-                  }}
-                >
+                <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#14b8a6,#0d9488)" }}>
                   <i className="fas fa-bookmark" />
                 </span>
                 <h3>스크랩 병원</h3>
-                <button className="dash-side-more">
-                  전체보기 <i className="fas fa-chevron-right" />
-                </button>
+                <button className="dash-side-more">전체보기 <i className="fas fa-chevron-right" /></button>
               </div>
               <div className="dash-side-body">
-                {SCRAPED_HOSPITALS.map((h, i) => (
-                  <ScrapHospitalRow key={i} {...h} />
-                ))}
+                {SCRAPED_HOSPITALS.map((h, i) => <ScrapHospitalRow key={i} {...h} />)}
               </div>
             </div>
           </div>
-
-          {/* 하단: 내 병원 기록 + 예방접종 */}
           <div className="dashboard-bottom-grid">
-            {/* 내 병원 기록 */}
             <div className="dash-record-card">
               <div className="dash-side-header">
-                <span
-                  className="dash-side-icon"
-                  style={{
-                    background: "linear-gradient(135deg,#0d9488,#0f766e)",
-                  }}
-                >
+                <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#0d9488,#0f766e)" }}>
                   <i className="fas fa-clipboard-list" />
                 </span>
                 <h3>내 병원 기록</h3>
-                <button className="dash-side-more">
-                  전체보기 <i className="fas fa-chevron-right" />
-                </button>
+                <button className="dash-side-more">전체보기 <i className="fas fa-chevron-right" /></button>
               </div>
               <div className="record-table-wrap">
                 <table className="record-table">
                   <thead>
                     <tr>
-                      <th>날짜</th>
-                      <th>병원명</th>
-                      <th>진료과</th>
-                      <th>담당의</th>
-                      <th>진단명</th>
-                      <th>상태</th>
+                      <th>날짜</th><th>병원명</th><th>진료과</th>
+                      <th>담당의</th><th>진단명</th><th>상태</th>
                     </tr>
                   </thead>
                   <tbody>
                     {MY_RECORDS.map((r, i) => (
                       <tr key={i} className="record-row">
                         <td>{r.date}</td>
-                        <td>
-                          <strong>{r.hospital}</strong>
-                        </td>
-                        <td>
-                          <span className="dept-badge">{r.dept}</span>
-                        </td>
+                        <td><strong>{r.hospital}</strong></td>
+                        <td><span className="dept-badge">{r.dept}</span></td>
                         <td>{r.doctor}</td>
                         <td>{r.diagnosis}</td>
-                        <td>
-                          <span className="status-chip done">{r.status}</span>
-                        </td>
+                        <td><span className="status-chip done">{r.status}</span></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             </div>
-
-            {/* 예방접종 */}
             <div className="dash-vaccine-card">
               <div className="dash-side-header">
-                <span
-                  className="dash-side-icon"
-                  style={{
-                    background: "linear-gradient(135deg,#0f766e,#115e59)",
-                  }}
-                >
+                <span className="dash-side-icon" style={{ background: "linear-gradient(135deg,#0f766e,#115e59)" }}>
                   <i className="fas fa-syringe" />
                 </span>
                 <h3>예방접종 / 백신</h3>
-                <button className="dash-side-more">
-                  관리하기 <i className="fas fa-chevron-right" />
-                </button>
+                <button className="dash-side-more">관리하기 <i className="fas fa-chevron-right" /></button>
               </div>
               <div className="vaccine-list">
-                {VACCINES.map((v, i) => (
-                  <VaccineRow key={i} {...v} />
-                ))}
+                {VACCINES.map((v, i) => <VaccineRow key={i} {...v} />)}
               </div>
               <div className="vaccine-cta">
                 <i className="fas fa-calendar-plus" />
                 <span>다음 예방접종 예약하기</span>
-                <button className="vaccine-book-btn">
-                  예약 <i className="fas fa-arrow-right" />
-                </button>
+                <button className="vaccine-book-btn">예약 <i className="fas fa-arrow-right" /></button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          FEATURES
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ FEATURES ══════════════════════════════ */}
       <section className="features-s2" id="services">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">FEATURES</span>
             <h2 className="section-title-s2">바로닥큐만의 특별함</h2>
-            <p className="section-desc-s2">
-              최첨단 기술로 더 나은 의료 경험을 제공합니다
-            </p>
+            <p className="section-desc-s2">최첨단 기술로 더 나은 의료 경험을 제공합니다</p>
           </div>
           <div className="features-grid-s2">
-            <FeatureCard
-              icon="wand-magic-sparkles"
-              title="AI 맞춤 추천"
-              desc="증상과 위치 기반으로 가장 적합한 병원을 인공지능이 추천합니다"
-              color="#14b8a6"
-            />
-            <FeatureCard
-              icon="bolt"
-              title="실시간 예약"
-              desc="병원의 실시간 예약 가능 시간을 확인하고 즉시 예약하세요"
-              color="#0d9488"
-            />
-            <FeatureCard
-              icon="star"
-              title="검증된 리뷰"
-              desc="실제 환자들의 진솔한 후기로 신뢰할 수 있는 선택을 하세요"
-              color="#0f766e"
-            />
-            <FeatureCard
-              icon="bell"
-              title="스마트 알림"
-              desc="예약 시간부터 사후 관리까지 놓치지 않도록 알려드립니다"
-              color="#14b8a6"
-            />
-            <FeatureCard
-              icon="shield-halved"
-              title="안전한 보안"
-              desc="의료 정보는 최고 수준의 보안 시스템으로 안전하게 보호됩니다"
-              color="#0d9488"
-            />
-            <FeatureCard
-              icon="comments"
-              title="24시간 지원"
-              desc="언제든지 궁금한 점을 문의하실 수 있는 고객센터를 운영합니다"
-              color="#0f766e"
-            />
+            <FeatureCard icon="wand-magic-sparkles" title="AI 맞춤 추천" desc="증상과 위치 기반으로 가장 적합한 병원을 인공지능이 추천합니다" color="#14b8a6" />
+            <FeatureCard icon="bolt" title="실시간 예약" desc="병원의 실시간 예약 가능 시간을 확인하고 즉시 예약하세요" color="#0d9488" />
+            <FeatureCard icon="star" title="검증된 리뷰" desc="실제 환자들의 진솔한 후기로 신뢰할 수 있는 선택을 하세요" color="#0f766e" />
+            <FeatureCard icon="bell" title="스마트 알림" desc="예약 시간부터 사후 관리까지 놓치지 않도록 알려드립니다" color="#14b8a6" />
+            <FeatureCard icon="shield-halved" title="안전한 보안" desc="의료 정보는 최고 수준의 보안 시스템으로 안전하게 보호됩니다" color="#0d9488" />
+            <FeatureCard icon="comments" title="24시간 지원" desc="언제든지 궁금한 점을 문의하실 수 있는 고객센터를 운영합니다" color="#0f766e" />
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          HOW IT WORKS
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ HOW IT WORKS ══════════════════════════════ */}
       <section className="how-it-works-s2">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">HOW IT WORKS</span>
             <h2 className="section-title-s2">3단계로 간편하게</h2>
-            <p className="section-desc-s2">
-              복잡한 절차 없이 빠르게 병원 예약을 완료하세요
-            </p>
+            <p className="section-desc-s2">복잡한 절차 없이 빠르게 병원 예약을 완료하세요</p>
           </div>
           <div className="steps-container-s2">
-            <Step
-              num="1"
-              icon="magnifying-glass"
-              title="병원 검색"
-              desc="증상과 위치를 입력하여 적합한 병원을 찾아보세요"
-              color="#14b8a6"
-            />
-            <div className="step-connector-s2">
-              <i className="fas fa-chevron-right" />
-            </div>
-            <Step
-              num="2"
-              icon="calendar-days"
-              title="예약 신청"
-              desc="원하는 날짜와 시간을 선택하여 간편하게 예약하세요"
-              color="#0d9488"
-            />
-            <div className="step-connector-s2">
-              <i className="fas fa-chevron-right" />
-            </div>
-            <Step
-              num="3"
-              icon="user-nurse"
-              title="진료 받기"
-              desc="예약 시간에 방문하여 빠르게 진료를 받으세요"
-              color="#0f766e"
-            />
+            <Step num="1" icon="magnifying-glass" title="병원 검색" desc="증상과 위치를 입력하여 적합한 병원을 찾아보세요" color="#14b8a6" />
+            <div className="step-connector-s2"><i className="fas fa-chevron-right" /></div>
+            <Step num="2" icon="calendar-days" title="예약 신청" desc="원하는 날짜와 시간을 선택하여 간편하게 예약하세요" color="#0d9488" />
+            <div className="step-connector-s2"><i className="fas fa-chevron-right" /></div>
+            <Step num="3" icon="user-nurse" title="진료 받기" desc="예약 시간에 방문하여 빠르게 진료를 받으세요" color="#0f766e" />
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          TESTIMONIALS
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ TESTIMONIALS ══════════════════════════════ */}
       <section className="testimonials-s2">
         <div className="container-s2">
           <div className="section-header-s2">
             <span className="section-subtitle-s2">REVIEWS</span>
             <h2 className="section-title-s2">사용자 후기</h2>
-            <p className="section-desc-s2">
-              바로닥큐를 이용한 분들의 생생한 후기입니다
-            </p>
+            <p className="section-desc-s2">바로닥큐를 이용한 분들의 생생한 후기입니다</p>
           </div>
           <div className="testimonials-grid-s2">
-            <TestimonialCard
-              name="김서연"
-              role="직장인"
-              avatar="김"
-              text="AI 추천 기능이 정말 정확해요. 제 증상에 딱 맞는 병원을 찾았고, 예약도 쉽게 할 수 있었습니다!"
-              rating={5}
-            />
-            <TestimonialCard
-              name="이준호"
-              role="프리랜서"
-              avatar="이"
-              text="리뷰를 보고 병원을 선택할 수 있어서 정말 좋았어요. 실제로 방문했을 때도 만족스러웠습니다."
-              rating={5}
-            />
-            <TestimonialCard
-              name="박민지"
-              role="대학생"
-              avatar="박"
-              text="예약 알림 기능 덕분에 병원 예약을 놓치지 않을 수 있었어요. 정말 편리한 서비스입니다!"
-              rating={5}
-            />
+            <TestimonialCard name="김서연" role="직장인" avatar="김" text="AI 추천 기능이 정말 정확해요. 제 증상에 딱 맞는 병원을 찾았고, 예약도 쉽게 할 수 있었습니다!" rating={5} />
+            <TestimonialCard name="이준호" role="프리랜서" avatar="이" text="리뷰를 보고 병원을 선택할 수 있어서 정말 좋았어요. 실제로 방문했을 때도 만족스러웠습니다." rating={5} />
+            <TestimonialCard name="박민지" role="대학생" avatar="박" text="예약 알림 기능 덕분에 병원 예약을 놓치지 않을 수 있었어요. 정말 편리한 서비스입니다!" rating={5} />
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          CTA
-      ══════════════════════════════ */}
+      {/* ══════════════════════════════ CTA ══════════════════════════════ */}
       <section className="cta-s2">
         <div className="container-s2">
           <div className="cta-box-s2">
@@ -850,26 +601,20 @@ const MainPage = () => {
               <p>바로닥큐와 함께 더 건강한 내일을 만들어가세요</p>
             </div>
             <div className="cta-actions-s2">
-              <button className="btn-cta-primary-s2">
-                무료로 시작하기 <i className="fas fa-arrow-right" />
-              </button>
-              <button className="btn-cta-secondary-s2">
-                <i className="fas fa-play" />
-                소개 영상 보기
-              </button>
+              <button className="btn-cta-primary-s2">무료로 시작하기 <i className="fas fa-arrow-right" /></button>
+              <button className="btn-cta-secondary-s2"><i className="fas fa-play" />소개 영상 보기</button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ✅ 여기에 모달 */}
-      {selectedHoNum && (
+      {selectedHospital && (
         <ReservationModal
-          hoNum={selectedHoNum}
-          onClose={() => setSelectedHoNum(null)}
+          hoNum={selectedHospital.hoNum}
+          deptNum={selectedHospital.deptNum}
+          onClose={() => setSelectedHospital(null)}
         />
       )}
-      
     </div>
   );
 };
@@ -879,9 +624,7 @@ const MainPage = () => {
 ───────────────────────────────────────── */
 const StatItem = ({ icon, number, label, color }) => (
   <div className="stat-item-s2" style={{ "--stat-color": color }}>
-    <div className="stat-icon-s2">
-      <i className={`fas fa-${icon}`} />
-    </div>
+    <div className="stat-icon-s2"><i className={`fas fa-${icon}`} /></div>
     <div className="stat-content-s2">
       <div className="stat-number">{number}</div>
       <div className="stat-label">{label}</div>
@@ -891,15 +634,15 @@ const StatItem = ({ icon, number, label, color }) => (
 
 const QuickSearchItem = ({ icon, label }) => (
   <div className="quick-search-item">
-    <div className="quick-icon">
-      <i className={`fas fa-${icon}`} />
-    </div>
+    <div className="quick-icon"><i className={`fas fa-${icon}`} /></div>
     <span>{label}</span>
   </div>
 );
 
-// ✅ HospitalCard 전체 교체
-const HospitalCard = ({ id, name, dept, address, rating, reviews, wait, distance, badge, open, onReserve }) => (
+const HospitalCard = ({
+  id, name, dept, deptNum,
+  address, rating, reviews, wait, distance, badge, open, onReserve,
+}) => (
   <div className="hospital-card-new">
     {badge && (
       <span className={`hospital-badge ${badge === "즉시예약" ? "instant" : badge === "이벤트" ? "event" : "hot"}`}>
@@ -907,15 +650,11 @@ const HospitalCard = ({ id, name, dept, address, rating, reviews, wait, distance
       </span>
     )}
     <div className="hospital-card-top">
-      <div className="hospital-avatar-new">
-        <i className="fas fa-hospital" />
-      </div>
+      <div className="hospital-avatar-new"><i className="fas fa-hospital" /></div>
       <div className="hospital-meta">
         <h3>{name}</h3>
         <span className="hospital-dept-tag">{dept}</span>
-        <p className="hospital-addr">
-          <i className="fas fa-location-dot" />{address}
-        </p>
+        <p className="hospital-addr"><i className="fas fa-location-dot" />{address}</p>
       </div>
     </div>
     <div className="hospital-card-stats">
@@ -937,31 +676,17 @@ const HospitalCard = ({ id, name, dept, address, rating, reviews, wait, distance
       </span>
     </div>
     <div className="hospital-card-footer">
-      {/* ✅ onClick에 onReserve(id) 연결 */}
-      <button className="btn-reserve-new" onClick={() => onReserve(id)}>
+      <button className="btn-reserve-new" onClick={() => onReserve(id, deptNum)}>
         <i className="fas fa-calendar-plus" />예약하기
       </button>
-      <button className="btn-scrap-new">
-        <i className="fas fa-bookmark" />
-      </button>
+      <button className="btn-scrap-new"><i className="fas fa-bookmark" /></button>
     </div>
   </div>
 );
 
-const HotReviewCard = ({
-  hospital,
-  dept,
-  reviewer,
-  avatar,
-  rating,
-  text,
-  time,
-  likes,
-}) => (
+const HotReviewCard = ({ hospital, dept, reviewer, avatar, rating, text, time, likes }) => (
   <div className="hot-review-card">
-    <div className="hrv-left">
-      <div className="hrv-avatar">{avatar}</div>
-    </div>
+    <div className="hrv-left"><div className="hrv-avatar">{avatar}</div></div>
     <div className="hrv-body">
       <div className="hrv-top">
         <span className="hrv-hospital">{hospital}</span>
@@ -969,17 +694,12 @@ const HotReviewCard = ({
         <span className="hrv-time">{time}</span>
       </div>
       <div className="hrv-stars">
-        {[...Array(rating)].map((_, i) => (
-          <i key={i} className="fas fa-star" />
-        ))}
+        {[...Array(rating)].map((_, i) => <i key={i} className="fas fa-star" />)}
       </div>
       <p className="hrv-text">"{text}"</p>
       <div className="hrv-footer">
         <span className="hrv-reviewer">{reviewer}</span>
-        <button className="hrv-like">
-          <i className="fas fa-heart" />
-          {likes}
-        </button>
+        <button className="hrv-like"><i className="fas fa-heart" />{likes}</button>
       </div>
     </div>
   </div>
@@ -987,9 +707,7 @@ const HotReviewCard = ({
 
 const EventCard = ({ hospital, title, badge, color, icon }) => (
   <div className="event-card-new" style={{ "--ev-color": color }}>
-    <div className="ev-icon-wrap">
-      <i className={`fas fa-${icon}`} />
-    </div>
+    <div className="ev-icon-wrap"><i className={`fas fa-${icon}`} /></div>
     <div className="ev-body">
       <p className="ev-hospital">{hospital}</p>
       <h4>{title}</h4>
@@ -1000,43 +718,22 @@ const EventCard = ({ hospital, title, badge, color, icon }) => (
 
 const NearbyHospitalRow = ({ name, dept, distance, open, wait }) => (
   <div className="nearby-row">
-    <div className="nearby-icon">
-      <i className="fas fa-hospital-user" />
-    </div>
-    <div className="nearby-info">
-      <strong>{name}</strong>
-      <span>{dept}</span>
-    </div>
+    <div className="nearby-icon"><i className="fas fa-hospital-user" /></div>
+    <div className="nearby-info"><strong>{name}</strong><span>{dept}</span></div>
     <div className="nearby-meta">
-      <span className="nearby-dist">
-        <i className="fas fa-location-dot" />
-        {distance}
-      </span>
-      <span className={`open-tag ${open ? "open" : "closed"}`}>
-        {open ? `대기 ${wait}` : "종료"}
-      </span>
+      <span className="nearby-dist"><i className="fas fa-location-dot" />{distance}</span>
+      <span className={`open-tag ${open ? "open" : "closed"}`}>{open ? `대기 ${wait}` : "종료"}</span>
     </div>
-    <button className="nearby-book-btn">
-      <i className="fas fa-plus" />
-    </button>
+    <button className="nearby-book-btn"><i className="fas fa-plus" /></button>
   </div>
 );
 
 const ScrapHospitalRow = ({ name, dept, rating, memo }) => (
   <div className="scrap-row">
-    <div className="scrap-icon">
-      <i className="fas fa-bookmark" />
-    </div>
+    <div className="scrap-icon"><i className="fas fa-bookmark" /></div>
     <div className="scrap-info">
       <strong>{name}</strong>
-      <span>
-        {dept} ·{" "}
-        <i
-          className="fas fa-star"
-          style={{ color: "#fbbf24", fontSize: "0.7rem" }}
-        />{" "}
-        {rating}
-      </span>
+      <span>{dept} · <i className="fas fa-star" style={{ color: "#fbbf24", fontSize: "0.7rem" }} /> {rating}</span>
       <p className="scrap-memo">{memo}</p>
     </div>
     <button className="scrap-book-btn">예약</button>
@@ -1049,9 +746,7 @@ const VaccineRow = ({ name, date, nextDate, status, progress, color }) => (
       <div className="vaccine-name-wrap">
         <span className="vaccine-dot" style={{ background: color }} />
         <strong>{name}</strong>
-        <span
-          className={`vaccine-status-tag ${status === "완료" ? "done" : status === "예정" ? "upcoming" : "none"}`}
-        >
+        <span className={`vaccine-status-tag ${status === "완료" ? "done" : status === "예정" ? "upcoming" : "none"}`}>
           {status}
         </span>
       </div>
@@ -1062,10 +757,7 @@ const VaccineRow = ({ name, date, nextDate, status, progress, color }) => (
     </div>
     <div className="vaccine-progress-wrap">
       <div className="vaccine-progress-bar">
-        <div
-          className="vaccine-progress-fill"
-          style={{ width: `${progress}%`, background: color }}
-        />
+        <div className="vaccine-progress-fill" style={{ width: `${progress}%`, background: color }} />
       </div>
       <span className="vaccine-progress-pct">{progress}%</span>
     </div>
@@ -1074,29 +766,22 @@ const VaccineRow = ({ name, date, nextDate, status, progress, color }) => (
 
 const FeatureCard = ({ icon, title, desc, color }) => (
   <div className="feature-card-s2" style={{ "--feature-color": color }}>
-    <div className="feature-icon-wrapper-s2">
-      <i className={`fas fa-${icon}`} />
-    </div>
+    <div className="feature-icon-wrapper-s2"><i className={`fas fa-${icon}`} /></div>
     <h3>{title}</h3>
     <p>{desc}</p>
-    <div className="feature-arrow-s2">
-      <i className="fas fa-arrow-right" />
-    </div>
+    <div className="feature-arrow-s2"><i className="fas fa-arrow-right" /></div>
   </div>
 );
 
 const Step = ({ num, icon, title, desc, color }) => (
   <div className="step-s2" style={{ "--step-color": color }}>
     <div className="step-number-s2">{num}</div>
-    <div className="step-icon-wrapper-s2">
-      <i className={`fas fa-${icon}`} />
-    </div>
+    <div className="step-icon-wrapper-s2"><i className={`fas fa-${icon}`} /></div>
     <h3>{title}</h3>
     <p>{desc}</p>
   </div>
 );
 
-// ✅ TestimonialCard — 모달 없는 정상 버전
 const TestimonialCard = ({ name, role, avatar, text, rating }) => (
   <div className="testimonial-card-s2">
     <div className="testimonial-header-s2">
@@ -1107,16 +792,11 @@ const TestimonialCard = ({ name, role, avatar, text, rating }) => (
       </div>
     </div>
     <div className="rating-s2">
-      {[...Array(rating)].map((_, i) => (
-        <i key={i} className="fas fa-star" />
-      ))}
+      {[...Array(rating)].map((_, i) => <i key={i} className="fas fa-star" />)}
     </div>
     <p className="testimonial-text-s2">{text}</p>
-    <div className="testimonial-quote-s2">
-      <i className="fas fa-quote-right" />
-    </div>
+    <div className="testimonial-quote-s2"><i className="fas fa-quote-right" /></div>
   </div>
 );
-
 
 export default MainPage;

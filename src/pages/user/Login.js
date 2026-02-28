@@ -47,6 +47,9 @@ function Login() {
       // ✅ 1️⃣ 토큰 저장
       localStorage.setItem("accessToken", data.accessToken);
 
+      // ✅ userNum 저장
+      localStorage.setItem("userNum", data.userNum);
+
       // ✅ 2️⃣ Context 상태 변경 (🔥 헤더 즉시 변경됨)
       setUser({
         isLoggedIn: true,
@@ -55,7 +58,6 @@ function Login() {
 
       // ✅ 3️⃣ 메인으로 이동
       navigate("/");
-
     } catch (error) {
       console.error("로그인 중 에러 발생:", error);
       alert("서버와 통신 중 오류가 발생했습니다.");
@@ -71,7 +73,6 @@ function Login() {
 
       <div className="login-wrapper">
         <div className="login-card">
-
           <div className="login-card-header">
             <h1 className="login-card-title">로그인</h1>
             <p className="login-card-subtitle">
@@ -80,7 +81,6 @@ function Login() {
           </div>
 
           <form className="login-form" onSubmit={handleLogin}>
-
             <div className="login-field">
               <label className="login-label">
                 <i className="fas fa-user" />
@@ -132,7 +132,9 @@ function Login() {
                   onChange={(e) => setKeepLogin(e.target.checked)}
                   hidden
                 />
-                <div className={`login-keep-check ${keepLogin ? "checked" : ""}`}>
+                <div
+                  className={`login-keep-check ${keepLogin ? "checked" : ""}`}
+                >
                   <i className="fas fa-check" />
                 </div>
                 <span>로그인 상태 유지</span>
@@ -146,7 +148,6 @@ function Login() {
             >
               {isLoading ? "로그인 중..." : "로그인"}
             </button>
-
           </form>
 
           <div className="login-footer-links">
@@ -162,7 +163,6 @@ function Login() {
               회원가입
             </Link>
           </div>
-
         </div>
 
         <div className="login-signup-cta">
@@ -171,7 +171,6 @@ function Login() {
             회원가입하기
           </Link>
         </div>
-
       </div>
     </div>
   );
