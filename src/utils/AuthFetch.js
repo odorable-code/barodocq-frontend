@@ -1,93 +1,119 @@
 /**
- * 
- * 서버에 요청할 떄 header에 토큰 정보를 자동으로 추가해주는 함수
- * @param {string} url 요청할 URL
- * @param {object} options 전송에 필요한 옵션들로, method, headers, body등이 옴
+ * 서버에 요청할 때 header에 토큰 정보를 자동으로 추가해주는 함수
  */
-export async function authFetch(url, options = {}) {
-	// 토큰 정보를 가져옴
-	const accessToken = localStorage.getItem('accessToken');
-	// FormData인지 확인
+
+let isRedirecting = false; // 🔑 전역 플래그: 리다이렉트 중복 방지
+
+export async function authFetch(url, options = {}, retry = true) {
+  const accessToken = localStorage.getItem("accessToken");
   const isFormData = options.body instanceof FormData;
-	// 헤더를 설정함
-	const headers = {
-		...(isFormData ? {} : { "Content-Type": "application/json" }),
-		...(options.headers || {})
-	}
-	// 토큰이 있으면 헤더에 토큰 정보를 추가
-	if (accessToken) {
-		headers.Authorization = `Bearer ${accessToken}`;
-	}
-	// fetch를 이용해서 요청
-	const resp = await fetch(url, {
-		...options,
-		headers,
-		credentials: "include",
-	});
-	// 성공하면 요청 결과를 반환
-	if (resp.ok) {
-		return resp;
-	}
-	// 403 Unauthorized나 권한 없는 경우 바로 alert
-    if (resp.status === 403) {
-        alert("권한이 없습니다.");
-        throw new Error("권한 없음");
+
+  const headers = {
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...(options.headers || {}),
+  };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const resp = await fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+
+  // ✅ 성공
+  if (resp.ok) return resp;
+
+  // ─────────────────────────────────────────
+  // ✅ 403 처리 — /auth/ 경로는 alert 안 띄움
+  // ─────────────────────────────────────────
+  if (resp.status === 403) {
+    // /auth/me, /auth/login 등 인증 관련 요청은 조용히 throw
+    if (url.includes("/auth/")) {
+      throw new Error("403");
     }
-	// 실패하면 리프레시 토큰을 이용해서 새 토큰을 발급받고, 받았으면 기존 하던작업 다시 진행
-	const refresh = await fetch("/api/v1/auth/refresh", {
-		method: "POST",
-		credentials: "include",
-	});
+    alert("권한이 없습니다.");
+    throw new Error("권한 없음");
+  }
 
-	if (!refresh.ok) throw new Error("로그인 만료");
+  // ─────────────────────────────────────────
+  // ✅ 401 처리 — refresh 시도
+  // ─────────────────────────────────────────
+  if (resp.status === 401 && retry) {
+    const currentPath = window.location.pathname;
 
-	const data = await refresh.json();
-	localStorage.setItem("accessToken", data.accessToken);
+    // ✅ 정확한 공개 페이지 목록
+    const isPublicPage =
+      currentPath === "/" ||
+      currentPath === "/login" ||
+      currentPath === "/signup" ||
+      currentPath === "/user/signup" ||
+      currentPath === "/admin/signup" || // 병원 회원가입만 공개
+      currentPath === "/find/id" ||
+      currentPath === "/found/id" ||
+      currentPath === "/resetPw";
 
-	return authFetch(url, options);
+    if (isPublicPage) {
+      throw new Error("401");
+    }
+
+    if (isRedirecting) {
+      throw new Error("401");
+    }
+
+    // ── refresh 토큰으로 재발급 시도 ──
+    try {
+      const refresh = await fetch("/api/v1/auth/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!refresh.ok) {
+        // refresh 실패 → 로그아웃 처리 후 리다이렉트
+        handleSessionExpired();
+        throw new Error("로그인 만료");
+      }
+
+      const data = await refresh.json();
+      const newToken = data.accessToken || data.token || data.access_token;
+
+      if (!newToken) {
+        handleSessionExpired();
+        throw new Error("로그인 만료");
+      }
+
+      // 새 토큰 저장 후 원래 요청 재시도
+      localStorage.setItem("accessToken", newToken);
+      return authFetch(url, options, false); // retry = false 로 재귀 1회만
+    } catch (err) {
+      // refresh 요청 자체가 네트워크 에러인 경우
+      if (err.message !== "로그인 만료") {
+        handleSessionExpired();
+      }
+      throw err;
+    }
+  }
+
+  // retry = false 상태에서 401 → 루프 없이 종료
+  throw new Error(`요청 실패: ${resp.status}`);
 }
 
+// ─────────────────────────────────────────
+// ✅ 세션 만료 처리 함수 (중복 실행 방지 포함)
+// ─────────────────────────────────────────
+function handleSessionExpired() {
+  if (isRedirecting) return; // 이미 처리 중이면 무시
+  isRedirecting = true;
 
-//////////////////////////////이전에 꺼////////////////////////////////////
-// /**
-//  * 
-//  * 서버에 요청할 떄 header에 토큰 정보를 자동으로 추가해주는 함수
-//  * @param {string} url 요청할 URL
-//  * @param {object} options 전송에 필요한 옵션들로, method, headers, body등이 옴
-//  */
-// export async function authFetch(url, options = {}) {
-// 	// 토큰 정보를 가져옴
-// 	const accessToken = localStorage.getItem('accessToken');
-	
-// 	// 헤더를 설정함
-// 	const headers = {
-// 		"credentials": "include",
-// 		"Content-Type": "application/json",
-// 		...(options.headers || {})
-// 	}
-// 	// 토큰이 있으면 헤더에 토큰 정보를 추가
-// 	if (accessToken) {
-// 		headers.Authorization = `Bearer ${accessToken}`;
-// 	}
-// 	// fetch를 이용해서 요청
-// 	const resp = await fetch(url, {
-// 		...options,
-// 		headers
-// 	});
-// 	// 성공하면 요청 결과를 반환
-// 	if (resp.ok) {
-// 		return resp;
-// 	}
-// 	// 실패하면 리프레시 토큰을 이용해서 새 토큰을 발급받고, 받았으면 기존 하던작업 다시 진행
-// 	const refresh = await fetch("/api/v1/auth/refresh", {
-// 		method: "POST",
-// 		credentials: "include",
-// 	});
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userNum");
 
-// 	if (!refresh.ok) throw new Error("로그인 만료");
+  alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+  window.location.href = "/login";
 
-// 	const data = await refresh.json();
-// 	localStorage.setItem("accessToken", data.accessToken);
-
-// 	return authFetch(url, options);
-// }
+  // 페이지 이동 완료 후 플래그 리셋
+  setTimeout(() => {
+    isRedirecting = false;
+  }, 3000);
+}

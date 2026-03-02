@@ -114,14 +114,14 @@ function ReservationDateSelect() {
     if (!response.ok) throw new Error("서버 응답 실패");
 
     const data = await response.json();
-    alert(`예약 완료: ${data.date || formatFullDate()}`);
+    alert(`예약확정: ${data.date || formatFullDate()}`);
     handleClose();
   } catch (err) {
     console.warn("실제 호출 실패, Mock으로 처리:", err);
 
     // Mock 동작
     setTimeout(() => {
-      alert(`예약 완료 (Mock): ${formatFullDate()}`);
+      alert(`예약확정 (Mock): ${formatFullDate()}`);
       handleClose();
     }, 500);
   }

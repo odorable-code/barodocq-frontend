@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSocket } from "../WebSocketContext";
+import { useAuth } from "../AuthContext";
 import {
   faHeart,
   faMagnifyingGlass,
@@ -8,7 +10,6 @@ import {
   faBell,
   faRightToBracket,
   faUserPlus,
-  faCalendarCheck,
   faPills,
   faHospital,
   faStethoscope,
@@ -28,23 +29,20 @@ import {
   faCircleDot,
   faTriangleExclamation,
   faMoon,
+  faRightFromBracket,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
 
-/* ══════════════════════════════════════
-   상수 데이터
-══════════════════════════════════════ */
 const NAV_ITEMS = [
   { path: "/pharmacy", label: "약국 찾기", icon: faPills },
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
   { path: "/mypage", label: "마이페이지", icon: faUser },
-  { path: "/reservation", label: "예약하기", icon: faUser },
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
   { path: "/community", label: "커뮤니티", icon: faComments },
   { path: "/qna", label: "Q&A", icon: faCircleQuestion },
 ];
 
-/* ── 예약 현황 데이터 ── */
 const RESERVATIONS = [
   {
     id: 1,
@@ -88,120 +86,6 @@ const RESERVATIONS = [
   },
 ];
 
-/* ── 채팅방 데이터 ── */
-const CHAT_ROOMS = [
-  {
-    id: 1,
-    hospital: "강남메디컬센터",
-    dept: "내과",
-    avatar: "강",
-    lastMsg: "네, 가능합니다. 원하시는 시간을 말씀해 주세요.",
-    time: "10:32",
-    unread: 1,
-  },
-  {
-    id: 2,
-    hospital: "서울아동병원",
-    dept: "소아청소년과",
-    avatar: "서",
-    lastMsg: "예약 확인 차 연락드립니다. 내일 10시 맞으신가요?",
-    time: "09:15",
-    unread: 2,
-  },
-  {
-    id: 3,
-    hospital: "스마일치과",
-    dept: "치과",
-    avatar: "스",
-    lastMsg: "감사합니다! 다음 방문 때 뵙겠습니다.",
-    time: "어제",
-    unread: 0,
-  },
-  {
-    id: 4,
-    hospital: "밝은눈안과",
-    dept: "안과",
-    avatar: "밝",
-    lastMsg: "진료 후기를 남겨주시면 감사하겠습니다.",
-    time: "월요일",
-    unread: 0,
-  },
-  {
-    id: 5,
-    hospital: "한강정형외과",
-    dept: "정형외과",
-    avatar: "한",
-    lastMsg: "다음 방문 일정을 잡아드릴까요?",
-    time: "화요일",
-    unread: 0,
-  },
-];
-
-/* ── 초기 채팅 메시지 ── */
-const INIT_MESSAGES = {
-  1: [
-    {
-      from: "hospital",
-      text: "안녕하세요! 강남메디컬센터입니다. 무엇을 도와드릴까요? 😊",
-      time: "10:20",
-    },
-    {
-      from: "user",
-      text: "안녕하세요, 내일 오후 2시 30분 예약인데 시간 변경이 가능할까요?",
-      time: "10:28",
-    },
-    {
-      from: "hospital",
-      text: "네, 가능합니다. 원하시는 시간을 말씀해 주세요.",
-      time: "10:32",
-    },
-  ],
-  2: [
-    {
-      from: "hospital",
-      text: "안녕하세요. 서울아동병원 예약팀입니다.",
-      time: "09:10",
-    },
-    {
-      from: "hospital",
-      text: "3월 5일 오전 10:00 예약 확인 차 연락드립니다. 맞으신가요?",
-      time: "09:15",
-    },
-  ],
-  3: [
-    {
-      from: "hospital",
-      text: "안녕하세요! 스마일치과입니다. 지난번 치료는 불편하지 않으셨나요?",
-      time: "어제 13:50",
-    },
-    {
-      from: "user",
-      text: "네, 덕분에 괜찮아졌어요. 감사합니다!",
-      time: "어제 14:00",
-    },
-    {
-      from: "hospital",
-      text: "감사합니다! 다음 방문 때 뵙겠습니다. 😄",
-      time: "어제 14:05",
-    },
-  ],
-  4: [
-    {
-      from: "hospital",
-      text: "안녕하세요. 밝은눈안과입니다. 진료 후기를 남겨주시면 감사하겠습니다.",
-      time: "월요일",
-    },
-  ],
-  5: [
-    {
-      from: "hospital",
-      text: "안녕하세요! 한강정형외과입니다. 다음 방문 일정을 잡아드릴까요?",
-      time: "화요일",
-    },
-  ],
-};
-
-/* ── 건강 리마인더 데이터 ── */
 const HEALTH_REMINDERS = [
   {
     id: 1,
@@ -210,7 +94,6 @@ const HEALTH_REMINDERS = [
     sub: "오전 8:00",
     done: true,
     color: "#14b8a6",
-    type: "pill",
   },
   {
     id: 2,
@@ -219,7 +102,6 @@ const HEALTH_REMINDERS = [
     sub: "오후 1:00",
     done: false,
     color: "#0d9488",
-    type: "pill",
   },
   {
     id: 3,
@@ -228,7 +110,6 @@ const HEALTH_REMINDERS = [
     sub: "D-14 남음",
     done: false,
     color: "#f97316",
-    type: "vaccine",
   },
   {
     id: 4,
@@ -237,7 +118,6 @@ const HEALTH_REMINDERS = [
     sub: "D-30 남음",
     done: false,
     color: "#6366f1",
-    type: "checkup",
   },
   {
     id: 5,
@@ -246,35 +126,40 @@ const HEALTH_REMINDERS = [
     sub: "오후 11:00",
     done: false,
     color: "#0f766e",
-    type: "sleep",
   },
 ];
 
-/* ══════════════════════════════════════
-   Header 컴포넌트
-══════════════════════════════════════ */
 const Header = ({ onOpenReservation }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  /* ── 기본 상태 ── */
+  /* ── 로컬 상태 ── */
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  /* ── 채팅 상태 ── */
-  const [activeChatRoom, setActiveChatRoom] = useState(null);
   const [chatInput, setChatInput] = useState("");
-  const [messages, setMessages] = useState(INIT_MESSAGES);
   const [reminders, setReminders] = useState(HEALTH_REMINDERS);
 
   /* ── Refs ── */
   const bellRef = useRef(null);
   const panelRef = useRef(null);
-  const chatRef = useRef(null);
-  const chatEndRef = useRef(null);
+
+  /* ── useSocket (딱 한 번) ── */
+  const {
+    chatRooms,
+    activeChatRoom,
+    setActiveChatRoom,
+    messages,
+    sendMessage: socketSendMessage,
+    totalUnread,
+    chatRef,
+    chatEndRef,
+    notifOpen,
+    setNotifOpen,
+    isAdmin,
+  } = useSocket();
 
   /* ── 스크롤 감지 ── */
   useEffect(() => {
@@ -283,14 +168,14 @@ const Header = ({ onOpenReservation }) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* ── 라우트 변경 → 닫기 ── */
+  /* ── 라우트 변경 시 패널 닫기 ── */
   useEffect(() => {
     setMobileOpen(false);
     setNotifOpen(false);
     setActiveChatRoom(null);
   }, [location.pathname]);
 
-  /* ── 외부 클릭 → 닫기 ── */
+  /* ── 패널 외부 클릭 시 닫기 ── */
   useEffect(() => {
     if (!notifOpen) return;
     const handler = (e) => {
@@ -306,10 +191,10 @@ const Header = ({ onOpenReservation }) => {
     return () => document.removeEventListener("mousedown", handler);
   }, [notifOpen]);
 
-  /* ── 채팅 스크롤 bottom ── */
+  /* ── 채팅 스크롤 ── */
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChatRoom, messages]);
+  }, [messages, activeChatRoom]);
 
   /* ── 검색 ── */
   const handleSearch = useCallback(() => {
@@ -321,52 +206,27 @@ const Header = ({ onOpenReservation }) => {
   }, [searchValue, navigate]);
 
   /* ── 메시지 전송 ── */
-  const sendMessage = useCallback(() => {
-    if (!chatInput.trim() || !activeChatRoom) return;
-    const now = new Date();
-    const t = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const userMsg = { from: "user", text: chatInput.trim(), time: t };
-    setMessages((prev) => ({
-      ...prev,
-      [activeChatRoom.id]: [...(prev[activeChatRoom.id] || []), userMsg],
-    }));
+  const sendMessage = () => {
+    if (!chatInput.trim()) return;
+    socketSendMessage(chatInput);
     setChatInput("");
-    setTimeout(() => {
-      const replies = [
-        "확인했습니다. 잠시만 기다려 주세요. 😊",
-        "네, 알겠습니다! 바로 처리해 드리겠습니다.",
-        "감사합니다. 추가로 궁금하신 점이 있으시면 말씀해 주세요.",
-      ];
-      const reply = {
-        from: "hospital",
-        text: replies[Math.floor(Math.random() * replies.length)],
-        time: t,
-      };
-      setMessages((prev) => ({
-        ...prev,
-        [activeChatRoom.id]: [...(prev[activeChatRoom.id] || []), reply],
-      }));
-    }, 900);
-  }, [chatInput, activeChatRoom]);
+  };
 
-  /* ── 리마인더 체크 토글 ── */
-  const toggleReminder = (id) => {
+  const toggleReminder = (id) =>
     setReminders((prev) =>
       prev.map((r) => (r.id === id ? { ...r, done: !r.done } : r)),
     );
-  };
 
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
-  const totalUnread = CHAT_ROOMS.reduce((s, r) => s + r.unread, 0);
+  const initials = user?.name ? user.name.slice(0, 1) : "U";
 
   return (
     <header className={`hdr${isScrolled ? " hdr--scrolled" : ""}`}>
-      {/* ════════ 상단 바 ════════ */}
+      {/* ════ 상단 바 ════ */}
       <div className="hdr__top">
         <div className="hdr__inner">
-          {/* 로고 */}
           <Link to="/" className="hdr__logo" aria-label="홈으로">
             <span className="hdr__logo-icon">
               <FontAwesomeIcon icon={faHeart} />
@@ -376,7 +236,6 @@ const Header = ({ onOpenReservation }) => {
             </span>
           </Link>
 
-          {/* 검색바 */}
           <div
             className={`hdr__search${searchFocused ? " hdr__search--focused" : ""}`}
           >
@@ -407,33 +266,55 @@ const Header = ({ onOpenReservation }) => {
             </button>
           </div>
 
-          {/* 우측 액션 */}
           <div className="hdr__actions">
-            {/* 알림 벨 */}
-            <div className="hdr__bell-wrap" ref={bellRef}>
-              <button
-                className={`hdr__icon-btn${notifOpen ? " hdr__icon-btn--active" : ""}`}
-                onClick={() => {
-                  setNotifOpen((v) => !v);
-                  if (notifOpen) setActiveChatRoom(null);
-                }}
-                aria-label="알림"
-              >
-                <FontAwesomeIcon icon={faBell} />
-                {totalUnread > 0 && (
-                  <span className="hdr__notif-badge">{totalUnread}</span>
-                )}
-              </button>
-            </div>
+            {user && (
+              <>
+                <div className="hdr__bell-wrap" ref={bellRef}>
+                  <button
+                    className={`hdr__icon-btn${notifOpen ? " hdr__icon-btn--active" : ""}`}
+                    onClick={() => {
+                      setNotifOpen((v) => !v);
+                      if (notifOpen) setActiveChatRoom(null);
+                    }}
+                    aria-label="알림"
+                  >
+                    <FontAwesomeIcon icon={faBell} />
+                    {totalUnread > 0 && (
+                      <span className="hdr__notif-badge">{totalUnread}</span>
+                    )}
+                  </button>
+                </div>
 
-            <Link to="/login" className="hdr__btn hdr__btn--ghost">
-              <FontAwesomeIcon icon={faRightToBracket} />
-              <span>로그인</span>
-            </Link>
-            <Link to="/signup" className="hdr__btn hdr__btn--solid">
-              <FontAwesomeIcon icon={faUserPlus} />
-              <span>회원가입</span>
-            </Link>
+                <div className="hdr__divider" />
+
+                <Link to="/mypage" className="hdr__profile-chip">
+                  <span className="hdr__profile-avatar">{initials}</span>
+                  <span className="hdr__profile-name">{user.name}님</span>
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className="hdr__profile-chevron"
+                  />
+                </Link>
+
+                <button className="hdr__logout-btn" onClick={logout}>
+                  <FontAwesomeIcon icon={faRightFromBracket} />
+                  <span>로그아웃</span>
+                </button>
+              </>
+            )}
+
+            {!user && (
+              <>
+                <Link to="/login" className="hdr__btn hdr__btn--ghost">
+                  <FontAwesomeIcon icon={faRightToBracket} />
+                  <span>로그인</span>
+                </Link>
+                <Link to="/signup" className="hdr__btn hdr__btn--solid">
+                  <FontAwesomeIcon icon={faUserPlus} />
+                  <span>회원가입</span>
+                </Link>
+              </>
+            )}
 
             <button
               className={`hdr__hamburger${mobileOpen ? " hdr__hamburger--open" : ""}`}
@@ -446,7 +327,7 @@ const Header = ({ onOpenReservation }) => {
         </div>
       </div>
 
-      {/* ════════ 네비게이션 ════════ */}
+      {/* ════ 네비게이션 ════ */}
       <nav className={`hdr__nav${mobileOpen ? " hdr__nav--open" : ""}`}>
         <div className="hdr__nav-inner">
           <ul className="hdr__nav-list">
@@ -465,7 +346,7 @@ const Header = ({ onOpenReservation }) => {
         </div>
       </nav>
 
-      {/* ════════ 딤 오버레이 ════════ */}
+      {/* ════ 딤 오버레이 ════ */}
       {notifOpen && (
         <div
           className="hdr__overlay"
@@ -476,9 +357,10 @@ const Header = ({ onOpenReservation }) => {
         />
       )}
 
-      {/* ════════ 알림 3컬럼 패널 ════════ */}
+      {/* ════ 알림 3컬럼 패널 ════ */}
       {notifOpen && (
         <div className="hdr__np" ref={panelRef}>
+          {/* Col 1 : 예약 현황 */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
               <FontAwesomeIcon
@@ -543,10 +425,9 @@ const Header = ({ onOpenReservation }) => {
             </Link>
           </div>
 
-          {/* ── 구분선 ── */}
           <div className="hdr__np-divider" />
 
-          {/* ── Col 2 : 병원 채팅 ── */}
+          {/* Col 2 : 병원 채팅 */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
               <FontAwesomeIcon
@@ -562,38 +443,45 @@ const Header = ({ onOpenReservation }) => {
               )}
             </div>
             <div className="hdr__np-body">
-              {CHAT_ROOMS.map((room) => (
-                <div
-                  key={room.id}
-                  className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
-                  onClick={() => setActiveChatRoom(room)}
-                >
-                  <div className="hdr__cr-avatar">{room.avatar}</div>
-                  <div className="hdr__cr-info">
-                    <div className="hdr__cr-top">
-                      <span className="hdr__cr-name">{room.hospital}</span>
-                      <span className="hdr__cr-time">{room.time}</span>
-                    </div>
-                    <div className="hdr__cr-bottom">
-                      <span className="hdr__cr-last">{room.lastMsg}</span>
-                      {room.unread > 0 && (
-                        <span className="hdr__cr-unread">{room.unread}</span>
-                      )}
-                    </div>
-                    <span className="hdr__cr-dept">{room.dept}</span>
-                  </div>
+              {chatRooms.length === 0 ? (
+                <div className="hdr__cr-empty">
+                  <p>아직 채팅방이 없어요</p>
+                  <p>병원 찾기에서 1:1 대화를 시작해보세요</p>
                 </div>
-              ))}
+              ) : (
+                chatRooms.map((room) => (
+                  <div
+                    key={room.id}
+                    className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
+                    onClick={() => setActiveChatRoom(room)}
+                  >
+                    <div className="hdr__cr-avatar">{room.avatar}</div>
+                    <div className="hdr__cr-info">
+                      <div className="hdr__cr-top">
+                        <span className="hdr__cr-name">
+                          {room.hospitalName}
+                        </span>
+                        <span className="hdr__cr-time">{room.lastTime}</span>
+                      </div>
+                      <div className="hdr__cr-bottom">
+                        <span className="hdr__cr-last">
+                          {room.lastMsg || "대화를 시작해보세요"}
+                        </span>
+                        {room.unread > 0 && (
+                          <span className="hdr__cr-unread">{room.unread}</span>
+                        )}
+                      </div>
+                      <span className="hdr__cr-dept">{room.dept}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            <Link to="/chat" className="hdr__np-footer-link">
-              전체 채팅 보기 <FontAwesomeIcon icon={faChevronRight} />
-            </Link>
           </div>
 
-          {/* ── 구분선 ── */}
           <div className="hdr__np-divider" />
 
-          {/* ── Col 3 : 건강 리마인더 ── */}
+          {/* Col 3 : 건강 리마인더 */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
               <FontAwesomeIcon
@@ -607,7 +495,6 @@ const Header = ({ onOpenReservation }) => {
               </span>
             </div>
             <div className="hdr__np-body">
-              {/* 오늘 진행률 */}
               <div className="hdr__hl-progress-wrap">
                 <div className="hdr__hl-progress-label">
                   <span>오늘의 건강 미션</span>
@@ -629,7 +516,6 @@ const Header = ({ onOpenReservation }) => {
                   />
                 </div>
               </div>
-
               {reminders.map((r) => (
                 <div
                   key={r.id}
@@ -657,8 +543,6 @@ const Header = ({ onOpenReservation }) => {
                   </div>
                 </div>
               ))}
-
-              {/* 긴급 알림 */}
               <div className="hdr__hl-alert">
                 <FontAwesomeIcon
                   icon={faTriangleExclamation}
@@ -680,10 +564,9 @@ const Header = ({ onOpenReservation }) => {
         </div>
       )}
 
-      {/* ════════ 카톡식 채팅창 ════════ */}
+      {/* ════ 카톡식 채팅창 ════ */}
       {notifOpen && activeChatRoom && (
         <div className="hdr__cw" ref={chatRef}>
-          {/* 헤더 */}
           <div className="hdr__cw-head">
             <button
               className="hdr__cw-back"
@@ -693,7 +576,9 @@ const Header = ({ onOpenReservation }) => {
             </button>
             <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
             <div className="hdr__cw-hinfo">
-              <span className="hdr__cw-hname">{activeChatRoom.hospital}</span>
+              <span className="hdr__cw-hname">
+                {activeChatRoom.hospitalName}
+              </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
             </div>
             <button className="hdr__cw-more">
@@ -701,25 +586,59 @@ const Header = ({ onOpenReservation }) => {
             </button>
           </div>
 
-          {/* 메시지 영역 */}
           <div className="hdr__cw-body">
-            {(messages[activeChatRoom.id] || []).map((msg, i) => (
-              <div key={i} className={`hdr__cw-msg hdr__cw-msg--${msg.from}`}>
-                {msg.from === "hospital" && (
-                  <div className="hdr__cw-msg-avatar">
-                    {activeChatRoom.avatar}
+            {(messages[activeChatRoom.id] || []).map((msg, i) => {
+              // ✅ 수정 1: role 기반으로 "내 메시지" 판별
+              //    관리자  → hospital_로 시작하면 내 것 (오른쪽)
+              //    환자    → user 이면 내 것 (오른쪽)
+              const isFromHospital = msg.from?.startsWith("hospital");
+              const isMine = isAdmin ? isFromHospital : !isFromHospital;
+
+              return (
+                <div
+                  key={msg.id || i}
+                  // ✅ 수정 2: isMine 기준으로 CSS 클래스 고정
+                  //    내 것  → hdr__cw-msg--user  (오른쪽)
+                  //    상대방 → hdr__cw-msg--hospital (왼쪽)
+                  className={`hdr__cw-msg hdr__cw-msg--${isMine ? "user" : "hospital"}`}
+                >
+                  {/* ✅ 수정 3: 상대방 아바타는 !isMine 일 때만 표시 */}
+                  {!isMine && (
+                    <div className="hdr__cw-msg-avatar">
+                      {activeChatRoom.avatar}
+                    </div>
+                  )}
+                  <div className="hdr__cw-msg-wrap">
+                    {/* ✅ 수정 4: 왼쪽 말풍선 인라인 스타일로 확실히 구분 */}
+                    <div
+                      className="hdr__cw-bubble"
+                      style={
+                        !isMine
+                          ? {
+                              backgroundColor: "#ffffff",
+                              border: "1px solid #d1d5db",
+                              color: "#111827",
+                            }
+                          : {}
+                      }
+                    >
+                      {msg.text}
+                    </div>
+                    <span className="hdr__cw-time">
+                      {msg.timestamp
+                        ? new Date(msg.timestamp).toLocaleTimeString("ko-KR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : msg.time || ""}
+                    </span>
                   </div>
-                )}
-                <div className="hdr__cw-msg-wrap">
-                  <div className="hdr__cw-bubble">{msg.text}</div>
-                  <span className="hdr__cw-time">{msg.time}</span>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={chatEndRef} />
           </div>
 
-          {/* 입력창 */}
           <div className="hdr__cw-input-wrap">
             <input
               type="text"

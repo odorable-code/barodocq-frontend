@@ -8,14 +8,19 @@ function UserSignup() {
     userPw: "",
     userPw2: "",
     userName: "",
-    userPhone: "",
-    userGender: "",
     userAddr: "",
-    userBirth: "",
     userEmail: "",
+    userPhone: "",
+    userBirth: "",
+    userGender: "",
   });
 
   const [agreements, setAgreements] = useState({
+    termsAgreed: false,
+    locationAgreed: false,
+  });
+
+  const [userAlert, setUserAlert] = useState({
     termsAgreed: false,
     locationAgreed: false,
   });
@@ -72,6 +77,27 @@ function UserSignup() {
     }
   };
 
+  //이메일 중복 확인. 나중에 살리기
+  // const distinctEmail = async () => {
+  //   const { userEmail } = formData;
+  //   if (!userEmail.trim()) { alert("이메일을 입력해주세요."); return; }
+
+  //   try {
+  //     const response = await fetch(`/api/v1/check-id?userEmail=${userEmail}`);
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       if (data.isDuplicate) {
+  //         alert("이미 사용중인 이메일입니다.");
+  //         setIsIdAvailable(false);
+  //       } else {
+  //         setIsIdAvailable(true);
+  //       }
+  //     }
+  //   } catch {
+  //     alert("서버 통신 오류가 발생했습니다.");
+  //   }
+  // };
+
   /* ── STEP 1 → 2 이동 ── */
   const goToStep2 = () => {
     const { userId, userPw, userPw2 } = formData;
@@ -110,9 +136,10 @@ function UserSignup() {
       alert("필수 약관에 동의해야 합니다.");
       return;
     }
+    if (!userAlert) { alert("알림허용여부를 선택하세요"); return; }
 
     setIsLoading(true);
-    const submitData = { ...formData, termAgreement: true };
+    const submitData = { ...formData, termAgreement: true, userAlert: true };
 
     try {
       const response = await fetch("/api/v1/auth/signup", {
@@ -385,6 +412,40 @@ function UserSignup() {
                   </div>
                 </div>
 
+                {/* 알림 허용 여부 */}
+                <div className="su-field">
+                  <label className="su-label">
+                    <i className="fas fa-venus-mars" />알림
+                    <span className="su-required">*</span>
+                  </label>
+                  <div className="su-gender-group">
+                    <label className={`su-gender-btn ${formData.userAlert === "isGranted" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userAlert"
+                        value={formData.userAlert}
+                        onChange={(e) =>
+                        setAgreements({ ...agreements, termsAgreed: e.target.checked })
+                      }
+                        hidden
+                      />
+                      <i className="fas fa-mars" />허용
+                    </label>
+                    <label className={`su-gender-btn ${formData.userAlert === "isDenied" ? "selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="userAlert"
+                        value={formData.userAlert}
+                        onChange={(e) =>
+                        setAgreements({ ...agreements, termsAgreed: e.target.checked })
+                      }
+                        hidden
+                      />
+                      <i className="fas fa-venus" />비허용
+                    </label>
+                  </div>
+                </div>
+              
                 {/* 약관 동의 */}
                 <div className="su-terms">
                   <div className="su-terms-title">
