@@ -25,6 +25,7 @@ import MyPage                from "./MyPage";
 import PharmacySearch        from "./pages/PhamacySearch";
 import Chat                  from "./Chat/Chat";
 import ChatList              from "./Chat/ChatList";
+import MyReservationsPage    from "./pages/MyReservationsPage";
 
 /* ── 인증 / 소켓 Provider ── */
 import { AuthProvider }      from "./AuthContext";
@@ -112,6 +113,7 @@ function App() {
               <Route index                        element={<MainPage />} />
               <Route path="mainpage"              element={<MainPage />} />
               <Route path="mypage"                element={<MyPage />} />
+              <Route path="mypage/reservations"   element={<MyReservationsPage />} />
               <Route path="details/:hospitalId"   element={<HospitalDetail />} />
               <Route path="hospitals"             element={<HospitalSearch />} />
               <Route path="pharmacy"              element={<PharmacySearch />} />
