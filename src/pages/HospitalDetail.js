@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "../assets/styles/HospitalDetail.css";
 import Chat from "../Chat/Chat";
 import { useSocket } from "../WebSocketContext";
@@ -158,7 +158,7 @@ export default function Hos_Detail() {
     //채팅방 정보: cr_num, ho_num, user_num, cm_sender_type, 
     // setActiveChatRoom({
     //   hospital : "dd"})
-    const ho_num = parseInt(location.pathname.replace(/\/details\//i, ""));
+    const ho_num = parseInt(window.location.pathname.replace(/\/details\//i, ""));
 
     const getChatRoomInfo = async () => {
       try {
@@ -168,9 +168,9 @@ export default function Hos_Detail() {
             'Content-Type' : 'application/json'
           },
           body : JSON.stringify({
-          crNum: crNum,
-          hoNum: hoNum,
-          userId: userId
+          //crNum: crNum,
+          //hoNum: hoNum,
+          //userId: userId
         })
         });
 
@@ -182,10 +182,10 @@ export default function Hos_Detail() {
     };
 
     setActiveChatRoom({
-      cr_num,
-      ho_num,
-      user_num,
-      cm_sender_type
+      //cr_num,
+      //ho_num,
+      //user_num,
+      //cm_sender_type
     })
       
     //통신으로 해당 병원과 회원 사이의 챙팅방 메세지 기록을 가져옴 => s

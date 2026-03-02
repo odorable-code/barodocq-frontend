@@ -35,6 +35,7 @@ import Login from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
+import KakaoCallback from "./pages/user/KakaoCallback";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -63,8 +64,11 @@ function App() {
           <ReservationDateSelect onClose={() => setShowPopup(false)} />
         )}
 
+  
+
         <Routes>
           {/* ══ 사용자 영역 ══ */}
+          <Route path="/kakao/callback" element={<KakaoCallback />} />
           <Route
             path="/"
             element={

@@ -24,6 +24,9 @@ function AdminSignup() {
     locationAgreed: false,
   });
   const [isIdAvailable, setIsIdAvailable]   = useState(null);  // null | true | false
+  const [isEmailAvailable, setIsEmailAvailable]   = useState(null);
+  const [isHoNameAvailable, setIsHoNameAvailable]   = useState(null);
+  const [isBusinessNumAvailable, setBusinessNumIdAvailable]   = useState(null);
   const [pwMatch, setPwMatch]               = useState(null);  // null | true | false
   const [showPw, setShowPw]                 = useState(false); // 비밀번호 보기 토글
   const [showPw2, setShowPw2]               = useState(false); // 비밀번호 확인 보기 토글
@@ -58,7 +61,9 @@ function AdminSignup() {
 
   // ── UNIQUE 값 검사 ───────────────────────────────────────────────
   // ㅡㅡ아이디 중복 확인
-  const distinctId = async () => {
+
+  
+  const distinctAdminId = async () => {
     const { adminId } = formData;
     if (!adminId.trim()) { alert("아이디를 입력해주세요."); return; }
 
@@ -73,9 +78,10 @@ function AdminSignup() {
     }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${adminId}`);
+      const response = await fetch(`/api/v1/check-AdminId?adminId=${adminId}`);
       if (response.ok) {
         const data = await response.json();
+        
         if (data.isDuplicate) {
           alert("이미 사용중인 아이디입니다.");
           setIsIdAvailable(false);
@@ -93,40 +99,55 @@ function AdminSignup() {
 
   // ㅡㅡ이메일 중복 확인
   const distinctEmail = async () => {
-    const { adminEmail } = formData;
-    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+  const { adminEmail } = formData;
 
-    try {
-      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.isDuplicate) {
-          alert("이미 사용중인 이메일입니다.");
-          setIsIdAvailable(false);
-        } else {
-          setIsIdAvailable(true);
-        }
-      } else {
-        alert("서버 응답 오류가 발생했습니다.");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("서버 통신 오류가 발생했습니다.");
+  if (!adminEmail.trim()) {
+    alert("이메일을 입력해주세요.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/api/v1/check-email?adminEmail=${adminEmail}`
+    );
+
+    // 서버 응답 자체가 실패했을 때
+    if (!response.ok) {
+      alert("서버 응답 오류가 발생했습니다.");
+      return;
     }
-  };
+
+    const data = await response.json();
+
+    // 중복 여부 체크
+    if (data.isDuplicate) {
+      alert("이미 사용중인 이메일입니다.");
+      setIsEmailAvailable(false);
+      return true;
+    } else {
+      alert("사용 가능한 이메일입니다.");
+      setIsEmailAvailable(true);
+      return false;
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("서버 통신 오류가 발생했습니다.");
+  }
+};
 
   // ㅡㅡ사업자번호 중복 확인
 
 const distinctBusinessNum = async () => {
     const { businessNum } = formData;
-    if (!businessNum.trim()) { alert("아이디를 입력해주세요."); return; }
+    //if (!businessNum.trim()) { alert("사업자번호를 입력해주세요."); return; }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${businessNum}`);
+      const response = await fetch(`/api/v1/check-businessNum?businessNum=${businessNum}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
-          alert("이미 사용중인 이메일입니다.");
+          alert("이미 사용중인 사업자번호입니다.");
           setIsIdAvailable(false);
         } else {
           setIsIdAvailable(true);
@@ -143,15 +164,15 @@ const distinctBusinessNum = async () => {
   // ㅡㅡ병원이름 중복 확인
 
   const distinctHoName = async () => {
-    const { adminEmail } = formData;
-    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+    const { hoName } = formData;
+    //if (!hoName.trim()) { alert("병원이름을 입력해주세요."); return; }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
+      const response = await fetch(`/api/v1/check-hoNum?hoName=${hoName}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
-          alert("이미 사용중인 이메일입니다.");
+          alert("이미 사용중인 병원이름입니다.");
           setIsIdAvailable(false);
         } else {
           setIsIdAvailable(true);
@@ -190,7 +211,7 @@ const distinctBusinessNum = async () => {
 
     // 필수 항목 검사
     if (!adminName.trim())      { alert("담당자명을 입력해주세요."); return; }
-    if (!hoName.trim())   { alert("병원명을 입력해주세요."); return; }
+    if (!hoName.trim())         { alert("병원명을 입력해주세요."); return; }
     if (businessNum.length !== 10) { alert("사업자등록번호는 10자리 숫자여야 합니다."); return; }
     if (!adminEmail.trim())     { alert("병원 이메일을 입력해주세요."); return; }
     if (!adminAddr.trim())      { alert("병원 주소를 입력해주세요."); return; }
@@ -207,6 +228,14 @@ const distinctBusinessNum = async () => {
       return;
     }
 
+    if (await distinctAdminId()) return;
+    if (await distinctEmail()) return;
+    if (await distinctBusinessNum()) return;
+    if (await distinctHoName()) return;
+
+    //alert("회원가입 진행!");
+  
+    
     setIsLoading(true);
     const submitData = { ...formData, termAgreement: true };
     console.log(submitData);
@@ -276,7 +305,8 @@ const distinctBusinessNum = async () => {
             </p>
           </div>
 
-          <form className="as-form" onSubmit={signupButton}>
+          <form className="as-form" onSubmit={signupButton}
+          >
 
             {/* ════════ STEP 1: 계정 정보 ════════ */}
             {currentStep === 1 && (
@@ -324,7 +354,7 @@ const distinctBusinessNum = async () => {
                     <button
                       type="button"
                       className={`as-check-btn ${isIdAvailable === true ? "checked" : ""}`}
-                      onClick={distinctId}
+                      onClick={distinctAdminId}
                     >
                       {isIdAvailable === true
                         ? <><i className="fas fa-check" />확인완료</>
