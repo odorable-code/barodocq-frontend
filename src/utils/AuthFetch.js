@@ -52,7 +52,9 @@ export async function authFetch(url, options = {}, retry = true) {
       currentPath === "/admin/signup" || // 병원 회원가입만 공개
       currentPath === "/find/id" ||
       currentPath === "/found/id" ||
-      currentPath === "/resetPw";
+      currentPath === "/resetPw" ||
+      currentPath === "/admin" ||
+      currentPath.startsWith("/admin");
 
     if (isPublicPage) {
       throw new Error("401");

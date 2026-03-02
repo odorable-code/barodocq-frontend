@@ -1,24 +1,29 @@
 import { useMemo, useState } from "react";
 
-// ✅ 라디오 필터
-const STATUS = ["전체", "승인요청", "승인완료"];
+// ✅ 라디오 필터 (원하면 바꿔도 됨)
+const STATUS = ["전체", "영업중", "휴무"];
 
-// ✅ 더미데이터
-const DUMMY = Array.from({ length: 18 }).map((_, i) => ({
-  id: i + 1,
-  bizNo: "245-34-34235",
-  adminId: `admin${String(i + 1).padStart(2, "0")}`,
-  hospitalName: i % 2 === 0 ? "바로닥큐 병원" : "클린페이 의원",
-  department: i % 3 === 0 ? "내과" : i % 3 === 1 ? "피부과" : "정형외과",
-  address: "서울특별시 종로구 어딘가 123",
-  phone: "02-1234-5678",
-  alertAllowed: i % 2 === 0,
-  firstJoinedAt: "2020.03.04",
-  lastUpdatedAt: "2020.04.01",
-  approveStatus: i % 3 === 0 ? "승인완료" : "승인요청",
-}));
+// ✅ 더미데이터 (운영시간/야간/공휴일 포함)
+const DUMMY = Array.from({ length: 18 }).map((_, i) => {
+  const night = i % 4 === 0; // 야간진료여부
+  const holiday = i % 5 === 0; // 공휴일진료여부
+  const closed = i % 6 === 0; // 휴무(예시)
+  return {
+    id: i + 1,
+    hospitalName: i % 2 === 0 ? "바로닥큐 병원" : "클린페이 의원",
+    department: i % 3 === 0 ? "내과" : i % 3 === 1 ? "피부과" : "정형외과",
+    openTime: closed ? "-" : night ? "09:00" : "10:00",
+    closeTime: closed ? "-" : night ? "22:00" : "18:00",
+    lunchStart: closed ? "-" : "13:00",
+    lunchEnd: closed ? "-" : "14:00",
+    nightYn: night, // ✅ boolean
+    holidayYn: holiday, // ✅ boolean
+    lastUpdatedAt: "2026.03.03",
+    openYn: !closed, // ✅ 영업 여부(예시)
+  };
+});
 
-export default function ClaimPage() {
+export default function AdminHospitals() {
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("전체");
   const [searchField, setSearchField] = useState("전체");
@@ -27,19 +32,20 @@ export default function ClaimPage() {
   const fieldMap = useMemo(
     () => ({
       전체: (row) => [
-        row.bizNo,
-        row.adminId,
         row.hospitalName,
         row.department,
-        row.address,
-        row.phone,
+        row.openTime,
+        row.closeTime,
+        row.lunchStart,
+        row.lunchEnd,
+        row.lastUpdatedAt,
       ],
-      사업자번호: (row) => [row.bizNo], // ✅ 버그 수정 (hNo -> bizNo)
-      관리자아이디: (row) => [row.adminId],
       병원명: (row) => [row.hospitalName],
-      진료과: (row) => [row.department],
-      주소: (row) => [row.address],
-      전화번호: (row) => [row.phone],
+      진료과목: (row) => [row.department],
+      오픈시간: (row) => [row.openTime],
+      종료시간: (row) => [row.closeTime],
+      점심시간: (row) => [row.lunchStart, row.lunchEnd],
+      정보수정일: (row) => [row.lastUpdatedAt],
     }),
     []
   );
@@ -48,10 +54,13 @@ export default function ClaimPage() {
     const kw = keyword.trim();
 
     return DUMMY.filter((row) => {
-      // 1) 상태 필터
-      const hitStatus = status === "전체" ? true : row.approveStatus === status;
+      const hitStatus =
+        status === "전체"
+          ? true
+          : status === "영업중"
+          ? row.openYn
+          : !row.openYn;
 
-      // 2) 키워드 필터
       if (kw === "") return hitStatus;
 
       const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
@@ -62,11 +71,54 @@ export default function ClaimPage() {
   }, [keyword, status, searchField, fieldMap]);
 
   return (
-    <div className="adm-page">
+    <div className="adm-page adm-hours-page">
+      {/* ✅ 이 페이지에서만 먹는 스타일 */}
+      <style>{`
+        .adm-hours-page .adm-table { table-layout: fixed; }
+
+        .adm-hours-page .adm-table th,
+        .adm-hours-page .adm-table td {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .adm-hours-page .adm-table th:nth-child(1),
+        .adm-hours-page .adm-table td:nth-child(1) { width: 50px; }
+        .adm-hours-page .adm-table th:nth-child(2),
+        .adm-hours-page .adm-table td:nth-child(2) { width: 180px; }
+
+        /* 진료과목 */
+        .adm-hours-page .adm-table th:nth-child(3),
+        .adm-hours-page .adm-table td:nth-child(3) { width: 100px; }
+
+        /* 시간 컬럼들 */
+        .adm-hours-page .adm-table th:nth-child(4),
+        .adm-hours-page .adm-table td:nth-child(4),
+        .adm-hours-page .adm-table th:nth-child(5),
+        .adm-hours-page .adm-table td:nth-child(5),
+        .adm-hours-page .adm-table th:nth-child(6),
+        .adm-hours-page .adm-table td:nth-child(6),
+        .adm-hours-page .adm-table th:nth-child(7),
+        .adm-hours-page .adm-table td:nth-child(7) { width: 110px; }
+
+        /* 야간/공휴일 */
+        .adm-hours-page .adm-table th:nth-child(8),
+        .adm-hours-page .adm-table td:nth-child(8),
+        .adm-hours-page .adm-table th:nth-child(9),
+        .adm-hours-page .adm-table td:nth-child(9) { width: 120px; }
+
+        /* 수정일 */
+        .adm-hours-page .adm-table th:nth-child(10),
+        .adm-hours-page .adm-table td:nth-child(10) { width: 120px; }
+
+        .adm-hours-page td.adm-cell-center { text-align: center; white-space: nowrap; }
+      `}</style>
+
       <div className="adm-page-head">
         <div>
-          <div className="adm-breadcrumb">회원관리 &gt; 병원관리</div>
-          <h1 className="adm-page-title">병원관리</h1>
+          <div className="adm-breadcrumb">회원관리 &gt; 병원운영시간</div>
+          <h1 className="adm-page-title">병원운영시간</h1>
         </div>
         <button className="adm-primary-btn">+ 신규등록</button>
       </div>
@@ -98,12 +150,12 @@ export default function ClaimPage() {
               onChange={(e) => setSearchField(e.target.value)}
             >
               <option>전체</option>
-              <option>사업자번호</option>
-              <option>관리자아이디</option>
               <option>병원명</option>
-              <option>진료과</option>
-              <option>주소</option>
-              <option>전화번호</option>
+              <option>진료과목</option>
+              <option>오픈시간</option>
+              <option>종료시간</option>
+              <option>점심시간</option>
+              <option>정보수정일</option>
             </select>
 
             <input
@@ -123,20 +175,19 @@ export default function ClaimPage() {
       <div className="adm-table-wrap">
         <div className="adm-table-meta">전체 {filtered.length}건</div>
 
-        <table className="adm-table adm-table-hospitals">
+        <table className="adm-table adm-table-hours">
           <thead>
             <tr>
               <th>No.</th>
-              <th>사업자번호</th>
-              <th>관리자아이디</th>
               <th>병원명</th>
-              <th>진료과</th>
-              <th>주소</th>
-              <th>전화번호</th>
-              <th>알림허용여부</th>
-              <th>가입일</th>
+              <th>진료과목</th>
+              <th>오픈시간</th>
+              <th>종료시간</th>
+              <th>점심시간시작</th>
+              <th>점심시간종료</th>
+              <th>야간진료여부</th>
+              <th>공휴일진료여부</th>
               <th>정보수정일</th>
-              <th>승인여부</th>
             </tr>
           </thead>
 
@@ -144,35 +195,26 @@ export default function ClaimPage() {
             {filtered.slice(0, 10).map((r, idx) => (
               <tr key={r.id}>
                 <td>{idx + 1}</td>
-                <td>{r.bizNo}</td>
-                <td>{r.adminId}</td>
-                <td>{r.hospitalName}</td>
+                <td title={r.hospitalName}>{r.hospitalName}</td>
                 <td>{r.department}</td>
-                <td>{r.address}</td>
-                <td>{r.phone}</td>
+                <td>{r.openTime}</td>
+                <td>{r.closeTime}</td>
+                <td>{r.lunchStart}</td>
+                <td>{r.lunchEnd}</td>
 
                 <td className="adm-cell-center">
-                  <span
-                    className={
-                      "adm-badge " + (r.alertAllowed ? "adm-on" : "adm-off")
-                    }
-                  >
-                    {r.alertAllowed ? "허용" : "미허용"}
+                  <span className={"adm-badge " + (r.nightYn ? "adm-on" : "adm-off")}>
+                    {r.nightYn ? "YES" : "NO"}
                   </span>
                 </td>
 
-                <td>{r.firstJoinedAt}</td>
-                <td>{r.lastUpdatedAt}</td>
-
                 <td className="adm-cell-center">
-                  {r.approveStatus === "승인요청" ? (
-                    <button className="adm-approve-btn adm-request" type="button">
-                      승인요청
-                    </button>
-                  ) : (
-                    <span className="adm-approve-done">승인완료</span>
-                  )}
+                  <span className={"adm-badge " + (r.holidayYn ? "adm-on" : "adm-off")}>
+                    {r.holidayYn ? "YES" : "NO"}
+                  </span>
                 </td>
+
+                <td>{r.lastUpdatedAt}</td>
               </tr>
             ))}
           </tbody>

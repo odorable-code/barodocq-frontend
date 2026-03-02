@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import TopHeader from "./TopHeader";
 import "./Admin.css";
 
-export default function AdminLayout() {
+export default function AdminLayout({children}) {
   return (
     <div className="adm-scope adm-root">
       <aside className="adm-sidebar">

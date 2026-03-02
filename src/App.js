@@ -31,8 +31,8 @@ import { AuthProvider }      from "./AuthContext";
 import { WebSocketProvider } from "./WebSocketContext";
 
 /* ── 관리자 컴포넌트 ── */
-import AdminCustomers   from "./adminComponents/AdminCustomers";
-import AdminHospitals   from "./adminComponents/AdminHospitals";
+import AdminUsers   from "./adminComponents/AdminUsers";
+import AdminAdmins   from "./adminComponents/AdminAdmins";
 import AdminLayout      from "./adminComponents/AdminLayout";
 import AdminMain        from "./adminComponents/AdminMain";
 import AdminReservation from "./adminComponents/AdminReservation";
@@ -48,6 +48,8 @@ import UserSignup    from "./pages/user/UserSignup";
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import AdminHospitals from "./adminComponents/AdminHospitals";
+import AdminReviews from "./adminComponents/AdminReviews";
 
 /* ─────────────────────────────────────
    페이지 이동 시 스크롤 최상단으로
@@ -134,9 +136,11 @@ function App() {
             ══════════════════════════════════════ */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index               element={<AdminMain />} />
+              <Route path="admins"    element={<AdminAdmins />} />
+              <Route path="users"    element={<AdminUsers />} />
               <Route path="hospitals"    element={<AdminHospitals />} />
               <Route path="reservations" element={<AdminReservation />} />
-              <Route path="customers"    element={<AdminCustomers />} />
+              <Route path="posts/reviews"    element={<AdminReviews />} />
             </Route>
 
             {/* 최상위 매칭 실패 → 메인으로 */}
