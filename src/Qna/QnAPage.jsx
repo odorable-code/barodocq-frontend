@@ -40,7 +40,6 @@ const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허
         `http://localhost:8080/api/v1/qnas?sort=${sort}`
       );
       const data = await resp.json();
-      setCurrentUserNum(data.currentUserNum);
       const mappedData = data.map(q => ({
         id: q.qnNum,
         title: q.qnTitle || "제목 없음",
@@ -129,7 +128,6 @@ const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허
 
   // 필터링
   const filteredData = qnas
-    .filter(q => activeCategory === "all" || q.category === activeCategory)
     .filter(q =>
       q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -149,50 +147,84 @@ const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허
   };
 
   return (
-    <div className="qna-page">
-      <section className="qna-content">
-        <div className="container-s2">
-          <div className="qna-controls">
-            <div className="qna-sort-buttons">
-              <button
-                className={`btn ${sortBy === "latest" ? "btn-primary" : "btn-secondary"}`}
-                onClick={() => setSortBy("latest")}
-              >
-                최신순
-              </button>
-              <button
-                className={`btn ${sortBy === "views" ? "btn-primary" : "btn-secondary"}`}
-                onClick={() => setSortBy("views")}
-              >
-                조회순
-              </button>
-              <button
-                className={`btn ${sortBy === "status" ? "btn-primary" : "btn-secondary"}`}
-                onClick={() => setSortBy("status")}
-              >
-                미답변
-              </button>
-            </div>
+    <div className="rv-page">
+      {/* ── 히어로 헤더 ── */}
+      <section className="rv-hero">
+        <div className="rv-hero__blob rv-hero__blob--a" />
+        <div className="rv-hero__blob rv-hero__blob--b" />
+        <div className="rv-hero__inner">
+          <h1 className="rv-hero__title">
+            실제 환자들의 <span className="rv-hero__accent">생생한 Q&A</span>
+          </h1>
+          <p className="rv-hero__sub">
+            잘 모르는곳을 병원한테 물어보세요
+          </p>
+        </div>
+      </section>
+    {/* ── 툴바 ── */}
+    <div className="rv-toolbar">
+      <div className="rv-toolbar__inner">
 
-            {canWriteQnA && (
-              <button 
-                className="btn-write-qna"
-                onClick={handleWriteClick}
-              >
-                <i className="fas fa-pen" /> 문의하기
-              </button>
-            )}
+        {/* 검색창 */}
+        <div className="rv-search">
+          <i className="fas fa-search rv-search__icon" />
+          <input
+            className="rv-search__input"
+            type="text"
+            placeholder="제목 또는 내용으로 검색"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+          {searchQuery && (
+            <button
+              className="rv-search__clear"
+              onClick={() => setSearchQuery("")}
+            >
+              <i className="fas fa-times" />
+            </button>
+          )}
+        </div>
 
-            <input
-              type="text"
-              className="form-control me-2"
-              placeholder="검색어를 입력하세요"
-              style={{ maxWidth: "500px" }}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        {/* 정렬 + 작성 버튼 */}
+        <div className="rv-toolbar__right">
+
+          <div className="rv-sort">
+            <button
+              className={`rv-sort__btn ${sortBy === "latest" ? "active" : ""}`}
+              onClick={() => setSortBy("latest")}
+            >
+              <i className="fas fa-clock" /> 최신순
+            </button>
+
+            <button
+              className={`rv-sort__btn ${sortBy === "views" ? "active" : ""}`}
+              onClick={() => setSortBy("views")}
+            >
+              <i className="fas fa-eye" /> 조회순
+            </button>
+
+            <button
+              className={`rv-sort__btn ${sortBy === "status" ? "active" : ""}`}
+              onClick={() => setSortBy("status")}
+            >
+              <i className="fas fa-clock" /> 미답변
+            </button>
           </div>
 
+          {canWriteQnA && (
+            <button className="rv-write-btn" onClick={handleWriteClick}>
+              <i className="fas fa-pen-to-square" /> 문의하기
+            </button>
+          )}
+
+        </div>
+      </div>
+    </div>
+  <section className="qna-content">
+  <div className="container-s2">   
           <div className="qna-list">
             {currentQnas.length === 0 ? (
               <div className="qna-empty">
@@ -263,11 +295,10 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
   <div className={`qna-card ${isSelected ? "selected" : ""}`} onClick={onSelect}>
     <div className="qna-card-header">
       <span className={`qna-status-badge ${hasAnswer ? "answered" : "waiting"}`}>{status}</span>
-      <h1>{currentUserNum}</h1>
-      <h1>{authorNum}</h1>
       {currentUserNum === authorNum && (
         <button
-          className="btn-delete-qna"
+          className="btn-write-qna"
+          style={{ marginLeft: "auto" }}
           onClick={(e) => { e.stopPropagation(); onDelete(id); }}
         >
           삭제

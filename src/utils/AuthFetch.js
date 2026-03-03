@@ -44,13 +44,27 @@ export async function authFetch(url, options = {}, retry = true) {
     });
 
     // ✅ refresh 실패 → 토큰 정리 + 로그인 페이지 이동
-    if (!refresh.ok) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("userNum");
+    // if (!refresh.ok) {
+    //   localStorage.removeItem("accessToken");
+    //   localStorage.removeItem("userNum");
+    //   alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+    //   window.location.href = "/login"; // 로그인 경로에 맞게 수정
+    //   throw new Error("로그인 만료");
+    // }
+    
+  // ✅ refresh 실패 → 토큰 정리 + 로그인 페이지 이동
+  if (!refresh.ok) {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userNum");
+
+  // 🔑 로그인 페이지가 아닐 때만 alert + 이동
+    if (window.location.pathname !== "/login") {
       alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      window.location.href = "/login"; // 로그인 경로에 맞게 수정
-      throw new Error("로그인 만료");
+      window.location.replace("/login"); // href → replace 로 변경
     }
+
+    throw new Error("로그인 만료");
+  }
 
     // ✅ 안전한 버전 - 어떤 키 이름이든 처리
     const data = await refresh.json();
