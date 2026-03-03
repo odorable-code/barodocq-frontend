@@ -155,9 +155,8 @@ export default function PharmacySearch() {
   const [regionLabel, setRegionLabel] = useState("지역 선택");
   const [showRegionModal, setShowRegionModal] = useState(false);
 
-  // 내 위치
+  // 내 위치 (미허용시 서울시청으로)
   const [myPos, setMyPos] = useState(DEFAULT_CENTER);
-  const [locError, setLocError] = useState(null);
 
   // 지도 제어용(카드 클릭 → map center 이동)
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
@@ -247,7 +246,7 @@ export default function PharmacySearch() {
   useEffect(() => {
     if (!navigator.geolocation) {
       setMyPos(DEFAULT_CENTER);
-      setLocError("위치 기능을 지원하지 않아 서울시청 기준으로 보여집니다.");
+      setMapCenter(DEFAULT_CENTER);
       return;
     }
 
@@ -255,16 +254,14 @@ export default function PharmacySearch() {
       (pos) => {
         const next = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setMyPos(next);
-        setLocError(null);
+        setMapCenter(next);
 
         // 처음엔 내 위치로 지도도 맞춰주기
         setMapCenter(next);
       },
       (err) => {
         setMyPos(DEFAULT_CENTER);
-        setLocError("위치 권한이 없어 서울시청 기준으로 보여드려요.");
         console.warn("geolocation error:", err);
-
         setMapCenter(DEFAULT_CENTER);
       },
       { enableHighAccuracy: true, timeout: 8000 }
@@ -439,7 +436,6 @@ export default function PharmacySearch() {
             </button>
           </div>
 
-          {locError && <div className="phar-loc-note">{locError}</div>}
 
           {/* 필터 탭 */}
           <div className="phar-filter-row">
