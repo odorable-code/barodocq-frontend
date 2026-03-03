@@ -29,12 +29,12 @@ export function WebSocketProvider({ children }) {
   const [activeChatRoom, setActiveChatRoom] = useState(null);
   const [messages, setMessages] = useState({});
   const [notifOpen, setNotifOpen] = useState(false);
-
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  // ✅ 시스템 알림 상태를 Context로 끌어올림 (실시간 반영을 위해)
+  const [sysNotifications, setSysNotifications] = useState([]);
+
   // ─── 헬퍼 ────────────────────────────────────────────────────
-  // const isAdmin       = (u) => u?.role === "ADMIN";
-  // 밑에거 안되면 위에거로!
   const isAdmin = (u) => u?.role?.toUpperCase() === "ADMIN";
 
   const getRoomsUrl = (u) =>
@@ -138,6 +138,7 @@ export function WebSocketProvider({ children }) {
       setActiveChatRoom(null);
       setConnected(false);
       setTabTitle(0);
+      setSysNotifications([]); // 유저 로그아웃 시 알림도 초기화
       return;
     }
     fetchRooms(user);
@@ -166,10 +167,21 @@ export function WebSocketProvider({ children }) {
         console.log("[DEBUG] 알람 구독 채널:", alarmChannel);
 
         alarmSubRef.current = client.subscribe(alarmChannel, (frame) => {
-          console.log("[DEBUG] 🔔 알람 수신!", frame.body);
           const msg = JSON.parse(frame.body);
 
-          // 현재 열려있는 방이면 무시 (이미 room 구독이 처리)
+          // 🚨 [핵심 수정] 1. 시스템 알림인지 구분 (ntFinalContent 필드가 있으면 시스템 알림)
+          if (msg.ntFinalContent || msg.ntNum) {
+            console.log("[DEBUG] 🚨 시스템 알림 수신!", msg);
+            playNotifSound();
+            showBrowserNotif("바로닥큐 알림", msg.ntFinalContent);
+
+            // 기존 알림 배열 맨 앞에 새 알림 끼워넣기 (실시간 반영)
+            setSysNotifications((prev) => [msg, ...prev]);
+            return; // 시스템 알림 처리가 끝났으므로 여기서 함수 종료!
+          }
+
+          // 💬 2. 기존 채팅 알림 처리 (roomId가 있는 경우)
+          console.log("[DEBUG] 🔔 채팅 알림 수신!", msg);
           if (msg.roomId === activeChatRoomRef.current?.id) return;
 
           playNotifSound();
@@ -220,28 +232,23 @@ export function WebSocketProvider({ children }) {
 
     const roomId = activeChatRoom.id;
 
-    // 메시지 기록 로드
     if (!messages[roomId]) fetchMessages(roomId);
 
-    // ✅ 백엔드 읽음 처리
     const reader = isAdmin(user) ? "hospital" : "user";
     fetch(`${API}/api/chat/rooms/${roomId}/read?reader=${reader}`, {
       method: "PUT",
     }).catch((e) => console.warn("읽음 처리 실패:", e));
 
-    // room 구독
     subscriptionRef.current = stompRef.current.subscribe(
       `/topic/room.${roomId}`,
       (frame) => {
         const msg = JSON.parse(frame.body);
 
-        // 메시지 추가
         setMessages((prev) => ({
           ...prev,
           [roomId]: [...(prev[roomId] || []), msg],
         }));
 
-        // lastMsg 업데이트 + unread = 0 유지 (보고 있는 방이므로)
         setChatRooms((prev) =>
           prev.map((r) =>
             r.id === roomId
@@ -250,7 +257,6 @@ export function WebSocketProvider({ children }) {
           ),
         );
 
-        // 상대방 메시지에만 알림음
         const isOpponent = isAdmin(user)
           ? !msg.from?.startsWith("hospital")
           : msg.from !== "user";
@@ -263,7 +269,6 @@ export function WebSocketProvider({ children }) {
       },
     );
 
-    // ✅ 방 진입 시 프론트 unread 초기화 (구독 콜백 밖 — 딱 1번만)
     setChatRooms((prev) => {
       const updated = prev.map((r) =>
         r.id === roomId ? { ...r, unread: 0 } : r,
@@ -299,6 +304,8 @@ export function WebSocketProvider({ children }) {
         isAdmin: isAdmin(user),
         isChatOpen,
         setIsChatOpen,
+        sysNotifications,      // ✅ 새로 추가: Header가 갖다 쓸 수 있도록 배포
+        setSysNotifications,   // ✅ 새로 추가
       }}
     >
       {children}
