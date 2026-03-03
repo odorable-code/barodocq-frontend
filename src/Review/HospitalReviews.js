@@ -159,8 +159,12 @@ function HospitalReviews() {
   };
 
   const filteredReviews = reviews
-    .filter((r) => r.rvDeletedYn === 0)
-    .filter((r) => r.rvTitle.toLowerCase().includes(searchTerm.toLowerCase()));
+  .filter((r) => r.rvDeletedYn === 0)
+  .filter(
+    (r) =>
+      r.rvTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.hoName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
   const currentReviews = filteredReviews.slice(
@@ -195,7 +199,7 @@ function HospitalReviews() {
             <input
               className="rv-search__input"
               type="text"
-              placeholder="병원명, 증상, 후기 내용으로 검색"
+              placeholder="병원명, 제목으로 검색"
               value={searchTerm}
               // ✅ 버그 수정
               // value에 함수가 들어가 있음 value={setSearchTerm}  →  value={searchTerm}

@@ -52,7 +52,9 @@ export async function authFetch(url, options = {}, retry = true) {
       currentPath === "/admin/signup" || // 병원 회원가입만 공개
       currentPath === "/find/id" ||
       currentPath === "/found/id" ||
-      currentPath === "/resetPw";
+      currentPath === "/resetPw" ||
+      currentPath === "/admin" ||
+      currentPath.startsWith("/admin");
 
     if (isPublicPage) {
       throw new Error("401");
@@ -109,8 +111,10 @@ function handleSessionExpired() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNum");
 
-  alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-  window.location.href = "/login";
+  if (window.location.pathname !== '/login') {
+    alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+    window.location.href = "/login";
+  }
 
   // 페이지 이동 완료 후 플래그 리셋
   setTimeout(() => {

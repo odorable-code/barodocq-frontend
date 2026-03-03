@@ -32,11 +32,12 @@ import { AuthProvider }      from "./AuthContext";
 import { WebSocketProvider } from "./WebSocketContext";
 
 /* ── 관리자 컴포넌트 ── */
-import AdminCustomers   from "./adminComponents/AdminCustomers";
-import AdminHospitals   from "./adminComponents/AdminHospitals";
-import AdminLayout      from "./adminComponents/AdminLayout";
-import AdminMain        from "./adminComponents/AdminMain";
-import AdminReservation from "./adminComponents/AdminReservation";
+import AdminUsers   from "./admin/AdminUsers";
+import AdminAdmins   from "./admin/AdminAdmins";
+import AdminLayout      from "./admin/adminComponents/AdminLayout";
+import AdminMainPage        from "./admin/AdminMainPage";
+import AdminReservation from "./admin/AdminReservation";
+import AdminHospitalsMe from "./admin/AdminHospitalsMe"
 
 /* ── 인증 관련 페이지 ── */
 import AdminSignup   from "./pages/user/AdminSignup";
@@ -49,6 +50,8 @@ import UserSignup    from "./pages/user/UserSignup";
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import AdminHospitals from "./admin/AdminHospitals";
+import AdminReviews from "./admin/AdminReviews";
 
 /* ─────────────────────────────────────
    페이지 이동 시 스크롤 최상단으로
@@ -135,10 +138,13 @@ function App() {
                 관리자 영역 — AdminLayout 포함
             ══════════════════════════════════════ */}
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index               element={<AdminMain />} />
+              <Route index               element={<AdminMainPage />} />
+              <Route path="admins"    element={<AdminAdmins />} />
+              <Route path="users"    element={<AdminUsers />} />
               <Route path="hospitals"    element={<AdminHospitals />} />
+              <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
               <Route path="reservations" element={<AdminReservation />} />
-              <Route path="customers"    element={<AdminCustomers />} />
+              <Route path="posts/reviews"    element={<AdminReviews />} />
             </Route>
 
             {/* 최상위 매칭 실패 → 메인으로 */}
