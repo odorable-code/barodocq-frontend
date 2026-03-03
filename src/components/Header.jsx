@@ -31,6 +31,8 @@ import {
   faCircleDot,
   faTriangleExclamation,
   faMoon,
+  faChevronDown,
+  faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
 import ReservationDetailModal from "./ReservationDetailModal";
