@@ -35,7 +35,8 @@ import Login from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
-import KakaoCallback from "./pages/user/KakaoCallback";
+import {KakaoCallback, KakaoCallbackAdmin} from "./pages/user/KakaoCallback";
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -69,6 +70,8 @@ function App() {
         <Routes>
           {/* ══ 사용자 영역 ══ */}
           <Route path="/kakao/callback" element={<KakaoCallback />} />
+          <Route path="/kakao/callback/admin" element={<KakaoCallbackAdmin />} />
+
           <Route
             path="/"
             element={

@@ -314,6 +314,8 @@ function UserSignup() {
               </div>
             )}
 
+            <br />
+
             <div className="circle" onClick={handleKakaoSignup}></div>
 
             {/* ════════ STEP 2 ════════ */}
@@ -529,6 +531,15 @@ function UserSignup() {
               로그인하기 <i className="fas fa-arrow-right" />
             </Link>
           </div>
+
+          {/* ── 일반 사용자 회원가입 안내 ── */}
+          <div className="as-user-cta">
+            <span>병원 관리자로 가입하시나요?</span>
+            <Link to="/admin/signup" className="as-user-link">
+              병원 관리자 회원가입 <i className="fas fa-arrow-right" />
+            </Link>
+          </div>
+
         </div>
       </div>
     </div>
