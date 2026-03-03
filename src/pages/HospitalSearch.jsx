@@ -9,7 +9,7 @@ import HospitalDeptSelect from "../components/HospitalDeptSelect";
    필터 태그
 ───────────────────────────────────────── */
 const FILTER_TAGS = [
-  { id: "open", label: "영업중", icon: "circle-check", color: "#10b981" },
+  { id: "open", label: "진료중", icon: "circle-check", color: "#10b981" },
   { id: "night", label: "야간진료", icon: "moon", color: "#6366f1" },
   { id: "holiday", label: "공휴일진료", icon: "calendar-day", color: "#ec4899" },
   { id: "parking", label: "주차가능", icon: "square-parking", color: "#0ea5e9" },
