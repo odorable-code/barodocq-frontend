@@ -434,6 +434,14 @@
   color: var(--text-secondary);
 }
 
+.circle{
+  width: 50px; height: 50px;
+  border-radius: 100px;
+  background-color: yellow;
+  margin: auto;
+  cursor: pointer;
+}
+
 
 /* ════════════════════════════════
    11. 로그인 제출 버튼
