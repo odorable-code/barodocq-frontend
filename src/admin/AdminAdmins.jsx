@@ -34,7 +34,7 @@ export default function ClaimPage() {
         row.address,
         row.phone,
       ],
-      사업자번호: (row) => [row.bizNo], // ✅ 버그 수정 (hNo -> bizNo)
+      사업자번호: (row) => [row.bizNo],
       관리자아이디: (row) => [row.adminId],
       병원명: (row) => [row.hospitalName],
       진료과: (row) => [row.department],
@@ -48,10 +48,7 @@ export default function ClaimPage() {
     const kw = keyword.trim();
 
     return DUMMY.filter((row) => {
-      // 1) 상태 필터
       const hitStatus = status === "전체" ? true : row.approveStatus === status;
-
-      // 2) 키워드 필터
       if (kw === "") return hitStatus;
 
       const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
@@ -62,7 +59,74 @@ export default function ClaimPage() {
   }, [keyword, status, searchField, fieldMap]);
 
   return (
-    <div className="adm-page">
+    // ✅ 이 페이지 전용 부모 클래스 추가
+    <div className="adm-page adm-hosp-page">
+      {/* ✅ 이 페이지에서만 먹는 스타일 */}
+      <style>{`
+        /* ====== 병원관리 페이지 전용 스코프 ====== */
+        .adm-hosp-page .adm-table {
+          table-layout: fixed; /* ✅ 컬럼 많은 테이블은 fixed가 안정적 */
+        }
+
+        /* 기본은 한 줄 + ... (세로로 찢기는 거 방지) */
+        .adm-hosp-page .adm-table th,
+        .adm-hosp-page .adm-table td {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* ✅ 주소는 줄바꿈 허용 (너무 좁으면 세로로 찢기니까) */
+        .adm-hosp-page .adm-table th:nth-child(6),
+        .adm-hosp-page .adm-table td:nth-child(6) {
+          white-space: normal;
+          overflow: visible;
+          text-overflow: clip;
+          line-height: 1.35;
+          word-break: keep-all;
+        }
+
+        /* ✅ 버튼/배지 칸은 가운데 정렬 유지 */
+        .adm-hosp-page td.adm-cell-center {
+          white-space: nowrap;
+        }
+
+        /* ====== 컬럼 폭(픽셀 노가다 최소) ======
+           "짧아야 하는 애들"만 최소폭 지정하고
+           나머지는 브라우저가 자동으로 배분하게 둠
+        */
+        .adm-hosp-page .adm-table th:nth-child(1),
+        .adm-hosp-page .adm-table td:nth-child(1) { width: 50px; }   /* No. */
+
+        .adm-hosp-page .adm-table th:nth-child(4),
+        .adm-hosp-page .adm-table td:nth-child(4) { width: 140px; }  /* 병원명 */
+
+        .adm-hosp-page .adm-table th:nth-child(5),
+        .adm-hosp-page .adm-table td:nth-child(5) { width: 90px; }   /* 진료과 */
+
+        .adm-hosp-page .adm-table th:nth-child(7),
+        .adm-hosp-page .adm-table td:nth-child(7) { width: 120px; }  /* 전화 */
+
+        .adm-hosp-page .adm-table th:nth-child(8),
+        .adm-hosp-page .adm-table td:nth-child(8) { width: 140px; }  /* 알림 */
+
+        .adm-hosp-page .adm-table th:nth-child(9),
+        .adm-hosp-page .adm-table td:nth-child(9) { width: 110px; }  /* 가입일 */
+
+        .adm-hosp-page .adm-table th:nth-child(10),
+        .adm-hosp-page .adm-table td:nth-child(10) { width: 110px; } /* 수정일 */
+
+        .adm-hosp-page .adm-table th:nth-child(11),
+        .adm-hosp-page .adm-table td:nth-child(11) { width: 140px; } /* 승인 */
+
+        /* ✅ 사업자번호/관리자아이디는 너무 길면 ... */
+        .adm-hosp-page .adm-table th:nth-child(2),
+        .adm-hosp-page .adm-table td:nth-child(2) { width: 140px; }
+
+        .adm-hosp-page .adm-table th:nth-child(3),
+        .adm-hosp-page .adm-table td:nth-child(3) { width: 120px; }
+      `}</style>
+
       <div className="adm-page-head">
         <div>
           <div className="adm-breadcrumb">회원관리 &gt; 병원관리</div>
@@ -123,6 +187,7 @@ export default function ClaimPage() {
       <div className="adm-table-wrap">
         <div className="adm-table-meta">전체 {filtered.length}건</div>
 
+        {/* ✅ 테이블 클래스는 그대로 두고, 부모(adm-hosp-page)로만 제어 */}
         <table className="adm-table adm-table-hospitals">
           <thead>
             <tr>
@@ -152,11 +217,7 @@ export default function ClaimPage() {
                 <td>{r.phone}</td>
 
                 <td className="adm-cell-center">
-                  <span
-                    className={
-                      "adm-badge " + (r.alertAllowed ? "adm-on" : "adm-off")
-                    }
-                  >
+                  <span className={"adm-badge " + (r.alertAllowed ? "adm-on" : "adm-off")}>
                     {r.alertAllowed ? "허용" : "미허용"}
                   </span>
                 </td>

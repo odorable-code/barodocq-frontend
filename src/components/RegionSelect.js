@@ -11,6 +11,7 @@ export default function Hos_RegionSelect({
   onConfirm = () => {},
 }) {
   const STEP = { SIDO: "SIDO", SIGUNGU: "SIGUNGU", EMD: "EMD" };
+  const ALL_SIDO = { code: "ALL", name: "전체" };
 
   const [step, setStep] = useState(STEP.SIDO);
   const [sido, setSido] = useState(null);       // { code, name }
@@ -63,7 +64,7 @@ export default function Hos_RegionSelect({
     if (step === STEP.SIDO) {
       const rank = new Map(SIDO_ORDER.map((name, idx) => [name, idx]));
 
-      return SIDO
+      const sortedSido = SIDO
         .map((v) => ({ code: v.sidocode, name: v.sidoname }))
         .sort((a, b) => {
           const ra = rank.has(a.name) ? rank.get(a.name) : 999;
@@ -71,29 +72,50 @@ export default function Hos_RegionSelect({
 
           if (ra !== rb) return ra - rb;
 
-          // ✅ 혹시 목록에 없는 시/도가 있으면 가나다순(ko)로 안정 정렬
+          // 편애 목록 외 '가나다순'
           return a.name.localeCompare(b.name, "ko");
         });
+        // 앞에 전체 추가
+        return [ALL_SIDO, ...sortedSido];
     }
 
     if (step === STEP.SIGUNGU) {
       if (!sido?.code) return [];
       return SIGUNGU
         .filter((v) => String(v.sidocode) === String(sido.code))
-        .map((v) => ({ code: v.sigungucode, name: v.sigunguname }));
+        .map((v) => ({ code: v.sigungucode, name: v.sigunguname }))
+        .sort((a, b) => a.name.localeCompare(b.name, "ko"));
     }
 
     // STEP.EMD
     if (!sigungu?.code) return [];
     return EMD
       .filter((v) => String(v.sigungucode) === String(sigungu.code))
-      .map((v) => ({ code: v.eupmyeondongcode, name: v.eupmyeondongname }));
+      .map((v) => ({ code: v.eupmyeondongcode, name: v.eupmyeondongname }))
+      .sort((a, b) => a.name.localeCompare(b.name, "ko"));
   }, [isOpen, step, sido?.code, sigungu?.code, SIDO_ORDER]);
 
   if (!isOpen) return null;
 
   // ✅ 선택 처리
   const handleSelect = (item) => {
+    if (step === STEP.SIDO && String(item.code) === "ALL") {
+      const all = item; // { code:"ALL", name:"전체" }
+
+      setSido(all);
+      setSigungu(null);
+      setEmd(null);
+      setStep(STEP.SIDO);
+
+      onConfirm({
+        level: STEP.SIDO,
+        sido: all,
+        sigungu: null,
+        emd: null,
+    });
+    onClose();
+    return;
+  }
     if (step === STEP.SIDO) {
       setSido(item);
       setSigungu(null);
@@ -128,6 +150,7 @@ export default function Hos_RegionSelect({
     if (!canConfirm) return;
 
     const level = emd ? STEP.EMD : sigungu ? STEP.SIGUNGU : STEP.SIDO;
+
 
     onConfirm({
       level,

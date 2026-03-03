@@ -7,7 +7,7 @@ import {
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Chat = ({ hospitalName, crNum, userNum, crStatus, hoNum, crLastMsgPreview, cmSenderType, cmNum, userId, style }) => {
+const Chat = ({ hospitalName, crNum, userNum, crStatus, hoNum, crLastMsgPreview, cmSenderType, cmNum, userId }) => {
   const {
     cmContent,
     setCmContent,
@@ -99,7 +99,7 @@ const Chat = ({ hospitalName, crNum, userNum, crStatus, hoNum, crLastMsgPreview,
   };
 
   return (
-        <div className="hdr__cw" ref={chatRef} style={style? style : null}>
+        <div className="hdr__cw" ref={chatRef}>
           {/* 헤더 */}
           <div className="hdr__cw-head">
             <button

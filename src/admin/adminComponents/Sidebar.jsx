@@ -1,42 +1,67 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 const MENUS = [
   {
-    key: "users", // ✅ 회원관리
+    key: "members",
     label: "회원관리",
     to: "/admin/users",
     children: [
-      { key: "admins", label: "관리자 회원관리", to: "/admin/hospitals" },
-      { key: "customers", label: "사용자 회원관리", to: "/admin/customers" },
-      { key: "my", label: "내 정보 보기", to: "/admin" },
+      { key: "admins", label: "관리자 회원관리", to: "/admin/admins" },
+      { key: "users", label: "사용자 회원관리", to: "/admin/users" },
+      { key: "me", label: "내 정보 보기", to: "/admin/me" },
     ],
   },
-  { key: "hospitals", label: "병원정보", to: "/admin/hospitals" }, // ✅ 병원정보
-  { key: "reservations", label: "예약관리", to: "/admin/reservations" }, // ✅ 예약관리
   {
-    key: "posts", // ✅ 게시글관리
-    label: "게시글관리",
-    to: "/admin/claims",
+    key: "hospitals",
+    label: "병원관리",
+    to: "/admin/hospitals",
     children: [
-      { key: "reviews", label: "병원후기", to: "/admin/claims" },
-      { key: "qna", label: "Q&A", to: "/admin/claims/request" },
-      { key: "events", label: "이벤트", to: "/admin/claims/hold" },
+      { key: "allHospitals", label: "전체 병원 정보", to: "/admin/hospitals" },
+      { key: "myHospital", label: "내 병원 정보", to: "/admin/hospitals/me" },
+      { key: "hours", label: "운영시간/휴무변경", to: "/admin/hospitals/hours" },
     ],
   },
-  { key: "inquiries", label: "1:1문의", to: "/admin/order" }, // ✅ 1:1문의
+  { key: "reservations", label: "예약관리", to: "/admin/reservations" },
+  {
+    key: "posts",
+    label: "게시글관리",
+    to: "/admin/posts/reviews",
+    children: [
+      { key: "reviews", label: "병원후기", to: "/admin/posts/reviews" },
+      { key: "qna", label: "Q&A", to: "/admin/posts/qna" },
+      { key: "events", label: "이벤트", to: "/admin/posts/events" },
+    ],
+  },
+  { key: "chats", label: "1:1문의", to: "/admin/chats" },
+  { key: "settings", label: "설정", to: "/admin/settings" },
 ];
 
 export default function Sidebar() {
   const [hoverKey, setHoverKey] = useState(null);
   const [openKey, setOpenKey] = useState(null);
+  const { pathname } = useLocation();
 
   const activeKey = openKey ?? hoverKey;
+
+  // ✅ 현재 경로가 해당 메뉴(또는 자식)의 prefix면 active 처리
+  const isMenuActive = (menu) => {
+    if (pathname === menu.to) return true;
+    if (pathname.startsWith(menu.to + "/")) return true;
+    if (menu.children?.some((c) => pathname === c.to || pathname.startsWith(c.to + "/")))
+      return true;
+    return false;
+  };
 
   return (
     <div className="adm-sb">
       {/* ✅ 로고 클릭 시 /admin 메인으로 이동 */}
-      <NavLink to="/admin" className="adm-sb-logo" style={{ textDecoration: "none", color: "inherit" }}>
+      <NavLink
+        to="/admin"
+        className="adm-sb-logo"
+        style={{ textDecoration: "none", color: "inherit" }}
+        onClick={() => setOpenKey(null)}
+      >
         BarodocQ
       </NavLink>
 
@@ -45,6 +70,9 @@ export default function Sidebar() {
           const hasChildren = Array.isArray(m.children) && m.children.length > 0;
           const isOpen = activeKey === m.key;
 
+          // ✅ 상위 메뉴 active: 현재 경로 기반
+          const parentActive = isMenuActive(m);
+
           return (
             <div
               key={m.key}
@@ -52,12 +80,11 @@ export default function Sidebar() {
               onMouseEnter={() => setHoverKey(m.key)}
               onMouseLeave={() => setHoverKey(null)}
             >
-              {/* 상위 메뉴 */}
               <div className="adm-sb-parent">
                 <NavLink
                   to={m.to}
-                  className={({ isActive }) =>
-                    "adm-sb-item" + (isActive ? " adm-active" : "")
+                  className={() =>
+                    "adm-sb-item" + (parentActive ? " adm-active" : "")
                   }
                   onClick={(e) => {
                     if (hasChildren) {
@@ -85,16 +112,16 @@ export default function Sidebar() {
                 )}
               </div>
 
-              {/* 하단 메뉴 */}
               {hasChildren && (
                 <div className={"adm-sb-sub" + (isOpen ? " adm-open" : "")}>
                   {m.children.map((c) => (
                     <NavLink
-                      key={c.key ?? c.to} // ✅ key가 있으면 key, 없으면 to
+                      key={c.key}
                       to={c.to}
                       className={({ isActive }) =>
                         "adm-sb-sub-item" + (isActive ? " adm-active" : "")
                       }
+                      onClick={() => setOpenKey(null)}
                     >
                       {c.label}
                     </NavLink>

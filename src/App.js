@@ -32,11 +32,11 @@ import { AuthProvider }      from "./AuthContext";
 import { WebSocketProvider } from "./WebSocketContext";
 
 /* ── 관리자 컴포넌트 ── */
-import AdminCustomers   from "./adminComponents/AdminCustomers";
-import AdminHospitals   from "./adminComponents/AdminHospitals";
-import AdminLayout      from "./adminComponents/AdminLayout";
-import AdminMain        from "./adminComponents/AdminMain";
-import AdminReservation from "./adminComponents/AdminReservation";
+import AdminUsers   from "./admin/AdminUsers";
+import AdminAdmins   from "./admin/AdminAdmins";
+import AdminLayout      from "./admin/adminComponents/AdminLayout";
+import AdminMainPage        from "./admin/AdminMainPage";
+import AdminReservation from "./admin/AdminReservation";
 
 /* ── 인증 관련 페이지 ── */
 import AdminSignup   from "./pages/user/AdminSignup";
@@ -44,12 +44,13 @@ import FindId        from "./pages/user/FindId";
 import FoundId       from "./pages/user/FoundId";
 import Login         from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
-import Signup from "./pages/user/Signup";
-import UserSignup from "./pages/user/UserSignup";
-import KakaoCallback from "./pages/user/KakaoCallback";
+import Signup        from "./pages/user/Signup";
+import UserSignup    from "./pages/user/UserSignup";
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import AdminHospitals from "./admin/AdminHospitals";
+import AdminReviews from "./admin/AdminReviews";
 
 /* ─────────────────────────────────────
    페이지 이동 시 스크롤 최상단으로
@@ -87,17 +88,7 @@ function App() {
           )}
 
           <Routes>
-          {/* ══ 사용자 영역 ══ */}
-          <Route path="/kakao/callback" element={<KakaoCallback />} />
-          <Route
-            path="/"
-            element={
-              <Layout
-                onOpenReservation={() => setShowReservation(true)}
-                onOpenPopup={() => setShowPopup(true)}
-              />
-           }
-          />
+
             {/* ══════════════════════════════════════
                 인증 페이지 — Header/Footer 없이 단독
             ══════════════════════════════════════ */}
@@ -137,13 +128,7 @@ function App() {
               <Route path="main"                  element={<Main />} />
               <Route path="chat"                  element={<Chat />} />
               <Route path="chat/list"             element={<ChatList />} />
-              <Route path="login"                 element={<Login />} />
-            <Route path="signup"                  element={<Signup />} />
-              <Route path="user/signup"           element={<UserSignup />} />
-              <Route path="admin/signup"          element={<AdminSignup />} />
-              <Route path="find/id"               element={<FindId />} />
-              <Route path="found/id"              element={<FoundId />} />
-              <Route path="resetPw"               element={<ResetPassword />} />
+
               {/* Layout 안 나머지 → 메인으로 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
@@ -152,10 +137,12 @@ function App() {
                 관리자 영역 — AdminLayout 포함
             ══════════════════════════════════════ */}
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index               element={<AdminMain />} />
+              <Route index               element={<AdminMainPage />} />
+              <Route path="admins"    element={<AdminAdmins />} />
+              <Route path="users"    element={<AdminUsers />} />
               <Route path="hospitals"    element={<AdminHospitals />} />
               <Route path="reservations" element={<AdminReservation />} />
-              <Route path="customers"    element={<AdminCustomers />} />
+              <Route path="posts/reviews"    element={<AdminReviews />} />
             </Route>
 
             {/* 최상위 매칭 실패 → 메인으로 */}

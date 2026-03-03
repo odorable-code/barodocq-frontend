@@ -68,20 +68,15 @@ export default function ReservationManagePage() {
   );
 
   const filtered = useMemo(() => {
-    const kw = keyword.trim();
+    const kw = keyword.trim().toLowerCase();
 
     return rows.filter((row) => {
-      // 1) 상태 필터
       const hitStatus = status === "전체" ? true : row.status === status;
-
-      // 2) 키워드 필터
       if (kw === "") return hitStatus;
 
       const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
       const hitKeyword = candidates.some((v) =>
-        String(v ?? "")
-          .toLowerCase()
-          .includes(kw.toLowerCase())
+        String(v ?? "").toLowerCase().includes(kw)
       );
 
       return hitStatus && hitKeyword;
@@ -96,10 +91,7 @@ export default function ReservationManagePage() {
           ? {
               ...r,
               status: "예약확정",
-              updatedAt: new Date()
-                .toISOString()
-                .slice(0, 16)
-                .replace("T", " "),
+              updatedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
             }
           : r
       )
@@ -114,17 +106,14 @@ export default function ReservationManagePage() {
           ? {
               ...r,
               status: "예약취소",
-              updatedAt: new Date()
-                .toISOString()
-                .slice(0, 16)
-                .replace("T", " "),
+              updatedAt: new Date().toISOString().slice(0, 16).replace("T", " "),
             }
           : r
       )
     );
   };
 
-  // ✅ 상태 배지 클래스(있으면 더 예쁨. 없어도 동작은 함)
+  // ✅ 상태 배지 클래스
   const statusClass = (s) => {
     if (s === "예약대기") return "adm-st-wait";
     if (s === "예약확정") return "adm-st-ok";
@@ -134,7 +123,72 @@ export default function ReservationManagePage() {
   };
 
   return (
-    <div className="adm-page">
+    // ✅ 예약관리 페이지 전용 스코프
+    <div className="adm-page adm-resv-page">
+      <style>{`
+        /* ===== 예약관리 페이지 전용 스코프 ===== */
+        .adm-resv-page .adm-table {
+          table-layout: fixed; /* ✅ 테이블 안정화 */
+        }
+
+        /* 기본: 한줄 ... (세로찢김 방지) */
+        .adm-resv-page .adm-table th,
+        .adm-resv-page .adm-table td {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* ✅ 예약요청사항은 두 줄까지 보여주고 싶으면 (선택) */
+        .adm-resv-page .adm-req {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          white-space: normal;
+          line-height: 1.35;
+          word-break: keep-all;
+        }
+
+        /* ===== 컬럼 폭: 꼭 필요한 애들만 최소 지정 ===== */
+        .adm-resv-page .adm-table th:nth-child(1),
+        .adm-resv-page .adm-table td:nth-child(1) { width: 50px; }  /* No. */
+
+        .adm-resv-page .adm-table th:nth-child(2),
+        .adm-resv-page .adm-table td:nth-child(2) { width: 160px; } /* 예약병원 */
+
+        .adm-resv-page .adm-table th:nth-child(3),
+        .adm-resv-page .adm-table td:nth-child(3) { width: 90px; }  /* 진료과 */
+
+        .adm-resv-page .adm-table th:nth-child(4),
+        .adm-resv-page .adm-table td:nth-child(4) { width: 110px; } /* 예약자 */
+
+        .adm-resv-page .adm-table th:nth-child(5),
+        .adm-resv-page .adm-table td:nth-child(5) { width: 160px; } /* 예약시간 */
+
+        .adm-resv-page .adm-table th:nth-child(6),
+        .adm-resv-page .adm-table td:nth-child(6) { width: 110px; } /* 예약상태 */
+
+        .adm-resv-page .adm-table th:nth-child(7),
+        .adm-resv-page .adm-table td:nth-child(7) { width: 260px; } /* 요청사항 */
+
+        .adm-resv-page .adm-table th:nth-child(8),
+        .adm-resv-page .adm-table td:nth-child(8) { width: 150px; } /* 신청 */
+
+        .adm-resv-page .adm-table th:nth-child(9),
+        .adm-resv-page .adm-table td:nth-child(9) { width: 150px; } /* 수정 */
+
+        .adm-resv-page .adm-table th:nth-child(10),
+        .adm-resv-page .adm-table td:nth-child(10) { width: 140px; } /* 처리 */
+
+        /* td flex 금지 + 가운데 정렬 유지 */
+        .adm-resv-page td.adm-cell-center {
+          display: table-cell;
+          text-align: center;
+          vertical-align: middle;
+        }
+      `}</style>
+
       <div className="adm-page-head">
         <div>
           <div className="adm-breadcrumb">예약관리</div>
@@ -225,7 +279,11 @@ export default function ReservationManagePage() {
                   </span>
                 </td>
 
-                <td>{r.requestMemo}</td>
+                {/* ✅ 요청사항은 2줄 클램프(너무 길면 보기 좋게) */}
+                <td>
+                  <div className="adm-req">{r.requestMemo}</div>
+                </td>
+
                 <td>{r.createdAt}</td>
                 <td>{r.updatedAt}</td>
 
