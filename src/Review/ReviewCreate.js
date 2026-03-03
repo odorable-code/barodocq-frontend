@@ -5,7 +5,7 @@
 //         후기 작성 화면으로 전환됨
 // ═══════════════════════════════════════════════════
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authFetch } from "../utils/AuthFetch";
 import "../assets/styles/ReviewCreate.css";
@@ -34,6 +34,7 @@ function ReservationAndReview() {
   const [hoverRating,  setHoverRating]  = useState(0);   // 마우스 올렸을 때 임시 별점
   const [files,        setFiles]        = useState([null, null, null]);    // 첨부 파일 (최대 3개)
   const [previews,     setPreviews]     = useState([null, null, null]);    // 파일 미리보기 URL
+  const [myReservations, setMyReservations] = useState([]);
 
   // ── 공통 상태 ──────────────────────────────────────
   const [step, setStep] = useState(1);  // 현재 단계 (1: 예약, 2: 후기)
@@ -157,6 +158,20 @@ function ReservationAndReview() {
       alert("후기 등록에 실패했습니다.");
     }
   };
+
+    useEffect(() => {
+      const fetchMyReservations = async () => {
+        try {
+          const res = await authFetch("http://localhost:8080/api/v1/reviews/my");
+          const data = await res.json();
+          setMyReservations(data);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      fetchMyReservations();
+  }, []);
 
 
   // ─────────────────────────────────────────────────
@@ -364,6 +379,9 @@ function ReservationAndReview() {
                   <button className="rc-btn rc-btn--submit" onClick={CreateReservation}>
                     <i className="fas fa-calendar-check" /> 예약 등록하기
                   </button>
+                  <button className="rc-btn rc-btn--submit" onClick={()=>setStep(2)}>
+                    이미 예약했으면? (후기 작성하러 가기)
+                  </button>
                 </div>
               </div>
             )}
@@ -413,15 +431,26 @@ function ReservationAndReview() {
 
                   {/* 예약 고유번호 — 예약과 후기를 연결하는 FK */}
                   <div className="rc-form-group">
-                    <label>예약 고유번호 <span className="rc-required">*</span></label>
+                    <label>예약 선택 <span className="rc-required">*</span></label>
                     <div className="rc-input-icon">
                       <i className="fas fa-hashtag" />
-                      <input
-                        type="number"
+                      <select
                         value={renum || ""}
-                        onChange={(e) => setRenum(e.target.value)}
-                        placeholder="예약 등록 후 발급된 번호"
-                      />
+                        onChange={(e) => {
+                          const selected = myReservations.find(
+                            (r) => r.reNum === Number(e.target.value)
+                          );
+                          setRenum(selected.reNum);
+                          setHonum(selected.hoNum); // 병원번호도 자동 세팅
+                        }}
+                      >
+                        <option value="">예약을 선택하세요</option>
+                        {myReservations.map((r) => (
+                          <option key={r.reNum} value={r.reNum}>
+                            {r.hoName} | {r.reDate} | {r.reStatus}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
