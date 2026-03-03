@@ -10,7 +10,6 @@ import HospitalDeptSelect from "../components/HospitalDeptSelect";
 ───────────────────────────────────────── */
 const FILTER_TAGS = [
   { id: "open", label: "영업중", icon: "circle-check", color: "#10b981" },
-  { id: "available", label: "예약가능", icon: "calendar-check", color: "#14b8a6" },
   { id: "night", label: "야간진료", icon: "moon", color: "#6366f1" },
   { id: "holiday", label: "공휴일진료", icon: "calendar-day", color: "#ec4899" },
   { id: "parking", label: "주차가능", icon: "square-parking", color: "#0ea5e9" },
@@ -203,6 +202,21 @@ async function toggleHospitalScrap(hospitalId) {
   // 서버가 json 안 줄 수도 있음
   return await res.json().catch(() => null);
 }
+
+const openKakaoDirections = ({ fromLat, fromLng, fromName, toLat, toLng, toName }) => {
+  if ([fromLat, fromLng, toLat, toLng].some((v) => v == null)) {
+    alert("출발/도착 정보가 없어서 길찾기를 열 수 없어요.");
+    return;
+  }
+
+  const sName = encodeURIComponent(fromName || "현재위치");
+  const dName = encodeURIComponent(toName || "목적지");
+
+  // ✅ 카카오맵 길찾기 URL (웹/앱 공통으로 동작하는 편)
+  const url = `https://map.kakao.com/link/from/${sName},${fromLat},${fromLng}/to/${dName},${toLat},${toLng}`;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+};
 
 /* ─────────────────────────────────────────
    Page
@@ -451,7 +465,6 @@ export default function HospitalSearch() {
           if (breakNow) features.push("휴게중");
           if (tags.includes("night")) features.push("야간진료");
           if (tags.includes("holiday")) features.push("공휴일진료");
-          if (tags.includes("available")) features.push("예약가능");
           if (tags.includes("parking")) features.push("주차가능");
 
           const apiClosed = String(acc.closedTextFromApi ?? "").trim();
@@ -757,11 +770,19 @@ export default function HospitalSearch() {
                   hospital={h}
                   isBookmarked={bookmarkedHospitals.has(h.id)}
                   onToggleBookmark={() => toggleBookmark(h.id)}
-                  onReserve={() => {
-                    if (!requireLogin()) return;
-                    navigate(`/reservation/${h.id}`)
-                  }}
+                  onReserve={() => {if (!requireLogin()) return;
+                    navigate(`/reservation/${h.id}`)}}
                   onGoDetail={() => navigate(`/details/${h.id}`)}
+                  onDirection={() => {
+                    openKakaoDirections({
+                      fromLat: userPos.lat,
+                      fromLng: userPos.lng,
+                      fromName: "현재위치",
+                      toLat: h.lat,
+                      toLng: h.lng,
+                      toName: h.name,
+                    });
+                  }}
                 />
               ))}
               {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
@@ -795,7 +816,7 @@ export default function HospitalSearch() {
 /* ─────────────────────────────────────────
    카드 컴포넌트 (HD C UI)
 ───────────────────────────────────────── */
-function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserve, onGoDetail }) {
+function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserve, onGoDetail, onDirection }) {
   const [expanded, setExpanded] = useState(false);
 
   // 상태
@@ -844,7 +865,6 @@ function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserv
         {isNightCare && <span className="hdc__badge hdc__badge--night">🌙 야간진료</span>}
         {isHolidayCare && <span className="hdc__badge hdc__badge--emergency">📅 공휴일진료</span>}
         {isPark && <span className="hdc__badge hdc__badge--park">🅿 주차가능</span>}
-        {isReservable && <span className="hdc__badge hdc__badge--res">📅 예약가능</span>}
       </div>
 
       <div className="hdc__body">
@@ -925,7 +945,11 @@ function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserv
       </div>
 
       <div className="hdc__actions" onClick={(e) => e.stopPropagation()}>
-        <button className="hdc__btn hdc__btn--ghost" type="button">
+        <button className="hdc__btn hdc__btn--ghost" type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDirection?.();
+                }}>
           <i className="fas fa-map" /> 길찾기
         </button>
         <button className="hdc__btn hdc__btn--ghost" type="button">
