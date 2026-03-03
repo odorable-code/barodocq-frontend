@@ -32,8 +32,6 @@ import {
   faTriangleExclamation,
   faRightFromBracket,
   faMoon,
-  faRightFromBracket,
-  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
 import Chat from "../Chat/Chat";
