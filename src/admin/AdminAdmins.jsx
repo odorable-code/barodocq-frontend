@@ -129,8 +129,8 @@ export default function ClaimPage() {
 
       <div className="adm-page-head">
         <div>
-          <div className="adm-breadcrumb">회원관리 &gt; 병원관리</div>
-          <h1 className="adm-page-title">병원관리</h1>
+          <div className="adm-breadcrumb">회원관리 &gt; 관리자 회원관리</div>
+          <h1 className="adm-page-title">관리자 회원관리</h1>
         </div>
         <button className="adm-primary-btn">+ 신규등록</button>
       </div>
