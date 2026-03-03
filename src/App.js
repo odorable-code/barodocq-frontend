@@ -44,9 +44,8 @@ import FindId        from "./pages/user/FindId";
 import FoundId       from "./pages/user/FoundId";
 import Login         from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
-import Signup from "./pages/user/Signup";
-import UserSignup from "./pages/user/UserSignup";
-import KakaoCallback from "./pages/user/KakaoCallback";
+import Signup        from "./pages/user/Signup";
+import UserSignup    from "./pages/user/UserSignup";
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -87,17 +86,7 @@ function App() {
           )}
 
           <Routes>
-          {/* ══ 사용자 영역 ══ */}
-          <Route path="/kakao/callback" element={<KakaoCallback />} />
-          <Route
-            path="/"
-            element={
-              <Layout
-                onOpenReservation={() => setShowReservation(true)}
-                onOpenPopup={() => setShowPopup(true)}
-              />
-           }
-          />
+
             {/* ══════════════════════════════════════
                 인증 페이지 — Header/Footer 없이 단독
             ══════════════════════════════════════ */}
@@ -137,13 +126,7 @@ function App() {
               <Route path="main"                  element={<Main />} />
               <Route path="chat"                  element={<Chat />} />
               <Route path="chat/list"             element={<ChatList />} />
-              <Route path="login"                 element={<Login />} />
-            <Route path="signup"                  element={<Signup />} />
-              <Route path="user/signup"           element={<UserSignup />} />
-              <Route path="admin/signup"          element={<AdminSignup />} />
-              <Route path="find/id"               element={<FindId />} />
-              <Route path="found/id"              element={<FoundId />} />
-              <Route path="resetPw"               element={<ResetPassword />} />
+
               {/* Layout 안 나머지 → 메인으로 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
