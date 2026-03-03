@@ -31,8 +31,6 @@ import {
   faCircleDot,
   faTriangleExclamation,
   faMoon,
-  faRightFromBracket,
-  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
 import ReservationDetailModal from "./ReservationDetailModal";
@@ -42,12 +40,173 @@ import ReservationCancelModal from "./ReservationCancelModal";
 const NAV_ITEMS = [
   { path: "/pharmacy", label: "약국 찾기", icon: faPills },
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
+  { path: "/hospitalsearchpage", label: "병원 찾기2", icon: faStethoscope },
   { path: "/mypage", label: "마이페이지", icon: faUser },
+  { path: "/reservation", label: "예약하기", icon: faUser },
+  { path: "/testChat", label: "챗테스트", icon: faUser },
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
   { path: "/community", label: "커뮤니티", icon: faComments },
   { path: "/qna", label: "Q&A", icon: faCircleQuestion },
 ];
 
+/* ── 예약 현황 데이터 ── */
+const RESERVATIONS = [
+  {
+    id: 1,
+    hospital: "강남메디컬센터",
+    dept: "내과",
+    date: "2026-02-27",
+    time: "14:30",
+    status: "confirmed",
+    doctor: "이서연",
+    waitNum: 3,
+  },
+  {
+    id: 2,
+    hospital: "서울아동병원",
+    dept: "소아청소년과",
+    date: "2026-03-05",
+    time: "10:00",
+    status: "pending",
+    doctor: "김민수",
+    waitNum: null,
+  },
+  {
+    id: 3,
+    hospital: "스마일치과",
+    dept: "치과",
+    date: "2026-03-12",
+    time: "16:00",
+    status: "confirmed",
+    doctor: "박준호",
+    waitNum: 7,
+  },
+  {
+    id: 4,
+    hospital: "밝은눈안과",
+    dept: "안과",
+    date: "2026-03-20",
+    time: "11:00",
+    status: "waiting",
+    doctor: "최지혜",
+    waitNum: null,
+  },
+];
+
+/* ── 채팅방 데이터 ── */
+const CHAT_ROOMS = [
+  {
+    id: 1,
+    hospital: "강남메디컬센터",
+    dept: "내과",
+    avatar: "강",
+    lastMsg: "네, 가능합니다. 원하시는 시간을 말씀해 주세요.",
+    time: "10:32",
+    unread: 1,
+  },
+  {
+    id: 2,
+    hospital: "서울아동병원",
+    dept: "소아청소년과",
+    avatar: "서",
+    lastMsg: "예약 확인 차 연락드립니다. 내일 10시 맞으신가요?",
+    time: "09:15",
+    unread: 2,
+  },
+  {
+    id: 3,
+    hospital: "스마일치과",
+    dept: "치과",
+    avatar: "스",
+    lastMsg: "감사합니다! 다음 방문 때 뵙겠습니다.",
+    time: "어제",
+    unread: 0,
+  },
+  {
+    id: 4,
+    hospital: "밝은눈안과",
+    dept: "안과",
+    avatar: "밝",
+    lastMsg: "진료 후기를 남겨주시면 감사하겠습니다.",
+    time: "월요일",
+    unread: 0,
+  },
+  {
+    id: 5,
+    hospital: "한강정형외과",
+    dept: "정형외과",
+    avatar: "한",
+    lastMsg: "다음 방문 일정을 잡아드릴까요?",
+    time: "화요일",
+    unread: 0,
+  },
+];
+
+/* ── 초기 채팅 메시지 ── */
+const INIT_MESSAGES = {
+  1: [
+    {
+      from: "hospital",
+      text: "안녕하세요! 강남메디컬센터입니다. 무엇을 도와드릴까요? 😊",
+      time: "10:20",
+    },
+    {
+      from: "user",
+      text: "안녕하세요, 내일 오후 2시 30분 예약인데 시간 변경이 가능할까요?",
+      time: "10:28",
+    },
+    {
+      from: "hospital",
+      text: "네, 가능합니다. 원하시는 시간을 말씀해 주세요.",
+      time: "10:32",
+    },
+  ],
+  2: [
+    {
+      from: "hospital",
+      text: "안녕하세요. 서울아동병원 예약팀입니다.",
+      time: "09:10",
+    },
+    {
+      from: "hospital",
+      text: "3월 5일 오전 10:00 예약 확인 차 연락드립니다. 맞으신가요?",
+      time: "09:15",
+    },
+  ],
+  3: [
+    {
+      from: "hospital",
+      text: "안녕하세요! 스마일치과입니다. 지난번 치료는 불편하지 않으셨나요?",
+      time: "어제 13:50",
+    },
+    {
+      from: "user",
+      text: "네, 덕분에 괜찮아졌어요. 감사합니다!",
+      time: "어제 14:00",
+    },
+    {
+      from: "hospital",
+      text: "감사합니다! 다음 방문 때 뵙겠습니다. 😄",
+      time: "어제 14:05",
+    },
+  ],
+  4: [
+    {
+      from: "hospital",
+      text: "안녕하세요. 밝은눈안과입니다. 진료 후기를 남겨주시면 감사하겠습니다.",
+      time: "월요일",
+    },
+  ],
+  5: [
+    {
+      from: "hospital",
+      text: "안녕하세요! 한강정형외과입니다. 다음 방문 일정을 잡아드릴까요?",
+      time: "화요일",
+    },
+  ],
+};
+
+/* ── 건강 리마인더 데이터 ── */
 const HEALTH_REMINDERS = [
   {
     id: 1,
@@ -56,6 +215,7 @@ const HEALTH_REMINDERS = [
     sub: "오전 8:00",
     done: true,
     color: "#14b8a6",
+    type: "pill",
   },
   {
     id: 2,
@@ -64,6 +224,7 @@ const HEALTH_REMINDERS = [
     sub: "오후 1:00",
     done: false,
     color: "#0d9488",
+    type: "pill",
   },
   {
     id: 3,
@@ -72,6 +233,7 @@ const HEALTH_REMINDERS = [
     sub: "D-14 남음",
     done: false,
     color: "#f97316",
+    type: "vaccine",
   },
   {
     id: 4,
@@ -80,6 +242,7 @@ const HEALTH_REMINDERS = [
     sub: "D-30 남음",
     done: false,
     color: "#6366f1",
+    type: "checkup",
   },
   {
     id: 5,
@@ -88,9 +251,13 @@ const HEALTH_REMINDERS = [
     sub: "오후 11:00",
     done: false,
     color: "#0f766e",
+    type: "sleep",
   },
 ];
 
+/* ══════════════════════════════════════
+   Header 컴포넌트
+══════════════════════════════════════ */
 const Header = ({ onOpenReservation }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -271,6 +438,7 @@ const Header = ({ onOpenReservation }) => {
             </span>
           </Link>
 
+          {/* 검색바 */}
           <div
             className={`hdr__search${searchFocused ? " hdr__search--focused" : ""}`}
           >
@@ -362,7 +530,7 @@ const Header = ({ onOpenReservation }) => {
         </div>
       </div>
 
-      {/* ════ 네비게이션 ════ */}
+      {/* ════════ 네비게이션 ════════ */}
       <nav className={`hdr__nav${mobileOpen ? " hdr__nav--open" : ""}`}>
         <div className="hdr__nav-inner">
           <ul className="hdr__nav-list">
@@ -381,7 +549,7 @@ const Header = ({ onOpenReservation }) => {
         </div>
       </nav>
 
-      {/* ════ 딤 오버레이 ════ */}
+      {/* ════════ 딤 오버레이 ════════ */}
       {notifOpen && (
           <div
             className="hdr__overlay"
@@ -392,7 +560,7 @@ const Header = ({ onOpenReservation }) => {
           />
         )}
 
-      {/* ════ 알림 3컬럼 패널 ════ */}
+      {/* ════════ 알림 3컬럼 패널 ════════ */}
       {notifOpen && (
         <div className="hdr__np" ref={panelRef}>
           {/* ── Col 1 : 예약 현황 ── */}
@@ -539,6 +707,7 @@ const Header = ({ onOpenReservation }) => {
             </Link>
           </div>
 
+          {/* ── 구분선 ── */}
           <div className="hdr__np-divider" />
 
           {/* ── Col 2 : 병원 채팅 ── */}
@@ -593,6 +762,7 @@ const Header = ({ onOpenReservation }) => {
             </div>
           </div>
 
+          {/* ── 구분선 ── */}
           <div className="hdr__np-divider" />
 
           {/* ── Col 3 : 건강 리마인더 ── */}
@@ -609,6 +779,7 @@ const Header = ({ onOpenReservation }) => {
               </span>
             </div>
             <div className="hdr__np-body">
+              {/* 오늘 진행률 */}
               <div className="hdr__hl-progress-wrap">
                 <div className="hdr__hl-progress-label">
                   <span>오늘의 건강 미션</span>
@@ -659,6 +830,7 @@ const Header = ({ onOpenReservation }) => {
                 </div>
               ))}
 
+              {/* 긴급 알림 */}
               <div className="hdr__hl-alert">
                 <FontAwesomeIcon
                   icon={faTriangleExclamation}
