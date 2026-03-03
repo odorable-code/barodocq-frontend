@@ -792,7 +792,7 @@ const MyPage = () => {
     }
 
     async function fetchReservaions() {
-      const result = await authFetch("/api/v1/reservations");
+      const result = await authFetch("/api/v1/reservations/my");
       if (result.ok) { const data = await result.json(); setReservations(data); }
     } 
 
@@ -802,7 +802,7 @@ const MyPage = () => {
     }
 
     async function fetchChatHistory() {
-      const resp = await authFetch("/api/chat/history/1");
+      const resp = await authFetch(`/api/chat/rooms/${auth.user.num}`);
       if (resp.ok) { const data = await resp.json(); setMessages(data); }
     }
 
@@ -814,7 +814,7 @@ const MyPage = () => {
       const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
       if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
     }
-    fetchChatHistory();
+    // fetchChatHistory();
     fetchScraps();
     fetchHistories();
     fetchReservaions();
