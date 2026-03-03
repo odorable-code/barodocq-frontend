@@ -117,8 +117,8 @@ export default function AdminHospitals() {
 
       <div className="adm-page-head">
         <div>
-          <div className="adm-breadcrumb">회원관리 &gt; 병원운영시간</div>
-          <h1 className="adm-page-title">병원운영시간</h1>
+          <div className="adm-breadcrumb">회원관리 &gt; 전체 병원 정보</div>
+          <h1 className="adm-page-title">전체 병원 정보</h1>
         </div>
         <button className="adm-primary-btn">+ 신규등록</button>
       </div>

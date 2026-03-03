@@ -30,7 +30,6 @@ const MENUS = [
     children: [
       { key: "reviews", label: "병원후기", to: "/admin/posts/reviews" },
       { key: "qna", label: "Q&A", to: "/admin/posts/qna" },
-      { key: "events", label: "이벤트", to: "/admin/posts/events" },
     ],
   },
   { key: "chats", label: "1:1문의", to: "/admin/chats" },

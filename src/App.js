@@ -37,6 +37,7 @@ import AdminAdmins   from "./admin/AdminAdmins";
 import AdminLayout      from "./admin/adminComponents/AdminLayout";
 import AdminMainPage        from "./admin/AdminMainPage";
 import AdminReservation from "./admin/AdminReservation";
+import AdminHospitalsMe from "./admin/AdminHospitalsMe"
 
 /* ── 인증 관련 페이지 ── */
 import AdminSignup   from "./pages/user/AdminSignup";
@@ -141,6 +142,7 @@ function App() {
               <Route path="admins"    element={<AdminAdmins />} />
               <Route path="users"    element={<AdminUsers />} />
               <Route path="hospitals"    element={<AdminHospitals />} />
+              <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
               <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
             </Route>
