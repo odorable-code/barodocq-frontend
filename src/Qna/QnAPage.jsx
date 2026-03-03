@@ -30,7 +30,7 @@ const QnAPage = () => {
     }
   }
 const isLoggedIn = !!currentUserId;
-const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허용
+const canWriteQnA = isLoggedIn && userRole === "USER"; // USER 테이블만 허용
 
   // DB에서 가져오기
   const fetchQnas = async (sort = "latest") => {
@@ -171,7 +171,7 @@ const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허
           <input
             className="rv-search__input"
             type="text"
-            placeholder="제목 또는 내용으로 검색"
+            placeholder="제목으로 검색"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
