@@ -7,16 +7,7 @@ import { authFetch } from "./utils/AuthFetch";
 /* ─────────────────────────────────────────
    데이터 상수
 ───────────────────────────────────────── */
-const USER_INFO = {
-  name: "은유진",
-  email: "yujin.eun@email.com",
-  phone: "010-1234-5678",
-  grade: "골드 회원",
-  joinDate: "2024-03-15",
-  birthDate: "1995-10-10",
-  points: 1240,
-  avatar: "은",
-};
+
 
 const RESERVATIONS = [
   { id: 1, hospital: "서울아동병원",   dept: "소아청소년과", date: "2026-03-05", time: "14:30", status: "예정" },
@@ -148,62 +139,6 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
    모달 내용 컴포넌트들
 ───────────────────────────────────────── */
 
-/* 포인트 사용 */
-const PointsModal = ({ isOpen, onClose }) => {
-  const [tab, setTab] = useState("use");
-  const history = [
-    { type: "적립", desc: "강남메디컬센터 진료 완료", points: "+50", date: "2026-02-25", color: "#14b8a6" },
-    { type: "적립", desc: "후기 작성 보너스",         points: "+30", date: "2026-02-10", color: "#14b8a6" },
-    { type: "사용", desc: "예약 결제 적용",           points: "-100", date: "2026-01-28", color: "#ef4444" },
-    { type: "적립", desc: "출석 체크 보너스",         points: "+10", date: "2026-01-20", color: "#14b8a6" },
-    { type: "사용", desc: "진료비 할인 적용",         points: "-200", date: "2025-12-15", color: "#ef4444" },
-  ];
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="포인트 관리" size="md" icon="coins" iconBg="linear-gradient(135deg,#f59e0b,#d97706)">
-      <div className="mp-points-summary">
-        <div className="mp-points-total">
-          <span className="mp-points-total-label"><i className="fas fa-coins" /> 보유 포인트</span>
-          <span className="mp-points-total-value">1,240<span>P</span></span>
-        </div>
-      </div>
-      <div className="mp-tab-bar">
-        <button className={`mp-tab ${tab === "use" ? "active" : ""}`} onClick={() => setTab("use")}>포인트 사용</button>
-        <button className={`mp-tab ${tab === "history" ? "active" : ""}`} onClick={() => setTab("history")}>이용 내역</button>
-      </div>
-      {tab === "use" ? (
-        <div className="mp-points-use-form">
-          <p className="mp-points-use-desc">사용할 포인트를 입력하세요. (최소 100P, 100P 단위)</p>
-          <div className="mp-input-row">
-            <input type="number" className="mp-input" placeholder="포인트 입력" min={100} step={100} />
-            <button className="mp-btn">사용하기</button>
-          </div>
-          <div className="mp-quick-btns">
-            {[100, 300, 500, 1000].map(v => (
-              <button key={v} className="mp-btn mp-btn-outline">{v.toLocaleString()}P</button>
-            ))}
-            <button className="mp-btn mp-btn-outline">전액사용</button>
-          </div>
-        </div>
-      ) : (
-        <div className="mp-list">
-          {history.map((h, i) => (
-            <div key={i} className="mp-list-item">
-              <div className="mp-list-icon" style={{ background: h.color + "22", color: h.color }}>
-                <i className={`fas fa-${h.type === "적립" ? "plus" : "minus"}`} />
-              </div>
-              <div className="mp-list-info">
-                <strong>{h.desc}</strong>
-                <span>{h.date}</span>
-              </div>
-              <span className="mp-list-value" style={{ color: h.color }}>{h.points}P</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </Modal>
-  );
-};
-
 /* 예약 현황 전체보기 */
 const ReservationAllModal = ({ isOpen, onClose, reservations, onCancel }) => {
   const [filterStatus, setFilterStatus] = useState("전체");
@@ -266,12 +201,12 @@ const NotificationsModal = ({ isOpen, onClose, notifications, setNotifications }
         {notifications.map(n => (
           <div key={n.ntNum} className={`mp-list-item mp-notif-item ${n.ntIsRead ? "read" : ""}`}
           onClick={() => setNotifications(prev => prev.map(p => p.ntNum === n.ntNum ? { ...p, ntIsRead: true } : p))}>
-            <div className="mp-list-icon" style={{ background: n.color + "22", color: n.color }}>
-              <i className={`fas fa-${n.icon}`} />
+            <div className="mp-list-icon" style={{ background: "#14b8a622", color: "#14b8a6" }}>
+              <i className={`fas fa-bell`} />
             </div>
             <div className="mp-list-info">
-              {/* <strong>{n.title}</strong> */}
-              <span>{n.ntFinalContent}</span>
+              <strong>{n.ntFinalContent}</strong>
+              {/* <span>{n.ntFinalContent}</span> */}
               <span className="mp-notif-time">{n.ntCreatedAt}</span>
             </div>
             {!n.ntIsRead && <div className="mp-notif-dot" />}
@@ -414,17 +349,17 @@ const ChatModal = ({ isOpen, onClose, messages, setMessages }) => {
     <Modal isOpen={isOpen} onClose={onClose} title="채팅" size="lg" icon="comment-dots" iconBg="linear-gradient(135deg,#14b8a6,#0d9488)">
       {!activeChat ? (
         <div className="mp-list">
-          {CHAT_LIST.map(c => (
+          {messages.map(c => (
             <div key={c.id} className="mp-list-item mp-chat-row" onClick={() => setActiveChat(c)}>
               <div className="mp-list-icon" style={{ background: "#14b8a622", color: "#14b8a6" }}>
                 <i className="fas fa-hospital" />
               </div>
               <div className="mp-list-info">
-                <strong>{c.hospital}</strong>
+                <strong>{c.hospitalName}</strong>
                 <span>{c.lastMsg}</span>
               </div>
               <div className="mp-chat-meta">
-                <span className="mp-notif-time">{c.time}</span>
+                <span className="mp-notif-time">{c.lastTime}</span>
                 {c.unread > 0 && <span className="mp-menu-badge">{c.unread}</span>}
               </div>
             </div>
@@ -532,7 +467,6 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
         body: JSON.stringify({ userPw : form.current })
       });
       const res = await resp.json();
-      console.log(res);
       return resp.ok && res;
     } catch (err) {
       console.error(err);
@@ -607,43 +541,6 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
           <button className="mp-btn mp-btn-ghost" onClick={onClose}>취소</button>
           <button className="mp-btn" onClick={async () => await validateAndClose() }>변경하기</button>
         </div>
-      </div>
-    </Modal>
-  );
-};
-
-/* 보안 설정 */
-const SecurityModal = ({ isOpen, onClose }) => {
-  const [settings, setSettings] = useState({
-    twoFactor: true, loginAlert: true, appLock: false, bioAuth: true,
-  });
-  const toggle = (key) => setSettings(prev => ({ ...prev, [key]: !prev[key] }));
-  const items = [
-    { key: "twoFactor",  icon: "shield-halved", label: "2단계 인증",         desc: "로그인 시 SMS 인증을 추가합니다." },
-    { key: "loginAlert", icon: "bell",          label: "로그인 알림",         desc: "새 기기 로그인 시 알림을 받습니다." },
-    { key: "appLock",    icon: "lock",          label: "앱 잠금",             desc: "앱 실행 시 PIN 또는 생체인증을 요구합니다." },
-    { key: "bioAuth",    icon: "fingerprint",   label: "생체 인증",           desc: "지문 또는 Face ID 로그인을 허용합니다." },
-  ];
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="보안 설정" size="md" icon="shield-check" iconBg="linear-gradient(135deg,#14b8a6,#0d9488)">
-      <div className="mp-list">
-        {items.map(item => (
-          <div key={item.key} className="mp-list-item mp-security-row">
-            <div className="mp-list-icon" style={{ background: "#14b8a622", color: "#14b8a6" }}>
-              <i className={`fas fa-${item.icon}`} />
-            </div>
-            <div className="mp-list-info">
-              <strong>{item.label}</strong>
-              <span>{item.desc}</span>
-            </div>
-            <button
-              className={`mp-toggle ${settings[item.key] ? "on" : ""}`}
-              onClick={() => toggle(item.key)}
-            >
-              <div className="mp-toggle-thumb" />
-            </button>
-          </div>
-        ))}
       </div>
     </Modal>
   );
@@ -767,7 +664,8 @@ const MyPage = () => {
     { id: 3, from: "hospital", text: "네, 가능합니다. 원하시는 날짜를 알려주세요.", time: "14:30" },
   ]);
   const [notifications, setNotifications] = useState([]);
-  const [form, setForm] = useState({ name: USER_INFO.name, email: USER_INFO.email, phone: USER_INFO.phone, birth: USER_INFO.birthdate });
+  const [hospitalHours, setHospitalHours] = useState([]);
+  const [form, setForm] = useState({});
 
   // 모달 상태
   const [modal, setModal] = useState(null); // 'points' | 'reservationAll' | 'historyAll' | 'scrapAll' | 'notifications' | 'qna' | 'reviews' | 'chat' | 'editProfile' | 'changePassword' | 'security' | 'notices' | 'support' | 'terms' | 'logout' | 'withdraw' | 'cancelConfirm'
@@ -782,12 +680,12 @@ const MyPage = () => {
   useEffect(() => {
     if (!auth?.user) return;
     async function fetchScraps() {
-      const result = await authFetch("/api/v1/hospitals/me/scraps");
+      const result = await authFetch("/api/v1/hospitals/me/scraps?limit=1000");
       if (result.ok) { const data = await result.json(); setScraps(data); }
     }
 
     async function fetchHistories() {
-      const result = await authFetch("/api/v1/reviews");
+      const result = await authFetch("/api/v1/reviews/me");
       if (result.ok) { const data = await result.json(); setReviews(data); }
     }
 
@@ -814,7 +712,8 @@ const MyPage = () => {
       const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
       if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
     }
-    // fetchChatHistory();
+
+    fetchChatHistory();
     fetchScraps();
     fetchHistories();
     fetchReservaions();
@@ -825,7 +724,13 @@ const MyPage = () => {
 
   if (!auth) return null;
   const { user } = auth;
+  
 
+  scraps.forEach(async d => {
+    const resp = await authFetch(`/api/v1/hospitals/${d.ho_num}/hours/available`);
+    const status = await resp.text();
+    d.status = status;
+  });
   const openModal = (type) => setModal(type);
   const closeModal = () => setModal(null);
 
@@ -850,7 +755,6 @@ const MyPage = () => {
     items: [
       { id: 5, icon: "user-pen",     title: "개인정보 수정", badge: null, color: "#0d9488" },
       { id: 6, icon: "lock",         title: "비밀번호 변경", badge: null, color: "#0f766e" },
-      { id: 7, icon: "shield-check", title: "보안 설정",     badge: null, color: "#14b8a6" },
     ],
   },
   {
@@ -864,7 +768,12 @@ const MyPage = () => {
 ];
   const handleCancelReservation = (r) => { setCancelTarget(r); openModal("cancelConfirm"); };
   const confirmCancel = () => {
-    setReservations(prev => prev.filter(r => r.id !== cancelTarget?.id));
+    setReservations(prev => prev.filter(r => r.reNum !== cancelTarget?.reNum));
+    (async () => {
+      await authFetch(`/api/v1/reservations/${cancelTarget.reNum}/cancel`, {
+        method: "PUT"
+      })
+    })();
     setCancelTarget(null);
   };
 
@@ -893,23 +802,15 @@ const MyPage = () => {
           <div className="mp-hero-inner">
             <div className="mp-profile-row">
               <div className="mp-avatar-wrap">
-                <div className="mp-avatar">{user ? user.id[0] : "X"}</div>
+                <div className="mp-avatar">{user && user.name ? user.name[0] : "X"}</div>
                 <span className="mp-avatar-badge"><i className="fas fa-check" /></span>
               </div>
               <div className="mp-profile-info">
                 <div className="mp-welcome-label"><i className="fas fa-hand-sparkles" /> WELCOME</div>
-                <h1 className="mp-username">{user ? user.id : "none"}<span className="mp-nim">님</span></h1>
+                <h1 className="mp-username">{user ? user.name : "none"}<span className="mp-nim">님</span></h1>
                 <div className="mp-meta-row">
-                  <span className="mp-grade-badge"><i className="fas fa-crown" />{USER_INFO.grade}</span>
-                  <span className="mp-email"><i className="fas fa-envelope" />{USER_INFO.email}</span>
+                  <span className="mp-email"><i className="fas fa-envelope" />{form.email}</span>
                 </div>
-              </div>
-              <div className="mp-points-box">
-                <div className="mp-points-label"><i className="fas fa-coins" />보유 포인트</div>
-                <div className="mp-points-value">{USER_INFO.points.toLocaleString()}<span>P</span></div>
-                <button className="mp-points-btn" onClick={() => openModal("points")}>
-                  포인트 사용 <i className="fas fa-arrow-right" />
-                </button>
               </div>
             </div>
           </div>
@@ -1034,7 +935,6 @@ const MyPage = () => {
       </div>
 
       {/* ══════════════════ 모달들 ══════════════════ */}
-      <PointsModal          isOpen={modal === "points"}          onClose={closeModal} />
       <ReservationAllModal  isOpen={modal === "reservationAll"}  onClose={closeModal} reservations={reservations} onCancel={handleCancelReservation} />
       <HistoryAllModal      isOpen={modal === "historyAll"}      onClose={closeModal} reviews={reviews}/>
       <ScrapAllModal        isOpen={modal === "scrapAll"}        onClose={closeModal} scraps={scraps} />
@@ -1044,7 +944,6 @@ const MyPage = () => {
       <ChatModal            isOpen={modal === "chat"}            onClose={closeModal} messages={messages} setMessages={setMessages}/>
       <EditProfileModal     isOpen={modal === "editProfile"}     onClose={closeModal} form={form} setForm={setForm} />
       <ChangePasswordModal  isOpen={modal === "changePassword"}  onClose={closeModal} />
-      <SecurityModal        isOpen={modal === "security"}        onClose={closeModal} />
       <NoticesModal         isOpen={modal === "notices"}         onClose={closeModal} />
       <SupportModal         isOpen={modal === "support"}         onClose={closeModal} />
       <TermsModal           isOpen={modal === "terms"}           onClose={closeModal} />
@@ -1073,7 +972,7 @@ const MyPage = () => {
         onClose={() => { closeModal(); setCancelTarget(null); }}
         onConfirm={confirmCancel}
         title="예약 취소"
-        message={cancelTarget ? `${cancelTarget.hospital} ${cancelTarget.dept}\n${cancelTarget.date} ${cancelTarget.time}\n예약을 취소하시겠습니까?` : ""}
+        message={cancelTarget ? `${cancelTarget.hoName} ${cancelTarget.deptName}\n${cancelTarget.reDate} ${cancelTarget.reTime}\n예약을 취소하시겠습니까?` : ""}
         confirmText="예약 취소"
         confirmColor="#ef4444"
         icon="calendar-xmark"
