@@ -336,6 +336,7 @@ export default function HospitalSearch() {
     async function load() {
       setLoading(true);
       setError("");
+      
 
       try {
         const list = await fetchHospitals(queryParams);
@@ -360,7 +361,7 @@ export default function HospitalSearch() {
               photo && String(photo).trim()
                 ? photo
                 : "https://via.placeholder.com/400x250/0ea5e9/ffffff?text=Hospital";
-
+                
             byId.set(id, {
               id,
               name: r.hoName ?? r.ho_name ?? "병원명",
@@ -453,8 +454,10 @@ export default function HospitalSearch() {
           if (tags.includes("available")) features.push("예약가능");
           if (tags.includes("parking")) features.push("주차가능");
 
+          const apiClosed = String(acc.closedTextFromApi ?? "").trim();
+
           const closedText =
-            (acc.closedTextFromApi && String(acc.closedTextFromApi).trim()) ||
+            apiClosed ||
             (acc.closedDays.length ? acc.closedDays.join(", ") : "휴진일 정보 없음");
 
           const hasCoord = acc.lat != null && acc.lng != null;
@@ -917,28 +920,6 @@ function HospitalDetailCard({ hospital, isBookmarked, onToggleBookmark, onReserv
               <i className="fas fa-calendar-xmark" />
               {hospital.closedText}
             </p>
-          )}
-
-          {hospital.features?.length > 0 && (
-            <div className="hdc__tags">
-              {hospital.features.slice(0, MAX_TAGS).map((f) => (
-                <span key={f} className="hdc__tag">
-                  {f}
-                </span>
-              ))}
-              {hospital.features.length > 4 && (
-                <button
-                  className="hdc__tag hdc__tag--more"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setExpanded((v) => !v);
-                  }}
-                  type="button"
-                >
-                  {expanded ? "접기 ▲" : `+${hospital.features.length - 4}개 더보기`}
-                </button>
-              )}
-            </div>
           )}
         </div>
       </div>
