@@ -28,9 +28,8 @@ const QnAPage = () => {
       console.error("토큰 디코딩 실패", err);
     }
   }
-
 const isLoggedIn = !!currentUser;
-const canWriteQnA = isLoggedIn && userRole === "user"; // users 테이블만 허용
+const canWriteQnA = isLoggedIn && userRole === "USER"; // users 테이블만 허용
 
   // DB에서 가져오기
   const fetchQnas = async (sort = "latest") => {

@@ -381,7 +381,7 @@
   box-shadow: 0 0 0 3px rgba(20,184,166,0.1);
 }
 .btn-comment-submit {
-  position: absolute;
+  position: static;
   bottom: 1.25rem;
   right: 1.25rem;
   display: inline-flex;
