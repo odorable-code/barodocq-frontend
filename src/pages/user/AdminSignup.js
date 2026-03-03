@@ -149,8 +149,11 @@ const distinctBusinessNum = async () => {
         if (data.isDuplicate) {
           alert("이미 사용중인 사업자번호입니다.");
           setIsIdAvailable(false);
+          return true;
+
         } else {
           setIsIdAvailable(true);
+          return false;
         }
       } else {
         alert("서버 응답 오류가 발생했습니다.");
@@ -168,14 +171,16 @@ const distinctBusinessNum = async () => {
     //if (!hoName.trim()) { alert("병원이름을 입력해주세요."); return; }
 
     try {
-      const response = await fetch(`/api/v1/check-hoNum?hoName=${hoName}`);
+      const response = await fetch(`/api/v1/check-hoName?hoName=${hoName}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
           alert("이미 사용중인 병원이름입니다.");
           setIsIdAvailable(false);
+          return true;
         } else {
           setIsIdAvailable(true);
+          return false;
         }
       } else {
         alert("서버 응답 오류가 발생했습니다.");

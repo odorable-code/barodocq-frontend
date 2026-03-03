@@ -189,7 +189,7 @@ function KakaoCallback() {
         console.log("서버로 전송할 인가 코드:", kakaoCode);
 
         // 백엔드 API 호출
-        const response = await fetch(`http://localhost:8080/api/v1/auth/kakao?code=${kakaoCode}`, {
+        const response = await fetch(`/api/v1/auth/kakao?code=${kakaoCode}`, {
           method: "GET",
         });
 

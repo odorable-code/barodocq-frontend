@@ -48,7 +48,7 @@ export async function authFetch(url, options = {}, retry = true) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userNum");
       alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      window.location.href = "/login"; // 로그인 경로에 맞게 수정
+      //window.location.href = "/login"; // 로그인 경로에 맞게 수정
       throw new Error("로그인 만료");
     }
 
@@ -63,7 +63,7 @@ export async function authFetch(url, options = {}, retry = true) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userNum");
       alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      window.location.href = "/login";
+      //window.location.href = "/login";
       throw new Error("로그인 만료");
     }
 

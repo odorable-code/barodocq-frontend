@@ -3,7 +3,7 @@
 // =====================================================================
 
 import "../../assets/styles/Login.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext"; // 🔥 경로 유지
 
@@ -18,7 +18,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleNavigate = (path) => navigate(path);
-
+  
   // ── 로그인 처리 ─────────────────────────────────────────────
   const handleLogin = async (e) => {
     e.preventDefault();
