@@ -1225,7 +1225,7 @@
 ══════════════════════════════════════════════════ */
 .hdr__cw {
   position: fixed;
-  top: calc(var(--hdr-h-top) + var(--hdr-h-nav) + 10px);
+  top: calc(var(--hdr-h-top) + var(--hdr-h-nav) - 50px);
   right: calc(860px + 20px + 12px);
   width: 340px;
   height: 640px;

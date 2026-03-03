@@ -30,6 +30,8 @@ export function WebSocketProvider({ children }) {
   const [messages, setMessages] = useState({});
   const [notifOpen, setNotifOpen] = useState(false);
 
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   // ─── 헬퍼 ────────────────────────────────────────────────────
   // const isAdmin       = (u) => u?.role === "ADMIN";
   // 밑에거 안되면 위에거로!
@@ -78,9 +80,12 @@ export function WebSocketProvider({ children }) {
   };
 
   // ─── REST: 채팅방 생성 (환자만) ──────────────────────────────
-  const createRoom = async ({ hospitalId, hospitalName, dept, avatar }) => {
+  const createRoom = async ({ hospitalId, hospitalName, dept }) => {
     if (!user || isAdmin(user)) return null;
+
     try {
+      const firstChar = hospitalName?.trim()?.charAt(0) || "?";
+
       const res = await fetch(`${API}/api/chat/rooms`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -89,12 +94,21 @@ export function WebSocketProvider({ children }) {
           hospitalId,
           hospitalName,
           dept,
-          avatar,
+          avatar: firstChar,
         }),
       });
+
       if (!res.ok) return null;
       const room = await res.json();
-      setChatRooms((prev) => [room, ...prev]);
+
+      setChatRooms((prev) => {
+        const exists = prev.find((r) => r.id === room.id);
+        if (exists) {
+          return [room, ...prev.filter((r) => r.id !== room.id)];
+        }
+        return [room, ...prev];
+      });
+
       return room;
     } catch (e) {
       console.error("createRoom 오류:", e);
@@ -283,6 +297,8 @@ export function WebSocketProvider({ children }) {
         chatRef,
         chatEndRef,
         isAdmin: isAdmin(user),
+        isChatOpen,
+        setIsChatOpen,
       }}
     >
       {children}
