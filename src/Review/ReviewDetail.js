@@ -35,7 +35,7 @@ function ReviewDetail() {
     const fetchComments = async () => {
       try {
         const response = await authFetch(
-          `http://3.38.49.151:8080/api/v1/reviews/${rvNum}/comments`
+          `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
         );
         const data = await response.json();
         const commentArray = Array.isArray(data) ? data : (data.comments || []);
@@ -59,7 +59,7 @@ function ReviewDetail() {
     const fetchReview = async () => {
       try {
         const response = await authFetch(
-          `http://3.38.49.151:8080/api/v1/reviews/${rvNum}`
+          `http://localhost:8080/api/v1/reviews/${rvNum}`
         );
         const data = await response.json();
         setReview(data.review);
@@ -81,13 +81,13 @@ function ReviewDetail() {
   // ─────────────────────────────────────────────
   const handleLike = async () => {
     try {
-      await authFetch(`http://3.38.49.151:8080/api/v1/reviews/${rvNum}/likes`, {
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/likes`, {
         method: "POST",
       });
       setLiked((prev) => !prev); // 낙관적 UI 업데이트
 
       // 최신 좋아요 수 반영을 위해 후기 재조회
-      const updated = await authFetch(`http://3.38.49.151:8080/api/v1/reviews/${rvNum}`);
+      const updated = await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`);
       const data    = await updated.json();
       setReview(data.review);
       setFiles(data.files || []);
@@ -107,7 +107,7 @@ function ReviewDetail() {
     if (!newComment.trim()) return alert("댓글 내용을 입력하세요.");
 
     try {
-      await authFetch(`http://3.38.49.151:8080/api/v1/reviews/${rvNum}/comments`, {
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rcContent: newComment }),
@@ -115,7 +115,7 @@ function ReviewDetail() {
 
       // 댓글 등록 후 목록 재조회
       const updated = await authFetch(
-        `http://3.38.49.151:8080/api/v1/reviews/${rvNum}/comments`
+        `http://localhost:8080/api/v1/reviews/${rvNum}/comments`
       );
       const data = await updated.json();
       setComments(Array.isArray(data) ? data : (data.comments || []));
@@ -222,7 +222,7 @@ function ReviewDetail() {
                 {files.map((file) => (
                   <div key={file.rfNum} className="gallery-item">
                     <img
-                      src={`http://3.38.49.151:8080${file.rfPath}`}
+                      src={`http://localhost:8080${file.rfPath}`}
                       alt="후기 이미지"
                     />
                   </div>

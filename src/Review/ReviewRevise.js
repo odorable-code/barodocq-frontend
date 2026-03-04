@@ -47,7 +47,7 @@ function ReviewRevise() {
     const fetchReview = async () => {
       try {
         const response = await authFetch(
-          `http://3.38.49.151:8080/api/v1/reviews/revise/${rvNum}`
+          `http://localhost:8080/api/v1/reviews/revise/${rvNum}`
         );
         const data = await response.json();
 
@@ -81,7 +81,7 @@ function ReviewRevise() {
 
   try {
     const res = await authFetch(
-      `http://3.38.49.151:8080/api/v1/reviews/revise/${rvNum}`,
+      `http://localhost:8080/api/v1/reviews/revise/${rvNum}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
