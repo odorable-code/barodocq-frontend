@@ -45,8 +45,10 @@ import FindId        from "./pages/user/FindId";
 import FoundId       from "./pages/user/FoundId";
 import Login         from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
-import Signup        from "./pages/user/Signup";
-import UserSignup    from "./pages/user/UserSignup";
+import Signup from "./pages/user/Signup";
+import UserSignup from "./pages/user/UserSignup";
+import {KakaoCallback, KakaoCallbackAdmin} from "./pages/user/KakaoCallback";
+
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -130,6 +132,17 @@ function App() {
               <Route path="chat"                  element={<Chat />} />
               <Route path="chat/list"             element={<ChatList />} />
 
+
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+              <Route path="user/signup" element={<UserSignup />} />
+              <Route path="admin/signup" element={<AdminSignup />} />
+              <Route path="find/id" element={<FindId />} />
+              <Route path="found/id" element={<FoundId />} />
+              <Route path="resetPw" element={<ResetPassword />} />
+
+              <Route path="/kakao/callback" element={<KakaoCallback />} />
+              <Route path="/kakao/callback/admin" element={<KakaoCallbackAdmin />} />
               {/* Layout 안 나머지 → 메인으로 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
@@ -147,6 +160,7 @@ function App() {
               <Route path="posts/reviews"    element={<AdminReviews />} />
             </Route>
 
+            
             {/* 최상위 매칭 실패 → 메인으로 */}
             <Route path="*" element={<Navigate to="/" replace />} />
 

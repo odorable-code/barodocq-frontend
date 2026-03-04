@@ -183,7 +183,7 @@ const distinctBusinessNum = async () => {
   };
 
   // ── 최종 제출 ─────────────────────────────────────────────────────
-  // /api/v1/auth/signup 으로 POST 요청 (UserSignup과 동일한 엔드포인트)
+  // /api/v1/auth/admin/signup 으로 POST 요청 (UserSignup과 동일한 엔드포인트)
   const signupButton = async (e) => {
     e.preventDefault();
     const { adminPhone, adminName, adminAddr, adminEmail, hoName, businessNum } = formData;

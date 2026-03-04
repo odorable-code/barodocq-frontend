@@ -1,304 +1,183 @@
 import { useMemo, useState } from "react";
 
-// ✅ 라디오 필터 (상태)
-const STATUS = ["전체", "정상", "삭제"];
+/* ───────── 상수 ───────── */
+const STATUS_OPTIONS = ["전체", "정상", "삭제"];
 
-// ✅ 더미데이터 (리뷰)
-const DUMMY_REVIEWS = Array.from({ length: 18 }).map((_, i) => ({
+const INITIAL_DATA = Array.from({ length: 25 }).map((_, i) => ({
   rv_num: i + 1,
-  rv_rating: (i % 5) + 1,
-  rv_title: `후기 제목 ${i + 1}`,
-  rv_content: `후기 내용 ${i + 1} ...`,
-  rv_comment_count: i % 7,
-  rv_view_count: 10 * (i + 1),
-  rv_likes_count: i % 9,
-  rv_created_at: "2026.03.03",
-  rv_updated_at: "2026.03.03",
-  rv_deleted_yn: i % 6 === 0 ? 1 : 0, // 0 정상, 1 삭제
-  user_num: 100 + i,
-  user_id: `user${String(i + 1).padStart(2, "0")}`, // ✅ 실제론 user 조인
-  ho_num: (i % 4) + 1,
-  hospital_name: i % 2 === 0 ? "바로닥큐 병원" : "클린페이 의원", // ✅ 실제론 hospital 조인
+  rv_rating: (4 + Math.random()).toFixed(1),
+  rv_title: i % 3 === 0 ? "의사선생님이 정말 친절하시고 설명도 자세해요" : "시설이 깔끔해서 좋았습니다.",
+  rv_content: "상세 내용이 여기에 표시됩니다. 관리자는 모든 내용을 확인할 수 있습니다.",
+  rv_created_at: "2026.03.04",
+  rv_deleted_yn: i % 5 === 0 ? 1 : 0, // 1은 삭제, 0은 정상
+  user_id: `user_${Math.floor(Math.random() * 1000)}`,
+  hospital_name: i % 2 === 0 ? "메디움강남요양병원" : "바로닥큐 의원",
+  fileCount: i % 4 === 0 ? 2 : 0,
+  rv_view_count: Math.floor(Math.random() * 100),
+  rv_likes_count: Math.floor(Math.random() * 20),
 }));
 
-// ✅ 더미데이터 (사진 테이블: review_files)
-const DUMMY_FILES = [
-  // rv_num 1에 2장
-  { rf_num: 1, rv_num: 1, rf_ori_name: "a.jpg", rf_name: "a1.jpg", rf_path: "/uploads", rf_order: 1, rf_created_at: "2026.03.03" },
-  { rf_num: 2, rv_num: 1, rf_ori_name: "b.jpg", rf_name: "b1.jpg", rf_path: "/uploads", rf_order: 2, rf_created_at: "2026.03.03" },
-
-  // rv_num 3에 1장
-  { rf_num: 3, rv_num: 3, rf_ori_name: "c.jpg", rf_name: "c1.jpg", rf_path: "/uploads", rf_order: 1, rf_created_at: "2026.03.03" },
-
-  // rv_num 7에 3장
-  { rf_num: 4, rv_num: 7, rf_ori_name: "d.jpg", rf_name: "d1.jpg", rf_path: "/uploads", rf_order: 1, rf_created_at: "2026.03.03" },
-  { rf_num: 5, rv_num: 7, rf_ori_name: "e.jpg", rf_name: "e1.jpg", rf_path: "/uploads", rf_order: 2, rf_created_at: "2026.03.03" },
-  { rf_num: 6, rv_num: 7, rf_ori_name: "f.jpg", rf_name: "f1.jpg", rf_path: "/uploads", rf_order: 3, rf_created_at: "2026.03.03" },
-];
-
 export default function AdminReviews() {
+  const [dataList, setDataList] = useState(INITIAL_DATA);
+  const [statusFilter, setStatusFilter] = useState("전체");
   const [keyword, setKeyword] = useState("");
-  const [status, setStatus] = useState("전체");
-  const [searchField, setSearchField] = useState("전체");
+  const [limit, setLimit] = useState(10);
 
-  // ✅ 리뷰별 사진 개수 맵 (rv_num -> count)
-  const fileCountMap = useMemo(() => {
-    const map = new Map();
-    for (const f of DUMMY_FILES) {
-      map.set(f.rv_num, (map.get(f.rv_num) || 0) + 1);
-    }
-    return map;
-  }, []);
+  // ✅ [기능] 삭제/복구 처리
+  const handleToggleDelete = (num, currentStatus) => {
+    const action = currentStatus === 1 ? "복구" : "삭제";
+    if (!window.confirm(`해당 후기를 ${action}하시겠습니까?`)) return;
+    
+    setDataList(prev => prev.map(item => 
+      item.rv_num === num ? { ...item, rv_deleted_yn: currentStatus === 1 ? 0 : 1 } : item
+    ));
+  };
 
-  // ✅ 검색필드 매핑
-  const fieldMap = useMemo(
-    () => ({
-      전체: (row) => [row.hospital_name, row.user_id, row.rv_title, row.rv_content],
-      병원명: (row) => [row.hospital_name],
-      작성자아이디: (row) => [row.user_id],
-      제목: (row) => [row.rv_title],
-      내용: (row) => [row.rv_content],
-    }),
-    []
-  );
-
+  // ✅ [기능] 필터링 로직
   const filtered = useMemo(() => {
-    const kw = keyword.trim();
-
-    return DUMMY_REVIEWS.filter((row) => {
-      const hitStatus =
-        status === "전체"
-          ? true
-          : status === "정상"
-          ? row.rv_deleted_yn === 0
-          : row.rv_deleted_yn === 1;
-
-      if (kw === "") return hitStatus;
-
-      const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
-      const hitKeyword = candidates.some((v) => String(v).includes(kw));
-
-      return hitStatus && hitKeyword;
+    const kw = keyword.trim().toLowerCase();
+    return dataList.filter((row) => {
+      const hitStatus = statusFilter === "전체" ? true : 
+                        statusFilter === "삭제" ? row.rv_deleted_yn === 1 : row.rv_deleted_yn === 0;
+      if (!hitStatus) return false;
+      return row.hospital_name.toLowerCase().includes(kw) || 
+             row.rv_title.toLowerCase().includes(kw) || 
+             row.user_id.toLowerCase().includes(kw);
     });
-  }, [keyword, status, searchField, fieldMap]);
-
-  // ✅ 클릭 이벤트만(라우팅은 나중에)
-  const handleClickTitle = (rvNum) => {
-    console.log("리뷰 상세로 이동:", rvNum);
-    // 예) navigate(`/admin/reviews/${rvNum}`);
-  };
-
-  const handleClickHospital = (hoNum) => {
-    console.log("병원 리뷰 목록/병원상세로 이동:", hoNum);
-    // 예) navigate(`/admin/hospitals/${hoNum}`) or navigate(`/admin/reviews?hoNum=${hoNum}`)
-  };
+  }, [dataList, keyword, statusFilter]);
 
   return (
-    <div className="adm-page adm-review-page">
-      <style>{`
-        /* ====== 리뷰관리 페이지 전용 스코프 ====== */
-        .adm-review-page .adm-table { table-layout: fixed; }
-
-        .adm-review-page .adm-table th,
-        .adm-review-page .adm-table td {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        /* ✅ No. 50px 고정 */
-        .adm-review-page .adm-table th:nth-child(1),
-        .adm-review-page .adm-table td:nth-child(1) { width: 50px; }
-
-        /* 상태 */
-        .adm-review-page .adm-table th:nth-child(2),
-        .adm-review-page .adm-table td:nth-child(2) { width: 80px; }
-
-        /* 병원명 */
-        .adm-review-page .adm-table th:nth-child(3),
-        .adm-review-page .adm-table td:nth-child(3) { width: 170px; }
-
-        /* 작성자 */
-        .adm-review-page .adm-table th:nth-child(4),
-        .adm-review-page .adm-table td:nth-child(4) { width: 120px; }
-
-        /* 별점 */
-        .adm-review-page .adm-table th:nth-child(5),
-        .adm-review-page .adm-table td:nth-child(5) { width: 80px; }
-
-        /* 제목(가장 넓게) */
-        .adm-review-page .adm-table th:nth-child(6),
-        .adm-review-page .adm-table td:nth-child(6) { width: 260px; }
-
-        /* 사진 */
-        .adm-review-page .adm-table th:nth-child(7),
-        .adm-review-page .adm-table td:nth-child(7) { width: 90px; }
-
-        /* 등록일 */
-        .adm-review-page .adm-table th:nth-child(8),
-        .adm-review-page .adm-table td:nth-child(8) { width: 120px; }
-
-        /* 조회수 */
-        .adm-review-page .adm-table th:nth-child(9),
-        .adm-review-page .adm-table td:nth-child(9) { width: 90px; }
-
-        /* 👍 좋아요 */
-        .adm-review-page .adm-table th:nth-child(10),
-        .adm-review-page .adm-table td:nth-child(10) { width: 90px; }
-
-        /* 댓글수 */
-        .adm-review-page .adm-table th:nth-child(10),
-        .adm-review-page .adm-table td:nth-child(10) { width: 90px; }
-
-        .adm-review-page td.adm-cell-center { text-align: center; }
-
-        /* 클릭 가능한 텍스트 */
-        .adm-review-page .adm-linklike {
-          cursor: pointer;
-          text-decoration: underline;
-          text-underline-offset: 2px;
-        }
-
-        /* 삭제된 행 톤다운(선택) */
-        .adm-review-page tr.is-deleted td { opacity: 0.55; }
-      `}</style>
-
-      <div className="adm-page-head">
+    <div className="adm-page">
+      {/* 🟢 헤더 영역 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
         <div>
-          <div className="adm-breadcrumb">게시글관리 &gt; 후기관리</div>
-          <h1 className="adm-page-title">후기관리</h1>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <i className="fas fa-paste" style={{marginRight: '4px'}}/> 게시글관리 <i className="fas fa-chevron-right" style={{fontSize:'.6rem', margin:'0 6px'}}/> <span style={{color: 'var(--primary-teal)'}}>후기관리</span>
+          </div>
+          <h1 className="adm-page-title" style={{marginBottom: 0}}>후기 <span>관리</span></h1>
         </div>
-        {/* 필요하면 버튼 */}
-        {/* <button className="adm-primary-btn">+ 신규등록</button> */}
       </div>
 
-      <div className="adm-card">
-        <div className="adm-filters">
-          <div className="adm-filter-row">
-            <span className="adm-label">상태</span>
-            <div className="adm-chips">
-              {STATUS.map((s) => (
-                <label key={s} className="adm-chip">
-                  <input
-                    type="radio"
-                    name="status"
-                    checked={status === s}
-                    onChange={() => setStatus(s)}
-                  />
-                  <span>{s}</span>
-                </label>
+      {/* 🟢 필터 및 검색 카드 */}
+      <div className="adm-card" style={{ padding: '1.5rem 2rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-secondary)' }}>게시글 상태</span>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {STATUS_OPTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => { setStatusFilter(s); setLimit(10); }}
+                  style={{
+                    width: '90px', height: '38px', borderRadius: 'var(--radius-full)', border: '2px solid',
+                    borderColor: statusFilter === s ? 'transparent' : 'var(--border-color)',
+                    background: statusFilter === s ? 'linear-gradient(135deg, var(--primary-mint), var(--primary-teal))' : '#fff',
+                    color: statusFilter === s ? '#fff' : 'var(--text-secondary)',
+                    fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >{s}</button>
               ))}
             </div>
           </div>
 
-          <div className="adm-search-row">
-            <span className="adm-label">검색</span>
-            <select
-              className="adm-select"
-              value={searchField}
-              onChange={(e) => setSearchField(e.target.value)}
-            >
-              <option>전체</option>
-              <option>병원명</option>
-              <option>작성자아이디</option>
-              <option>제목</option>
-              <option>내용</option>
-            </select>
-
-            <input
-              className="adm-input"
-              placeholder="검색어를 입력해주세요."
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+          <div style={{ flex: 1, display: 'flex', background: 'var(--bg-secondary)', padding: '0.4rem', borderRadius: 'var(--radius-xl)', border: '2px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '0 1rem', color: 'var(--primary-teal)' }}><i className="fas fa-search" /></div>
+            <input 
+              className="adm-input" placeholder="병원명, 작성자 또는 제목으로 검색..." 
+              value={keyword} onChange={(e) => setKeyword(e.target.value)} 
+              style={{ flex: 1, border: 'none', background: 'transparent', height: '40px', outline:'none' }} 
             />
-
-            <button className="adm-ghost-btn" type="button">
-              검색
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="adm-table-wrap">
-        <div className="adm-table-meta">전체 {filtered.length}건</div>
-
-        <table className="adm-table adm-table-reviews">
+      {/* 🟢 데이터 테이블 (고정 너비/정렬 최적화) */}
+      <div className="adm-table-wrap" style={{ overflowX: 'auto' }}>
+        <div style={{ padding: '1.25rem 1.5rem', background: '#fff', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-secondary)' }}>전체 후기 리스트 <span style={{ color: 'var(--primary-teal)' }}>{filtered.length}</span>건</span>
+        </div>
+        
+        <table className="adm-table" style={{ tableLayout: 'fixed', width: '100%', minWidth: '1500px' }}>
           <thead>
             <tr>
-               <th>No.</th>
-              <th>상태</th>
-              <th>병원명</th>
-              <th>작성자ID</th>
-              <th>별점</th>
-              <th>제목</th>
-              <th>사진</th>
-              <th>등록일</th>
-              <th>조회수</th>
-              <th>좋아요</th>
-              <th>댓글수</th>
+              <th style={{width: '60px', textAlign: 'center'}}>NO.</th>
+              <th style={{width: '90px', textAlign: 'center'}}>상태</th>
+              <th style={{width: '180px', textAlign: 'left'}}>병원명</th>
+              <th style={{width: '120px', textAlign: 'left'}}>작성자 ID</th>
+              <th style={{width: '90px', textAlign: 'center'}}>별점</th>
+              <th style={{width: '320px', textAlign: 'left'}}>제목</th>
+              <th style={{width: '80px', textAlign: 'center'}}>사진</th>
+              <th style={{width: '120px', textAlign: 'center'}}>등록일</th>
+              <th style={{width: '80px', textAlign: 'center'}}>조회</th>
+              <th style={{width: '80px', textAlign: 'center'}}>좋아요</th>
+              <th style={{width: '100px', textAlign: 'center'}}>관리</th>
             </tr>
           </thead>
-
           <tbody>
-            {filtered.slice(0, 10).map((r, idx) => {
-              const fileCount = fileCountMap.get(r.rv_num) || 0;
+            {filtered.slice(0, limit).map((r, idx) => {
               const isDeleted = r.rv_deleted_yn === 1;
-
               return (
-                <tr key={r.rv_num} className={isDeleted ? "is-deleted" : ""}>
-                  <td className="adm-cell-center">{idx + 1}</td>
-
-                  <td className="adm-cell-center">
-                    <span className={"adm-badge " + (isDeleted ? "adm-off" : "adm-on")}>
+                <tr key={r.rv_num} style={{ height: '68px', opacity: isDeleted ? 0.6 : 1, background: isDeleted ? '#f8fafc' : '#fff' }}>
+                  <td style={{textAlign: 'center', color: 'var(--text-muted)'}}>{idx + 1}</td>
+                  <td style={{textAlign: 'center'}}>
+                    <span className={`adm-badge ${isDeleted ? "adm-off" : "adm-on"}`} style={{width: '55px'}}>
                       {isDeleted ? "삭제" : "정상"}
                     </span>
                   </td>
-
-                  <td title={r.hospital_name}>
-                    <span
-                      className="adm-linklike"
-                      onClick={() => handleClickHospital(r.ho_num)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === "Enter" && handleClickHospital(r.ho_num)}
-                    >
-                      {r.hospital_name}
-                    </span>
+                  <td style={{textAlign: 'left', fontWeight: 700, color: isDeleted ? 'var(--text-muted)' : 'var(--primary-teal)', cursor: 'pointer'}}>
+                    {r.hospital_name}
                   </td>
-
-                  <td>{r.user_id}</td>
-
-                  <td className="adm-cell-center" title={`${r.rv_rating}점`}>
-                    {Number(r.rv_rating).toFixed(1)}점
+                  <td style={{textAlign: 'left', fontWeight: 600}}>{r.user_id}</td>
+                  <td style={{textAlign: 'center', color: '#f59e0b', fontWeight: 800}}>
+                    <i className="fas fa-star" style={{marginRight: '4px'}}/>{r.rv_rating}
                   </td>
-
-                  <td title={r.rv_title}>
-                    <span
-                      className="adm-linklike"
-                      onClick={() => handleClickTitle(r.rv_num)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === "Enter" && handleClickTitle(r.rv_num)}
-                    >
+                  <td style={{textAlign: 'left'}}>
+                    <div style={{ fontWeight: 600, color: isDeleted ? 'var(--text-muted)' : 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }}>
                       {r.rv_title}
-                    </span>
+                    </div>
                   </td>
-
-                  <td className="adm-cell-center" title={fileCount ? `사진 ${fileCount}장` : "사진 없음"}>
-                    {fileCount > 0 ? `📷 ${fileCount}` : "-"}
+                  <td style={{textAlign: 'center', color: 'var(--primary-mint)'}}>
+                    {r.fileCount > 0 ? <><i className="fas fa-image" style={{marginRight: '4px'}}/>{r.fileCount}</> : "-"}
                   </td>
-
-                  <td className="adm-cell-center">{r.rv_created_at}</td>
-                  <td className="adm-cell-center">{r.rv_view_count}</td>
-                  <td className="adm-cell-center">{r.rv_likes_count}</td>
-                  <td className="adm-cell-center">{r.rv_comment_count}</td>
+                  <td style={{textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem'}}>{r.rv_created_at}</td>
+                  <td style={{textAlign: 'center', fontWeight: 600}}>{r.rv_view_count}</td>
+                  <td style={{textAlign: 'center', fontWeight: 600, color: '#ef4444'}}>{r.rv_likes_count}</td>
+                  <td style={{textAlign: 'center'}}>
+                    <button 
+                      onClick={() => handleToggleDelete(r.rv_num, r.rv_deleted_yn)}
+                      style={{ 
+                        padding: '5px 12px', borderRadius: '6px', border: '1px solid',
+                        borderColor: isDeleted ? 'var(--primary-mint)' : '#fca5a5',
+                        background: isDeleted ? 'var(--bg-secondary)' : '#fee2e2',
+                        color: isDeleted ? 'var(--primary-teal)' : '#dc2626',
+                        fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer'
+                      }}
+                    >
+                      {isDeleted ? "복구" : "삭제"}
+                    </button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
 
-        <div className="adm-more">∨ 더보기 (1/12)</div>
+        {/* 🟢 세련된 더보기 버튼 */}
+        {filtered.length > limit && (
+          <div style={{ padding: '2rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: '#fff' }}>
+            <button 
+              onClick={() => setLimit(prev => prev + 5)}
+              style={{ 
+                background: '#fff', border: '2px solid var(--primary-mint)', padding: '0.8rem 3.5rem', borderRadius: 'var(--radius-lg)', 
+                color: 'var(--primary-teal)', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+              onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+            >
+              후기 더보기 ({Math.min(limit, filtered.length)}/{filtered.length}) <i className="fas fa-chevron-down" style={{marginLeft: '8px'}}/>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

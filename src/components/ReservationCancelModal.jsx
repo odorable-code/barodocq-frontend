@@ -22,7 +22,7 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
   const [error,   setError]   = useState("");
   const [isClosing, setIsClosing] = useState(false);
 
-   const handleClose = () => {          // ✅ 추가
+  const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => onClose(), 160);
   };
@@ -30,11 +30,8 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
   if (!r) return null;
 
   const handleCancel = async () => {
-    // ✅ 디버그 로그 추가
     console.log("🔴 [취소모달] 버튼 클릭됨");
-    console.log("  reNum:", r.reNum);
-    console.log("  reason:", reason);
-
+    
     if (!reason) {
       setError("취소 사유를 선택해주세요.");
       return;
@@ -44,31 +41,28 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
     setError("");
 
     try {
-      console.log("📡 API 요청:", `/api/v1/reservations/${r.reNum}/cancel`);
-
       const res = await authFetch(`/api/v1/reservations/${r.reNum}/cancel`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cancelReason: reason }),
       });
 
-      // ✅ 응답 상세 로그
-      console.log("📡 응답 status:", res.status);
       const text = await res.text();
-      console.log("📡 응답 body:", text);
 
       if (!res.ok) {
-        // ✅ 서버 에러 메시지를 직접 표시
         setError(`서버 오류 (${res.status}): ${text}`);
         return;
       }
 
+      // ✅ 성공 상태로 변경
       setDone(true);
-      // ✅ onSuccess만 호출 (onClose 제거)
-      setTimeout(() => { onSuccess?.(); }, 1500);
+      
+      // 토스트 팝업을 보여준 뒤 리스트 갱신을 위해 onSuccess 호출
+      setTimeout(() => { 
+        onSuccess?.(); 
+      }, 2000);
 
     } catch (err) {
-      // ✅ 에러 변수 반드시 catch(err)로 받아야 콘솔에 출력됨
       console.error("❌ [취소모달] 네트워크 오류:", err);
       setError("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
@@ -77,8 +71,7 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
   };
 
   return (
-    <div  className={`rvm-overlay${isClosing ? " rvm-overlay--out" : ""}`}
-      onClick={handleClose} >
+    <div className={`rvm-overlay${isClosing ? " rvm-overlay--out" : ""}`} onClick={handleClose}>
       <div className="rvm rvm--cancel" onClick={(e) => e.stopPropagation()}>
 
         {/* 헤더 */}
@@ -109,7 +102,6 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* 예약 요약 */}
           <div className="rvm-section">
             <p className="rvm-section-label">취소할 예약</p>
             <div className="rvm-summary-card">
@@ -132,7 +124,6 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* 취소 사유 */}
           <div className="rvm-section">
             <p className="rvm-section-label">
               취소 사유 <span style={{ color: "red" }}>*</span>
@@ -151,38 +142,16 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* ✅ 에러/성공 메시지 - 항상 보이도록 */}
           {error && (
-            <div style={{
-              background: "#fef2f2",
-              border: "1px solid #fca5a5",
-              borderRadius: 8,
-              padding: "10px 14px",
-              color: "#dc2626",
-              fontSize: 13,
-              margin: "0 0 8px 0"
-            }}>
+            <div className="rvm-error-box" style={{ marginTop: '10px', color: '#dc2626', background: '#fef2f2', padding: '10px', borderRadius: '8px', fontSize: '13px' }}>
               ❌ {error}
-            </div>
-          )}
-          {done && (
-            <div style={{
-              background: "#f0fdf4",
-              border: "1px solid #86efac",
-              borderRadius: 8,
-              padding: "10px 14px",
-              color: "#16a34a",
-              fontSize: 13
-            }}>
-              <FontAwesomeIcon icon={faCheck} /> 예약이 취소되었습니다.
             </div>
           )}
         </div>
 
         {/* 푸터 */}
         <div className="rvm-footer">
-          <button className="rvm-btn rvm-btn--outline"
-                  onClick={handleClose}> {/* ✅ */}
+          <button className="rvm-btn rvm-btn--outline" onClick={handleClose}>
             돌아가기
           </button>
           <button
@@ -201,6 +170,20 @@ const ReservationCancelModal = ({ reservation: r, onClose, onSuccess }) => {
             )}
           </button>
         </div>
+
+        {/* 🌟 취소 완료 토스트 팝업 추가 🌟 */}
+        {done && (
+          <div className="rvm-toast-popup">
+            <div className="rvm-toast-popup-icon rvm-toast-popup-icon--red">
+              <FontAwesomeIcon icon={faCheck} />
+            </div>
+            <div className="rvm-toast-popup-text">
+              <p className="rvm-toast-popup-title">예약 취소 완료</p>
+              <p className="rvm-toast-popup-sub">예약이 성공적으로 취소되었습니다!</p>
+            </div>
+          </div>
+        )}
+        
       </div>
     </div>
   );

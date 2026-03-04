@@ -1,588 +1,197 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-// ✅ 상태 필터(라디오)
-const STATUS = ["전체", "예약대기", "예약확정", "진료완료", "예약취소"];
-const PAGE_SIZES = [20, 50, 100];
+/* ───────── 상수 ───────── */
+const STATUS_OPTIONS = ["전체", "예약대기", "예약확정", "진료완료", "예약취소"];
 
-// ✅ 상태 배지 클래스
-const statusClass = (s) => {
-  if (s === "예약대기") return "adm-st-wait";
-  if (s === "예약확정") return "adm-st-ok";
-  if (s === "진료완료") return "adm-st-done";
-  if (s === "예약취소") return "adm-st-cancel";
-  return "";
-};
+const INITIAL_DATA = Array.from({ length: 25 }).map((_, i) => ({
+  id: i + 1,
+  hospitalName: i % 2 === 0 ? "바로닥큐 병원" : "클린페이 의원",
+  department: i % 3 === 0 ? "내과" : i % 3 === 1 ? "피부과" : "정형외과",
+  patientName: `환자${i + 1}`,
+  visitType: i % 4 === 0 ? "재진" : "초진",
+  reservedAt: `2026-03-05 1${i % 9}:30`,
+  status: i === 0 ? "예약대기" : i % 4 === 1 ? "예약확정" : i % 4 === 2 ? "진료완료" : "예약취소",
+  requestMemo: i % 3 === 0 ? "갑자기 열이 나고 오한이 있어요. 조심히 가겠습니다." : "기존 처방전 재발급 원합니다.",
+  createdAt: "2026-03-03 10:00",
+}));
 
-// ✅ 간단 모달
-function MemoModal({ open, title = "예약 요청사항", memo, onClose }) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
+/* ───────── 메모 모달 컴포넌트 ───────── */
+function MemoModal({ open, memo, onClose }) {
   if (!open) return null;
-
   return (
-    <div className="adm-modal__backdrop" onMouseDown={onClose}>
-      <div className="adm-modal__panel" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="adm-modal__head">
-          <div className="adm-modal__title">{title}</div>
-          <button className="adm-modal__close" type="button" onClick={onClose} aria-label="닫기">
-            ✕
-          </button>
+    <div className="adm-modal-bg" onClick={onClose} style={{
+      position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.7)', 
+      backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', 
+      alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.2s ease'
+    }}>
+      <div onClick={(e) => e.stopPropagation()} style={{
+        background: '#fff', width: 'min(450px, 90%)', borderRadius: 'var(--radius-xl)', 
+        padding: '2rem', boxShadow: 'var(--shadow-xl)', border: '1px solid var(--border-color)'
+      }}>
+        <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary-teal)', fontSize: '1.2rem', fontWeight: 800 }}>
+          <i className="fas fa-comment-medical" /> 예약 요청사항 상세
+        </h3>
+        <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--primary-mint)', marginTop: '1.5rem', lineHeight: 1.7, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+          {memo || "요청사항이 없습니다."}
         </div>
-
-        <div className="adm-modal__body">
-          <div className="adm-modal__memo">{memo || "-"}</div>
-        </div>
-
-        <div className="adm-modal__foot">
-          <button className="adm-modal__btn" type="button" onClick={onClose}>
-            닫기
-          </button>
+        <div style={{ textAlign: 'right', marginTop: '2rem' }}>
+          <button className="hdp-btn hdp-btn-primary" style={{ width: '100%' }} onClick={onClose}>닫기</button>
         </div>
       </div>
     </div>
   );
 }
 
+/* ───────── 메인 페이지 ───────── */
 export default function ReservationManagePage() {
+  const [dataList, setDataList] = useState(INITIAL_DATA);
   const [keyword, setKeyword] = useState("");
-  const [status, setStatus] = useState("전체");
-  const [searchField, setSearchField] = useState("전체");
-
-  // ✅ 서버 페이징
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(20);
-  const [total, setTotal] = useState(0);
-
-  const [rows, setRows] = useState([]); // 서버 원본(list)
-  const [loading, setLoading] = useState(false);
-
-  // ✅ 요청사항 모달 상태
+  const [statusFilter, setStatusFilter] = useState("전체");
   const [memoOpen, setMemoOpen] = useState(false);
   const [memoText, setMemoText] = useState("");
+  const [limit, setLimit] = useState(10);
 
-  const openMemo = (memo) => {
-    setMemoText(memo || "-");
-    setMemoOpen(true);
+  // ✅ [기능] 상태 변경 (승인/취소)
+  const handleStatusChange = (id, newStatus) => {
+    const msg = newStatus === "예약확정" ? "예약을 승인하시겠습니까?" : "예약을 취소하시겠습니까?";
+    if (!window.confirm(msg)) return;
+    setDataList(prev => prev.map(item => item.id === id ? { ...item, status: newStatus } : item));
   };
 
-  const closeMemo = () => {
-    setMemoOpen(false);
-    setMemoText("");
-  };
-
-  // ✅ 검색필드별 매핑 (화면용 row 기준)
-  const fieldMap = useMemo(
-    () => ({
-      전체: (row) => [
-        row.hospitalName,
-        row.department,
-        row.patientName,
-        row.visitType,
-        row.reservedAt,
-        row.status,
-        row.requestMemo,
-        row.createdAt,
-        row.updatedAt,
-      ],
-      병원명: (row) => [row.hospitalName],
-      진료과: (row) => [row.department],
-      예약자성함: (row) => [row.patientName],
-      초진재진: (row) => [row.visitType],
-      예약시간: (row) => [row.reservedAt],
-      예약상태: (row) => [row.status],
-      예약요청사항: (row) => [row.requestMemo],
-    }),
-    []
-  );
-
-  // ✅ 서버 DTO → 화면 row로 변환
-  const mappedRows = useMemo(() => {
-    const padDT = (v) => (v ? String(v).slice(0, 16).replace("T", " ") : "-");
-    const padDate = (v) => (v ? String(v).slice(0, 10) : "-");
-    const padTime = (v) => (v ? String(v).slice(0, 5) : "-");
-
-    return (rows ?? []).map((r) => {
-      const memo = (r.reMemo ?? "").trim();
-      return {
-        id: r.reNum,
-        hospitalName: r.hoName ?? "-",
-        department: r.deptName ?? "-",
-        patientName: r.userName ?? "-",
-
-        // ✅ 초진/재진
-        visitType: r.reVisitType ?? "-", // '초진' | '재진'
-
-        reservedAt: `${padDate(r.reDate)} ${padTime(r.reTime)}`,
-        status: r.reStatus ?? "-",
-        requestMemo: memo || "-", // 화면 표기용
-
-        // ✅ 클릭 가능 여부
-        hasMemo: memo.length > 0,
-
-        createdAt: padDT(r.reCreatedAt),
-        updatedAt: padDT(r.reUpdatedAt),
-      };
-    });
-  }, [rows]);
-
-  // ✅ 목록 조회 (status/page/size 변경 시 자동)
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchList = async () => {
-      try {
-        setLoading(true);
-
-        const sp = new URLSearchParams();
-        sp.set("page", String(page));
-        sp.set("size", String(size));
-        if (status !== "전체") sp.set("status", status);
-
-        const res = await fetch(`/api/v1/admin/reservations?${sp.toString()}`, {
-          signal: controller.signal,
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error(`list fetch failed: ${res.status}`);
-
-        const payload = await res.json();
-        setRows(payload?.list ?? []);
-        setTotal(Number(payload?.total ?? 0));
-      } catch (e) {
-        if (e.name !== "AbortError") console.error(e);
-        setRows([]);
-        setTotal(0);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchList();
-    return () => controller.abort();
-  }, [page, size, status]);
-
-  // ✅ 필터/검색/페이지크기 바뀌면 1페이지로
-  useEffect(() => setPage(1), [keyword, status, searchField, size]);
-
-  // ✅ 프론트 검색 (주의: 현재 페이지 데이터 기준)
+  // ✅ [기능] 필터링
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
-
-    return mappedRows.filter((row) => {
-      if (!kw) return true;
-      const candidates = (fieldMap[searchField] || fieldMap["전체"])(row);
-      return candidates.some((v) => String(v ?? "").toLowerCase().includes(kw));
+    return dataList.filter((row) => {
+      const hitStatus = statusFilter === "전체" ? true : row.status === statusFilter;
+      if (!hitStatus) return false;
+      return row.patientName.toLowerCase().includes(kw) || row.hospitalName.toLowerCase().includes(kw);
     });
-  }, [mappedRows, keyword, searchField, fieldMap]);
-
-  const totalPages = Math.max(1, Math.ceil(total / size));
-
-  // ✅ 예약 승인: 예약대기 -> 예약확정
-  const handleApprove = async (id) => {
-    try {
-      const res = await fetch(`/api/v1/admin/reservations/${id}/approve`, {
-        method: "PATCH",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error(`approve failed: ${res.status}`);
-
-      setRows((prev) =>
-        prev.map((r) => (r.reNum === id ? { ...r, reStatus: "예약확정" } : r))
-      );
-    } catch (e) {
-      console.error(e);
-      alert("예약 승인 실패");
-    }
-  };
-
-  // ✅ 예약 취소: 예약확정(또는 예약대기) -> 예약취소
-  const handleCancel = async (id) => {
-    try {
-      const res = await fetch(`/api/v1/admin/reservations/${id}/cancel`, {
-        method: "PATCH",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error(`cancel failed: ${res.status}`);
-
-      setRows((prev) =>
-        prev.map((r) => (r.reNum === id ? { ...r, reStatus: "예약취소" } : r))
-      );
-    } catch (e) {
-      console.error(e);
-      alert("예약 취소 실패");
-    }
-  };
+  }, [dataList, keyword, statusFilter]);
 
   return (
-    <div className="adm-page adm-resv-page">
-      <style>{`
-        .adm-resv-page .adm-table {
-          width: 100%;
-          border-collapse: collapse;
-          table-layout: fixed;
-        }
-        .adm-resv-page .adm-table th,
-        .adm-resv-page .adm-table td {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          vertical-align: middle;
-        }
+    <div className="adm-page">
+      <MemoModal open={memoOpen} memo={memoText} onClose={() => setMemoOpen(false)} />
 
-        /* 요청사항은 2줄 클램프 */
-        .adm-resv-page .adm-req {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          white-space: normal;
-          line-height: 1.35;
-          word-break: keep-all;
-        }
-
-        /* ✅ 요청사항 클릭 가능 스타일 */
-        .adm-resv-page .adm-req-clickable {
-          cursor: pointer;
-          text-decoration: underline;
-          text-underline-offset: 2px;
-        }
-
-        /* ===== 컬럼 폭 ===== */
-        .adm-resv-page .adm-table th:nth-child(1),
-        .adm-resv-page .adm-table td:nth-child(1) { width: 50px; }  /* No. */
-        .adm-resv-page .adm-table th:nth-child(2),
-        .adm-resv-page .adm-table td:nth-child(2) { width: 160px; } /* 예약병원 */
-        .adm-resv-page .adm-table th:nth-child(3),
-        .adm-resv-page .adm-table td:nth-child(3) { width: 90px; }  /* 진료과 */
-        .adm-resv-page .adm-table th:nth-child(4),
-        .adm-resv-page .adm-table td:nth-child(4) { width: 110px; } /* 예약자 */
-        .adm-resv-page .adm-table th:nth-child(5),
-        .adm-resv-page .adm-table td:nth-child(5) { width: 90px; }  /* 초진/재진 */
-        .adm-resv-page .adm-table th:nth-child(6),
-        .adm-resv-page .adm-table td:nth-child(6) { width: 160px; } /* 예약시간 */
-        .adm-resv-page .adm-table th:nth-child(7),
-        .adm-resv-page .adm-table td:nth-child(7) { width: 110px; } /* 예약상태 */
-        .adm-resv-page .adm-table th:nth-child(8),
-        .adm-resv-page .adm-table td:nth-child(8) { width: 260px; } /* 요청사항 */
-        .adm-resv-page .adm-table th:nth-child(9),
-        .adm-resv-page .adm-table td:nth-child(9) { width: 150px; } /* 신청 */
-        .adm-resv-page .adm-table th:nth-child(10),
-        .adm-resv-page .adm-table td:nth-child(10) { width: 150px; } /* 수정 */
-        .adm-resv-page .adm-table th:nth-child(11),
-        .adm-resv-page .adm-table td:nth-child(11) { width: 140px; } /* 처리 */
-
-        .adm-resv-page td.adm-cell-center {
-          display: table-cell;
-          text-align: center;
-          vertical-align: middle;
-        }
-
-        /* 테이블 위 size 토글 */
-        .adm-resv-page .adm-topbar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          margin: 10px 0;
-        }
-        .adm-resv-page .adm-size-toggle {
-          display: inline-flex;
-          border: 1px solid var(--adm-line);
-          border-radius: 999px;
-          overflow: hidden;
-          background: #fff;
-        }
-        .adm-resv-page .adm-size-toggle button {
-          border: 0;
-          background: transparent;
-          padding: 7px 12px;
-          cursor: pointer;
-          font-weight: 800;
-          font-size: 13px;
-          color: var(--adm-muted);
-        }
-        .adm-resv-page .adm-size-toggle button.is-active {
-          background: var(--primary-mint, #14b8a6);
-          color: #fff;
-        }
-
-        .adm-resv-page .adm-pager {
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-          gap: 10px;
-          margin-top: 10px;
-          color: var(--adm-muted);
-          font-size: 13px;
-        }
-        .adm-resv-page .adm-pager button {
-          border: 1px solid var(--adm-line);
-          background: #fff;
-          border-radius: 10px;
-          padding: 6px 10px;
-          cursor: pointer;
-          font-weight: 700;
-        }
-        .adm-resv-page .adm-pager button:disabled {
-          opacity: .5;
-          cursor: not-allowed;
-        }
-
-        /* ===== 모달 ===== */
-        .adm-modal__backdrop{
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,.45);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 20px;
-          z-index: 9999;
-        }
-        .adm-modal__panel{
-          width: min(560px, 100%);
-          background: #fff;
-          border-radius: 16px;
-          box-shadow: 0 20px 60px rgba(0,0,0,.2);
-          overflow: hidden;
-        }
-        .adm-modal__head{
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 14px 16px;
-          border-bottom: 1px solid var(--adm-line);
-        }
-        .adm-modal__title{
-          font-weight: 900;
-          font-size: 15px;
-        }
-        .adm-modal__close{
-          border: 0;
-          background: transparent;
-          cursor: pointer;
-          font-size: 18px;
-          line-height: 1;
-        }
-        .adm-modal__body{
-          padding: 16px;
-        }
-        .adm-modal__memo{
-          white-space: pre-wrap;
-          line-height: 1.5;
-          color: #111;
-        }
-        .adm-modal__foot{
-          padding: 12px 16px 16px;
-          display: flex;
-          justify-content: flex-end;
-          gap: 8px;
-        }
-        .adm-modal__btn{
-          border: 1px solid var(--adm-line);
-          background: #fff;
-          border-radius: 12px;
-          padding: 8px 12px;
-          cursor: pointer;
-          font-weight: 800;
-        }
-      `}</style>
-
-      <MemoModal open={memoOpen} memo={memoText} onClose={closeMemo} />
-
-      <div className="adm-page-head">
+      {/* 🟢 헤더 영역 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
         <div>
-          <div className="adm-breadcrumb">예약관리</div>
-          <h1 className="adm-page-title">예약관리</h1>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <i className="fas fa-home" style={{marginRight: '4px'}}/> 예약관리 <i className="fas fa-chevron-right" style={{fontSize:'.6rem', margin:'0 6px'}}/> <span style={{color: 'var(--primary-teal)'}}>전체 예약 내역</span>
+          </div>
+          <h1 className="adm-page-title" style={{marginBottom: 0}}>예약 <span>관리</span></h1>
         </div>
       </div>
 
-      {/* ✅ 필터 영역 */}
-      <div className="adm-card">
-        <div className="adm-filters">
-          <div className="adm-filter-row">
-            <span className="adm-label">상태</span>
-            <div className="adm-chips">
-              {STATUS.map((s) => (
-                <label key={s} className="adm-chip">
-                  <input
-                    type="radio"
-                    name="status"
-                    checked={status === s}
-                    onChange={() => setStatus(s)}
-                  />
-                  <span>{s}</span>
-                </label>
+      {/* 🟢 필터 카드 */}
+      <div className="adm-card" style={{ padding: '1.5rem 2rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-secondary)' }}>예약상태</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {STATUS_OPTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => { setStatusFilter(s); setLimit(10); }}
+                  style={{
+                    padding: '0.5rem 1.1rem', borderRadius: 'var(--radius-full)', border: '2px solid',
+                    borderColor: statusFilter === s ? 'transparent' : 'var(--border-color)',
+                    background: statusFilter === s ? 'linear-gradient(135deg, var(--primary-mint), var(--primary-teal))' : '#fff',
+                    color: statusFilter === s ? '#fff' : 'var(--text-secondary)',
+                    fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                >{s}</button>
               ))}
             </div>
           </div>
-
-          <div className="adm-search-row">
-            <span className="adm-label">검색</span>
-            <select
-              className="adm-select"
-              value={searchField}
-              onChange={(e) => setSearchField(e.target.value)}
-            >
-              <option>전체</option>
-              <option>병원명</option>
-              <option>진료과</option>
-              <option>예약자성함</option>
-              <option>초진재진</option>
-              <option>예약시간</option>
-              <option>예약상태</option>
-              <option>예약요청사항</option>
-            </select>
-
-            <input
-              className="adm-input"
-              placeholder="검색어를 입력해주세요."
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+          <div style={{ flex: 1, display: 'flex', background: 'var(--bg-secondary)', padding: '0.4rem', borderRadius: 'var(--radius-xl)', border: '2px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '0 1rem', color: 'var(--primary-teal)' }}><i className="fas fa-search" /></div>
+            <input 
+              className="adm-input" placeholder="병원명 또는 예약자 성함을 입력하세요..." 
+              value={keyword} onChange={(e) => setKeyword(e.target.value)} 
+              style={{ flex: 1, border: 'none', background: 'transparent', height: '40px', outline:'none' }} 
             />
-
-            <button className="adm-ghost-btn" type="button">
-              검색
-            </button>
           </div>
         </div>
       </div>
 
-      {/* ✅ 테이블 */}
-      <div className="adm-table-wrap">
-        <div className="adm-topbar">
-          <div className="adm-table-meta">
-            전체 {total}건 {loading ? "· 불러오는 중..." : ""}
-          </div>
-
-          <div className="adm-size-toggle" role="tablist" aria-label="페이지당 개수">
-            {PAGE_SIZES.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={n === size ? "is-active" : ""}
-                onClick={() => {
-                  setSize(n);
-                  setPage(1);
-                }}
-              >
-                {n}개
-              </button>
-            ))}
-          </div>
+      {/* 🟢 데이터 테이블 (고정 레이아웃) */}
+      <div className="adm-table-wrap" style={{ overflowX: 'auto' }}>
+        <div style={{ padding: '1.25rem 1.5rem', background: '#fff', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-secondary)' }}>검색 내역 <span style={{ color: 'var(--primary-teal)' }}>{filtered.length}</span>건</span>
         </div>
-
-        <table className="adm-table">
+        
+        <table className="adm-table" style={{ tableLayout: 'fixed', width: '100%', minWidth: '1400px' }}>
           <thead>
             <tr>
-              <th>No.</th>
-              <th>예약병원</th>
-              <th>진료과</th>
-              <th>예약자성함</th>
-              <th>초진/재진</th>
-              <th>예약시간</th>
-              <th>예약상태</th>
-              <th>예약요청사항</th>
-              <th>예약신청일시</th>
-              <th>예약수정일시</th>
-              <th>처리</th>
+              <th style={{width: '60px', textAlign: 'center'}}>NO.</th>
+              <th style={{width: '180px', textAlign: 'left'}}>예약병원</th>
+              <th style={{width: '100px', textAlign: 'center'}}>진료과</th>
+              <th style={{width: '110px', textAlign: 'left'}}>예약자성함</th>
+              <th style={{width: '90px', textAlign: 'center'}}>유형</th>
+              <th style={{width: '150px', textAlign: 'center'}}>예약시간</th>
+              <th style={{width: '110px', textAlign: 'center'}}>상태</th>
+              <th style={{width: '240px', textAlign: 'left'}}>요청사항</th>
+              <th style={{width: '150px', textAlign: 'center'}}>신청일시</th>
+              <th style={{width: '160px', textAlign: 'center'}}>처리</th>
             </tr>
           </thead>
-
           <tbody>
-            {!loading && filtered.length === 0 && (
-              <tr>
-                <td colSpan={11} style={{ padding: 20, color: "var(--adm-muted)" }}>
-                  조회 결과가 없습니다.
+            {filtered.slice(0, limit).map((r, idx) => (
+              <tr key={r.id} style={{ height: '70px' }}>
+                <td style={{textAlign: 'center', color: 'var(--text-muted)'}}>{idx + 1}</td>
+                <td style={{textAlign: 'left', fontWeight: 700}}>{r.hospitalName}</td>
+                <td style={{textAlign: 'center'}}><span style={{ padding: '0.2rem 0.5rem', background: 'var(--bg-tertiary)', color: 'var(--primary-dark-teal)', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>{r.department}</span></td>
+                <td style={{textAlign: 'left', fontWeight: 700}}>{r.patientName}</td>
+                <td style={{textAlign: 'center'}}>{r.visitType}</td>
+                <td style={{textAlign: 'center', fontWeight: 600, color: 'var(--text-secondary)'}}>{r.reservedAt}</td>
+                <td style={{textAlign: 'center'}}>
+                  <span className={`adm-badge ${r.status === "예약대기" ? "adm-st-wait" : r.status === "예약확정" ? "adm-on" : ""}`} style={{width: '75px', background: r.status === "예약취소" ? "#f1f5f9" : "", color: r.status === "예약취소" ? "#94a3b8" : ""}}>
+                    {r.status}
+                  </span>
                 </td>
-              </tr>
-            )}
-
-            {filtered.map((r, idx) => (
-              <tr key={r.id}>
-                <td>{(page - 1) * size + idx + 1}</td>
-                <td>{r.hospitalName}</td>
-                <td>{r.department}</td>
-                <td>{r.patientName}</td>
-                <td className="adm-cell-center">{r.visitType}</td>
-                <td>{r.reservedAt}</td>
-
-                <td className="adm-cell-center">
-                  <span className={"adm-badge " + statusClass(r.status)}>{r.status}</span>
-                </td>
-
-                <td>
-                  <div
-                    className={
-                      "adm-req " + (r.hasMemo ? "adm-req-clickable" : "")
-                    }
-                    title={r.hasMemo ? "클릭해서 전체 보기" : ""}
-                    role={r.hasMemo ? "button" : undefined}
-                    tabIndex={r.hasMemo ? 0 : undefined}
-                    onClick={() => r.hasMemo && openMemo(r.requestMemo)}
-                    onKeyDown={(e) => {
-                      if (!r.hasMemo) return;
-                      if (e.key === "Enter" || e.key === " ") openMemo(r.requestMemo);
-                    }}
+                <td style={{textAlign: 'left'}}>
+                  <div 
+                    onClick={() => { setMemoText(r.requestMemo); setMemoOpen(true); }}
+                    style={{ cursor: 'pointer', color: 'var(--primary-teal)', fontWeight: 600, fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                   >
-                    {r.requestMemo}
+                    <i className="far fa-comment-dots" style={{marginRight: '6px'}}/> {r.requestMemo}
                   </div>
                 </td>
-
-                <td>{r.createdAt}</td>
-                <td>{r.updatedAt}</td>
-
-                <td className="adm-cell-center">
-                  {r.status === "예약대기" ? (
-                    <button
-                      className="adm-approve-btn adm-request"
-                      type="button"
-                      onClick={() => handleApprove(r.id)}
-                    >
-                      예약승인
-                    </button>
-                  ) : r.status === "예약확정" ? (
-                    <button
-                      className="adm-approve-btn"
-                      type="button"
-                      onClick={() => handleCancel(r.id)}
-                    >
-                      예약취소
-                    </button>
-                  ) : (
-                    <span className="adm-approve-done">-</span>
-                  )}
+                <td style={{textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem'}}>{r.createdAt}</td>
+                <td style={{textAlign: 'center', padding: '0'}}>
+                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    {r.status === "예약대기" ? (
+                      <>
+                        <button onClick={() => handleStatusChange(r.id, "예약확정")} className="btn-act ok" style={{width: '55px', height: '32px', background: 'var(--bg3)', color: 'var(--pdt)', border: '1px solid var(--pm)', borderRadius: '6px', fontWeight: 800, cursor: 'pointer'}}>승인</button>
+                        <button onClick={() => handleStatusChange(r.id, "예약취소")} className="btn-act no" style={{width: '55px', height: '32px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', fontWeight: 800, cursor: 'pointer'}}>취소</button>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>처리완료</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div className="adm-pager">
-          <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            이전
-          </button>
-          <span>
-            {page} / {Math.max(1, Math.ceil(total / size))}
-          </span>
-          <button
-            type="button"
-            disabled={page >= Math.max(1, Math.ceil(total / size))}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            다음
-          </button>
-        </div>
+        {/* 🟢 세련된 더보기 버튼 */}
+        {filtered.length > limit && (
+          <div style={{ padding: '2rem', textAlign: 'center', borderTop: '1px solid var(--border-color)', background: '#fff' }}>
+            <button 
+              onClick={() => setLimit(prev => prev + 5)}
+              style={{ 
+                background: '#fff', border: '2px solid var(--primary-mint)', padding: '0.8rem 3.5rem', borderRadius: 'var(--radius-lg)', 
+                color: 'var(--primary-teal)', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.background = 'var(--bg-secondary)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.background = '#fff'; }}
+            >
+              예약 내역 더보기 ({Math.min(limit, filtered.length)}/{filtered.length}) <i className="fas fa-chevron-down" style={{marginLeft: '8px'}}/>
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* 참고: keyword 검색은 "현재 페이지 데이터" 기준 */}
     </div>
   );
 }
