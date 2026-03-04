@@ -7,11 +7,12 @@ function KakaoCallback() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const hasCalled = useRef(false); // 중복 호출 방지 플래그
+  const { getMeAndSetUser } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-
+    
     const sendCodeToBackend = async (kakaoCode) => {
       // 1. 이미 호출 중이라면 중단
       if (hasCalled.current) return;
@@ -26,6 +27,7 @@ function KakaoCallback() {
 
         /** [추가/수정] 로그 확인 결과: 토큰은 data.token에, 유저는 data.user에 있습니다. */
         login(data, setUser, navigate);
+        await getMeAndSetUser();
 
       } catch (err) {
         console.error("sendCodeToBackend 오류 발생:", err);
@@ -50,6 +52,7 @@ function KakaoCallbackAdmin() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const hasCalled = useRef(false); // 중복 호출 방지 플래그
+  const { getMeAndSetUser } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -72,6 +75,7 @@ function KakaoCallbackAdmin() {
         if(user && user.usaNum > 0){
           alert("이미 가입된 사용자입니다.");
           login(data, setUser, navigate); // 바로 로그인 처리
+          await getMeAndSetUser(); // 사용자 정보 업데이트
           return;
           //navigate("/login");
         }
@@ -146,7 +150,8 @@ async function getKakaoUserInfo(kakaoCode) {
   return data;
 }
 
-function login(data, setUser, navigate) {
+async function login(data, setUser, navigate, ) {
+  
   if(!data){
     return false;
   }
@@ -161,12 +166,11 @@ function login(data, setUser, navigate) {
     
 
     /** [수정] setUser에 백엔드에서 준 실제 사용자 정보(박서연 님)를 반영 */
-    setUser({
-      isLoggedIn: true,
-      userId: userData?.usaName || "KakaoUser", // usaName: '박서연' 반영
-      userNum: userData?.userNum                // userNum: 8 반영
-    });
-
+    // setUser({
+    //   isLoggedIn: true,
+    //   userId: userData?.usaName || "KakaoUser", // usaName: '박서연' 반영
+    //   userNum: userData?.userNum                // userNum: 8 반영
+    // });
     console.log("토큰 및 유저 정보 저장 완료. 메인으로 이동합니다.");
 
     /** [추가] 401 Unauthorized 방지 로직 

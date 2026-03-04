@@ -1,0 +1,155 @@
+@charset "UTF-8";
+/* ──────────────────────────────────────────────────────────
+   [핵심 해결책] Header.css에서 준 body padding-top 제거
+   ────────────────────────────────────────────────────────── */
+
+/* 1. 관리자 레이아웃(adm-scope)이 존재하는 경우 body의 패딩을 초기화 */
+body:has(.adm-scope) {
+  padding-top: 0 !important;
+  margin: 0 !important;
+  overflow: hidden; /* 관리자 전체 페이지 스크롤 방지 */
+}
+
+/* 만약 :has 선택자 지원이 걱정된다면 아래 방식도 같이 적어주세요 */
+.adm-scope {
+  position: fixed; /* 화면에 꽉 차게 고정 */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999; /* 메인 헤더보다 위에 오도록 설정 */
+  background: #f8fafc;
+}
+
+/* ────────────────────────────────────────────────────────── */
+/* ── MainPage.css와 동일한 변수 세팅 ── */
+.adm-scope {
+  --primary-mint: #14b8a6;
+  --primary-teal: #0d9488;
+  --primary-dark-teal: #0f766e;
+  --primary-darker-teal: #115e59;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0fdfa;
+  --bg-tertiary: #ccfbf1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: #e2e8f0;
+  
+  /* MainPage와 동일한 그림자/라운딩 */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.1);
+  --shadow-mint: 0 10px 30px rgba(20,184,166,.22);
+  
+  --radius-md: .75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-full: 9999px;
+  
+  --transition-base: 300ms cubic-bezier(.4,0,.2,1);
+
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc; /* 관리자 배경은 살짝 밝은 그레이 유지 (카드 부각) */
+  color: var(--text-primary);
+  font-family: 'Pretendard', sans-serif;
+}
+
+.adm-scope * { box-sizing: border-box; }
+
+/* ── 레이아웃 뼈대 ── */
+.adm-main-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+.adm-content-area { flex: 1; padding: 2.5rem; overflow-y: auto; background: #f8fafc; }
+
+/* ── 사이드바 (MainPage의 Dark Slate 색감) ── */
+.adm-sb { width: 280px; flex-shrink: 0; background: #0f172a; color: #fff; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+.adm-sb-logo { 
+  height: 80px; display: flex; align-items: center; padding: 0 2rem;
+  font-size: 1.6rem; font-weight: 900; color: #fff; letter-spacing: -1px; text-decoration: none;
+}
+/* 로고 Q에 메인페이지 그라데이션 적용 */
+.adm-sb-logo span { 
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.adm-sb-nav { padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.adm-sb-item { 
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; 
+  color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; 
+  border-radius: var(--radius-lg); transition: var(--transition-base); 
+}
+.adm-sb-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+
+/* 활성화 메뉴: 메인페이지 그라데이션 + 민트 그림자 */
+.adm-sb-item.adm-active { 
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal)); 
+  color: #fff; 
+  box-shadow: var(--shadow-mint);
+}
+
+.adm-sb-caret { background: transparent; border: none; color: #475569; padding: 0.5rem; cursor: pointer; transition: var(--transition-base); }
+.adm-sb-sub { max-height: 0; overflow: hidden; transition: max-height 300ms ease; padding-left: 2.5rem; }
+.adm-sb-sub.adm-open { max-height: 500px; padding-bottom: 0.5rem; }
+.adm-sb-sub-item { display: block; padding: 0.6rem 0; color: #64748b; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: var(--transition-base); }
+.adm-sb-sub-item:hover { color: var(--primary-mint); }
+.adm-sb-sub-item.adm-active { color: var(--primary-mint); font-weight: 700; }
+
+/* ── 상단 헤더 ── */
+.adm-th { height: 80px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; padding: 0 2.5rem; gap: 1.5rem; }
+.adm-th-user { text-align: right; }
+.adm-th-name { font-weight: 800; font-size: 1rem; color: var(--text-primary); }
+.adm-th-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+/* 로그아웃 버튼: 메인페이지 스타일 */
+.adm-th-btn { 
+  padding: 0.6rem 1.25rem; border-radius: var(--radius-full); 
+  background: var(--bg-secondary); color: var(--primary-teal); 
+  border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: var(--transition-base); 
+}
+.adm-th-btn:hover { background: #fee2e2; color: #dc2626; }
+
+.adm-th-icon { 
+  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-color); 
+  background: #fff; display: flex; align-items: center; justify-content: center; 
+  cursor: pointer; transition: var(--transition-base); color: var(--text-secondary); 
+}
+.adm-th-icon:hover { border-color: var(--primary-mint); color: var(--primary-mint); background: var(--bg-secondary); }
+
+/* ── 카드 및 공통 UI (MainPage HospitalCard 스타일 이식) ── */
+.adm-card { 
+  background: #fff; border-radius: var(--radius-2xl); border: 2px solid var(--border-color); 
+  padding: 2rem; box-shadow: var(--shadow-md); margin-bottom: 2rem; position: relative; overflow: hidden;
+  transition: var(--transition-base);
+}
+/* 카드 상단 민트 라인 효과 */
+.adm-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--primary-mint), var(--primary-teal));
+}
+
+.adm-page-title { font-size: 2rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 2.5rem; }
+.adm-page-title span { 
+  background: linear-gradient(135deg, var(--primary-mint), var(--primary-teal)); 
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+}
+
+/* ── 테이블 (MainPage RecordTable 스타일) ── */
+.adm-table-wrap { background: #fff; border: 2px solid var(--border-color); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+.adm-table { width: 100%; border-collapse: collapse; }
+.adm-table thead { background: var(--bg-secondary); }
+.adm-table th { 
+  padding: 1.2rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 800; 
+  color: var(--primary-dark-teal); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.adm-table td { padding: 1.1rem 1rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-secondary); }
+.adm-table tr:hover td { background: var(--bg-secondary); }
+
+/* 배지 스타일 */
+.adm-badge { padding: 0.3rem 0.7rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; }
+.adm-on { background: #d1fae5; color: #059669; }
+.adm-off { background: #fee2e2; color: #dc2626; }

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate }       from "react-router-dom";
+import { useSocket }                    from "../WebSocketContext";
+import { useAuth }                      from "../AuthContext";
 import "../assets/styles/HospitalDetail.css";
-import Chat from "../Chat/Chat";
-import { useSocket } from "../WebSocketContext";
-import { useAuth } from "../AuthContext";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
-/* ── utils ── */
 const toBool = (v) => {
   if (v === true || v === false) return v;
   if (v === 1 || v === 0) return Boolean(v);
@@ -39,7 +37,6 @@ const formatDate = (v) => {
   return s.length >= 10 ? s.slice(0,10) : s;
 };
 
-/* ── Font Awesome 별점 ── */
 function Stars({ score = 0 }) {
   return (
     <span className="hd2__stars">
@@ -57,49 +54,34 @@ function Stars({ score = 0 }) {
   );
 }
 
-/* ════════════════════════════════
-   Hos_Detail
-════════════════════════════════ */
-export default function Hos_Detail() {
+export default function HospitalDetail() {
   const { hospitalId } = useParams();
   const navigate       = useNavigate();
-  const { user } = useAuth();
+
+  const { user }                                      = useAuth();
+  const { createRoom, setActiveChatRoom, setNotifOpen } = useSocket();
+
   const [summary, setSummary] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  const {
-    cmContent,
-    setCmContent,
-    cmContents,
-    setCmContents,
-    socket,
-    activeChatRoom,
-    setActiveChatRoom,
-    chatRef,
-    chatEndRef,
-  } = useSocket();
 
   useEffect(() => {
-    let ignore = false; // 데이터가 늦게 도착했을 때, 이미 떠나버린 페이지의 상태를 업데이트하려고 시도하다가 발생하는 에러(Memory Leak)를 막아주는 거절용 스위치
+    let ignore = false;
     async function loadData() {
       if (!hospitalId) return;
-      setLoading(true); // 시간이 걸릴 때 "데이터를 가져오는 중이니 잠시만 기다려주세요"라는 표시(예: 빙글빙글 도는 아이콘이나 로딩 메시지)를 보여주기 위해
-      setError(""); //에러 메시지 통을 깨끗하게 비워
+      setLoading(true); setError("");
       try {
-        const [sumRes, revRes] = await Promise.all([ // 두 개의 fetch를 동시에 요청
-          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/summary`), // summary의 결과값이 sumRes에 들어감
-          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/reviews?limit=3`), // reviews의 결과값이 revRes에 들어감
+        const [sumRes, revRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/summary`),
+          fetch(`${API_BASE_URL}/api/v1/hospitals/${hospitalId}/reviews?limit=3`),
         ]);
-        if (!sumRes.ok) throw new Error(`병원 정보 로드 실패 (${sumRes.status})`); 
+        if (!sumRes.ok) throw new Error(`병원 정보 로드 실패 (${sumRes.status})`);
         if (!revRes.ok) throw new Error(`리뷰 로드 실패 (${revRes.status})`);
         const [sumData, revData] = await Promise.all([sumRes.json(), revRes.json()]);
         if (!ignore) {
           setSummary({ ...sumData, hoNightYn: toBool(sumData.hoNightYn), hoHolidayYn: toBool(sumData.hoHolidayYn) });
           setReviews(Array.isArray(revData) ? revData : []);
-          console.log(sumData)
         }
       } catch (e) {
         if (!ignore) setError(e?.message || "에러 발생");
@@ -111,18 +93,34 @@ export default function Hos_Detail() {
     return () => { ignore = true; };
   }, [hospitalId]);
 
+  const handleChatOpen = async () => {
+    if (!user) { navigate("/login"); return; }
+    if (!summary) return;
+
+    const room = await createRoom({
+      hospitalId:   String(hospitalId),
+      hospitalName: summary.hoName,
+      dept:         summary.deptName || "상담",
+      avatar:       summary.hoName?.slice(0, 1) || "병",
+    });
+
+    if (room) {
+      setActiveChatRoom(room);
+      setNotifOpen(true); // ✅ 패널 + 채팅창 열기
+    }
+  };
+
   const tags = useMemo(() => {
     if (!summary) return [];
     const arr = [];
-    if (summary.hoNightYn)   arr.push({ label: "야간진료",   icon: "fa-moon",          cls: "night"   });
-    if (summary.hoHolidayYn) arr.push({ label: "공휴일진료", icon: "fa-calendar-star",  cls: "holiday" });
+    if (summary.hoNightYn)   arr.push({ label:"야간진료",   icon:"fa-moon",         cls:"night"   });
+    if (summary.hoHolidayYn) arr.push({ label:"공휴일진료", icon:"fa-calendar-star", cls:"holiday" });
     return arr;
   }, [summary]);
 
   const timeText  = formatTimeRange(summary?.hhOpenTime,  summary?.hhCloseTime);
   const lunchText = formatLunch(summary?.hhLunchStart, summary?.hhLunchEnd);
 
-  /* ── 로딩 / 에러 풀스크린 ── */
   if (loading) return (
     <div className="hd2__fullstate">
       <i className="fas fa-spinner fa-spin" />
@@ -139,80 +137,17 @@ export default function Hos_Detail() {
     </div>
   );
 
-  const aaaaa = ()=>{
-
-    //로그인 여부 확인 후 처리 작업
-    const isLoggedIn = !!localStorage.getItem("accessToken"); //토큰이 있으면 true, 없으면 false. !!를 통해 값을 true 또는 false로 가져옴
-
-    if (!isLoggedIn) {
-    alert("로그인 후 이용 가능합니다.");
-    return; // 로그인이 안 되어 있으면 아래 코드를 실행하지 않고 함수를 여기서 종료합니다.
-    }
-
-    //통신으로 해당 병원과 회원 사이의 채팅방 정보를 가져옴(없으면 추가 후 가져옴)
-    //userNum 가져옴
-    const userNum = user.num;
-    console.log(userNum);
-
-    //setActiveChatRoom을 이용하여 선택된 채팅방 정보를 가져옴
-    //채팅방 정보: cr_num, ho_num, user_num, cm_sender_type, 
-    // setActiveChatRoom({
-    //   hospital : "dd"})
-    const ho_num = parseInt(window.location.pathname.replace(/\/details\//i, ""));
-
-    const getChatRoomInfo = async () => {
-      try {
-        const response = await fetch(`/api/chat/chatRoom`, {
-          method : "POST",
-          headers : {
-            'Content-Type' : 'application/json'
-          },
-          body : JSON.stringify({
-          //crNum: crNum,
-          //hoNum: hoNum,
-          //userId: userId
-        })
-        });
-
-        const data = await response.json();
-
-      }catch (err) {
-        console.error("채팅방 정보 불러오기 실패", err);
-      }
-    };
-
-    setActiveChatRoom({
-      //cr_num,
-      //ho_num,
-      //user_num,
-      //cm_sender_type
-    })
-      
-    //통신으로 해당 병원과 회원 사이의 챙팅방 메세지 기록을 가져옴 => s
-    setCmContents([{cmContent : "안녕", cmCreatedAt: "2026-01-01"}])
-    setNotifOpen((v) => !v);
-    
-  }
   return (
     <div className="hd2">
-
-      {/* ══ 히어로 ══ */}
       <div className="hd2__hero">
         <div className="hd2__hero-blob" />
         <div className="hd2__hero-blob hd2__hero-blob--2" />
         <div className="hd2__hero-inner">
-
-          {/* 뒤로가기 */}
           <button className="hd2__back" onClick={() => navigate(-1)}>
             <i className="fas fa-arrow-left" />목록으로
           </button>
-
           <div className="hd2__hero-content">
-            {/* 병원 아이콘 */}
-            <div className="hd2__hero-icon">
-              <i className="fas fa-hospital" />
-            </div>
-
+            <div className="hd2__hero-icon"><i className="fas fa-hospital" /></div>
             <div className="hd2__hero-text">
               {summary?.deptName && (
                 <span className="hd2__hero-dept">
@@ -231,7 +166,7 @@ export default function Hos_Detail() {
               </div>
               {tags.length > 0 && (
                 <div className="hd2__hero-tags">
-                  {tags.map((t) => (
+                  {tags.map(t => (
                     <span key={t.label} className={`hd2__hero-tag hd2__hero-tag--${t.cls}`}>
                       <i className={`fas ${t.icon}`} />{t.label}
                     </span>
@@ -243,7 +178,6 @@ export default function Hos_Detail() {
         </div>
       </div>
 
-      {/* ══ 퀵 스트립 ══ */}
       {summary && (
         <div className="hd2__strip">
           <span className="hd2__strip-item">
@@ -264,20 +198,13 @@ export default function Hos_Detail() {
           <span className="hd2__strip-sep" />
           <span className="hd2__strip-item">
             <i className="fas fa-phone" />
-            <a href={`tel:${summary.hoPhone}`} className="hd2__strip-tel">
-              {summary.hoPhone}
-            </a>
+            <a href={`tel:${summary.hoPhone}`} className="hd2__strip-tel">{summary.hoPhone}</a>
           </span>
         </div>
       )}
 
-      {/* ══ 본문 레이아웃 ══ */}
       <div className="hd2__wrap">
-
-        {/* ─ 사이드바 ─ */}
         <aside className="hd2__left">
-
-          {/* 예약 카드 */}
           <div className="hd2__reserveCard">
             <div className="hd2__reserveHead">
               <i className="fas fa-calendar-check" />빠른 예약
@@ -288,13 +215,15 @@ export default function Hos_Detail() {
             <button className="hd2__actionBtn hd2__actionBtn--primary">
               <i className="fas fa-calendar-plus" />예약하기
             </button>
-            <button className="hd2__actionBtn hd2__actionBtn--ghost" 
-              onClick={aaaaa}>
-              <i className="far fa-comment-dots" />1:1 문의
+            <button
+              className="hd2__actionBtn hd2__actionBtn--ghost"
+              onClick={handleChatOpen}
+            >
+              <i className="far fa-comment-dots" />
+              {user ? "1:1 문의" : "로그인 후 문의"}
             </button>
           </div>
 
-          {/* 병원 정보 카드 */}
           <section className="hd2__leftCard">
             <div className="hd2__cardTitle">
               <i className="fas fa-circle-info" />병원 정보
@@ -304,9 +233,7 @@ export default function Hos_Detail() {
                 <div className="hd2__title">{summary.hoName}</div>
                 <div className="hd2__sub">
                   <Stars score={summary.rvRating ?? 0} />
-                  <span className="hd2__score-sm">
-                    {Number(summary.rvRating ?? 0).toFixed(1)}
-                  </span>
+                  <span className="hd2__score-sm">{Number(summary.rvRating ?? 0).toFixed(1)}</span>
                   <span className="hd2__dot" />
                   {summary.deptName ?? "진료과 미지정"}
                 </div>
@@ -332,7 +259,7 @@ export default function Hos_Detail() {
                 </ul>
                 {tags.length > 0 && (
                   <div className="hd2__tags">
-                    {tags.map((t) => (
+                    {tags.map(t => (
                       <span key={t.label} className={`hd2__tag hd2__tag--${t.cls}`}>
                         <i className={`fas ${t.icon}`} />{t.label}
                       </span>
@@ -344,14 +271,10 @@ export default function Hos_Detail() {
           </section>
         </aside>
 
-        {/* ─ 메인 콘텐츠 ─ */}
         <main className="hd2__right">
-
-          {/* 병원 사진 */}
           <section className="hd2__panel">
             <div className="hd2__panelTitle">
-              <span className="hd2__panelIcon"><i className="fas fa-camera" /></span>
-              병원 사진
+              <span className="hd2__panelIcon"><i className="fas fa-camera" /></span>병원 사진
             </div>
             <div className="hd2__panelBody hd2__photoBox">
               <i className="fas fa-image hd2__placeholder-icon" />
@@ -359,15 +282,12 @@ export default function Hos_Detail() {
             </div>
           </section>
 
-          {/* 오시는 길 */}
           <section className="hd2__panel">
             <div className="hd2__panelTitle">
-              <span className="hd2__panelIcon"><i className="fas fa-map-location-dot" /></span>
-              오시는 길
+              <span className="hd2__panelIcon"><i className="fas fa-map-location-dot" /></span>오시는 길
             </div>
             <div className="hd2__addrBar">
-              <i className="fas fa-location-dot" />
-              {summary?.hoAddr ?? "주소 정보 없음"}
+              <i className="fas fa-location-dot" />{summary?.hoAddr ?? "주소 정보 없음"}
             </div>
             <div className="hd2__panelBody hd2__mapBox">
               <i className="fas fa-map-pin hd2__placeholder-icon" />
@@ -381,16 +301,12 @@ export default function Hos_Detail() {
             </div>
           </section>
 
-          {/* 리뷰 */}
           <section className="hd2__panel">
             <div className="hd2__panelTitle">
               <span className="hd2__panelIcon"><i className="fas fa-star" /></span>
               리뷰
-              {reviews.length > 0 && (
-                <span className="hd2__reviewBadge">{reviews.length}</span>
-              )}
+              {reviews.length > 0 && <span className="hd2__reviewBadge">{reviews.length}</span>}
             </div>
-
             <div className="hd2__reviews">
               {reviews.length === 0 ? (
                 <div className="hd2__emptyReviews">
@@ -398,7 +314,7 @@ export default function Hos_Detail() {
                   <p>등록된 리뷰가 없습니다</p>
                 </div>
               ) : (
-                reviews.map((rev) => (
+                reviews.map(rev => (
                   <div key={rev.rvNum} className="hd2__reviewRow">
                     <div className="hd2__revAvatar">
                       {rev.rfName
@@ -423,7 +339,6 @@ export default function Hos_Detail() {
                 ))
               )}
             </div>
-
             {reviews.length > 0 && (
               <div className="hd2__moreWrap">
                 <button className="hd2__moreBtn" onClick={() => navigate(`/hospital/${hospitalId}/reviews`)}>
@@ -432,9 +347,6 @@ export default function Hos_Detail() {
               </div>
             )}
           </section>
-          {notifOpen && activeChatRoom &&  (
-            <Chat style={{top:"auto", bottom : "0", right : "10px"}} />
-          )}
         </main>
       </div>
     </div>

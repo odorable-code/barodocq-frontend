@@ -1,25 +1,18 @@
-// =====================================================================
-// Login.js
-// =====================================================================
-
-import "../../assets/styles/Login.css";
-import { useState, useEffect, useContext } from "react";
+import "../../assets/styles/Login.css";   // ✅ 원래 경로 그대로
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext"; // 🔥 경로 유지
+import { useAuth } from "../../AuthContext"; // ✅ 원래 경로 그대로
 
 function Login() {
-  const [userId, setUserId] = useState("");
-  const [userPw, setUserPw] = useState("");
+  const [userId,    setUserId]    = useState("");
+  const [userPw,    setUserPw]    = useState("");
   const [keepLogin, setKeepLogin] = useState(false);
-  const [showPw, setShowPw] = useState(false);
+  const [showPw,    setShowPw]    = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setUser } = useAuth(); // 🔥 핵심 추가
+  const { getMeAndSetUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleNavigate = (path) => navigate(path);
-  
-  // ── 로그인 처리 ─────────────────────────────────────────────
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -34,30 +27,33 @@ function Login() {
       const response = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ userId, userPw, keepLogin }),
       });
 
       if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        console.error("로그인 실패:", response.status, errText);
         alert("아이디 또는 비밀번호를 확인하세요.");
         return;
       }
 
       const data = await response.json();
 
-      // ✅ 1️⃣ 토큰 저장
-      localStorage.setItem("accessToken", data.accessToken);
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+      }
 
-      // ✅ userNum 저장
-      localStorage.setItem("userNum", data.userNum);
+      const me = await getMeAndSetUser();
 
-      // ✅ 2️⃣ Context 상태 변경 (🔥 헤더 즉시 변경됨)
-      setUser({
-        isLoggedIn: true,
-        userId: userId,
-      });
+      if (!me) {
+        alert("사용자 정보를 불러오지 못했습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("accessToken");
+        return;
+      }
 
-      // ✅ 3️⃣ 메인으로 이동
       navigate("/");
+
     } catch (error) {
       console.error("로그인 중 에러 발생:", error);
       alert("서버와 통신 중 오류가 발생했습니다.");
@@ -93,8 +89,7 @@ function Login() {
           <form className="login-form" onSubmit={handleLogin}>
             <div className="login-field">
               <label className="login-label">
-                <i className="fas fa-user" />
-                아이디
+                <i className="fas fa-user" /> 아이디
               </label>
               <div className="login-input-wrap">
                 <i className="fas fa-user login-input-icon-left" />
@@ -111,8 +106,7 @@ function Login() {
 
             <div className="login-field">
               <label className="login-label">
-                <i className="fas fa-lock" />
-                비밀번호
+                <i className="fas fa-lock" /> 비밀번호
               </label>
               <div className="login-input-wrap">
                 <i className="fas fa-lock login-input-icon-left" />
@@ -142,49 +136,42 @@ function Login() {
                   onChange={(e) => setKeepLogin(e.target.checked)}
                   hidden
                 />
-                <div
-                  className={`login-keep-check ${keepLogin ? "checked" : ""}`}
-                >
+                <div className={`login-keep-check ${keepLogin ? "checked" : ""}`}>
                   <i className="fas fa-check" />
                 </div>
                 <span>로그인 상태 유지</span>
               </label>
             </div>
-
             <div className="circle" onClick={handleKakaoLogin}></div>
-
             <button
               type="submit"
               className="login-submit-btn"
               disabled={isLoading}
             >
-              {isLoading ? "로그인 중..." : "로그인"}
+              {isLoading ? (
+                <><i className="fas fa-spinner fa-spin" /> 로그인 중...</>
+              ) : (
+                "로그인"
+              )}
             </button>
           </form>
 
           <div className="login-footer-links">
-            <Link to="/find/id" className="login-link">
-              아이디 찾기
-            </Link>
+            <Link to="/find/id"  className="login-link">아이디 찾기</Link>
             <span className="login-link-divider">|</span>
-            <Link to="/resetPassword" className="login-link">
-              비밀번호 재설정
-            </Link>
+            <Link to="/resetPw"  className="login-link">비밀번호 재설정</Link>
             <span className="login-link-divider">|</span>
-            <Link to="/signup" className="login-link strong">
-              회원가입
-            </Link>
+            <Link to="/signup"   className="login-link strong">회원가입</Link>
           </div>
         </div>
 
         <div className="login-signup-cta">
           <span>아직 계정이 없으신가요?</span>
-          <Link to="/signup" className="login-signup-link">
-            회원가입하기
-          </Link>
+          <Link to="/signup" className="login-signup-link">회원가입하기</Link>
         </div>
       </div>
     </div>
   );
 }
+
 export default Login;

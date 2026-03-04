@@ -47,7 +47,7 @@ function UserSignup() {
   };
 
   /* ── 아이디 중복 확인 ── */
-  const distinctUserId = async () => {
+  const distinctId = async () => {
     const { userId } = formData;
     if (!userId.trim()) { alert("아이디를 입력해주세요."); return; }
 
@@ -149,14 +149,8 @@ function UserSignup() {
       });
 
       if (response.ok) {
-        const res = await response.json();
-        if(res){
-          alert("회원가입이 완료되었습니다! 로그인해 주세요.");
-          navigate("/user/login");
-        }else{
-          alert("이메일이 중복되었습니다.");
-        }
-
+        alert("회원가입이 완료되었습니다! 로그인해 주세요.");
+        navigate("/user/login");
       } else {
         alert("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
@@ -168,19 +162,18 @@ function UserSignup() {
   };
 
   const handleKakaoSignup = () => {
-  // 1. 카카오 개발자 콘솔에서 설정한 내 애플리케이션의 REST API 키
-  const REST_API_KEY = "7167ec309dc09273be6d7b09a108044c"; 
-  
-  // 2. 카카오 로그인 완료 후 돌아올 주소 (이미 만드신 KakaoCallback 주소)
-  const REDIRECT_URI = 'http://localhost:3000/kakao/callback'; 
+    // 1. 카카오 개발자 콘솔에서 설정한 내 애플리케이션의 REST API 키
+    const REST_API_KEY = "7167ec309dc09273be6d7b09a108044c"; 
+    
+    // 2. 카카오 로그인 완료 후 돌아올 주소 (이미 만드신 KakaoCallback 주소)
+    const REDIRECT_URI = 'http://localhost:3000/kakao/callback'; 
 
-  // 3. 카카오 인증 URL 생성
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+    // 3. 카카오 인증 URL 생성
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
-  // 4. 해당 주소로 이동 (카카오 로그인 창이 뜹니다)
-  window.location.href = kakaoAuthUrl;
-};
-
+    // 4. 해당 주소로 이동 (카카오 로그인 창이 뜹니다)
+    window.location.href = kakaoAuthUrl;
+  };
   return (
     <div className="su-page">
       {/* ── 배경 블롭 ── */}
@@ -244,7 +237,7 @@ function UserSignup() {
                     <button
                       type="button"
                       className={`su-check-btn ${isIdAvailable === true ? "checked" : ""}`}
-                      onClick={distinctUserId}
+                      onClick={distinctId}
                     >
                       {isIdAvailable === true
                         ? <><i className="fas fa-check" />확인완료</>

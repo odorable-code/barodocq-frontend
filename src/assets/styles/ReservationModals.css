@@ -1,0 +1,664 @@
+/* ════════════════════════════════════════════════
+   ReservationModals.css — Mint Green + Teal Theme
+════════════════════════════════════════════════ */
+.rvm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: rvm-overlay-in 0.2s ease;
+}
+@keyframes rvm-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.rvm {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(13, 148, 136, 0.2), 0 4px 16px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: rvm-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+}
+@keyframes rvm-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.rvm-toast-popup {
+  position: absolute;
+  bottom: 24px; /* 모달 하단에서 띄움 */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: 85%;
+  max-width: 320px;
+  background-color: #ffffff;
+  border-left: 4px solid #14b8a6; /* 바로닥큐 메인 테마색 (Teal) */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 16px 20px;
+  
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 100;
+  
+  /* 부드럽게 아래에서 위로 나타나는 애니메이션 */
+  animation: rvmToastSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.rvm-toast-popup-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f0fdf4;
+  color: #16a34a; /* 성공의 상징인 초록색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.rvm-toast-popup-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.rvm-toast-popup-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.rvm-toast-popup-sub {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+@keyframes rvmToastSlideUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ── 닫힘 애니메이션 ── */
+.rvm-overlay--out {
+  animation: rvm-overlay-out 0.18s ease forwards;
+  pointer-events: none; /* 닫히는 중 클릭 방지 */
+}
+.rvm-overlay--out .rvm {
+  animation: rvm-out 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes rvm-overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes rvm-out {
+  from { opacity: 1; transform: translateY(0)    scale(1);    }
+  to   { opacity: 0; transform: translateY(20px) scale(0.96); }
+}
+
+/* ── 누락된 cancelled 상태 스타일 (보너스 수정) ── */
+.rvm-status-banner--cancelled {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #b91c1c;
+}
+.rvm-status-chip--cancelled { background: #fee2e2; color: #dc2626; }
+
+
+.rvm--detail { width: 520px; }
+.rvm--change { width: 560px; }
+.rvm--cancel { width: 480px; }
+
+/* ── 헤더 ── */
+.rvm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(20, 184, 166, 0.12);
+  background: rgba(240, 253, 250, 0.6);
+  flex-shrink: 0;
+}
+.rvm-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rvm-head-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+}
+.rvm-head-icon--blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+.rvm-head-icon--red {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+.rvm-head-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+.rvm-head-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 2px 0 0;
+}
+.rvm-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #64748b;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.rvm-close:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ── 상태 배너 ── */
+.rvm-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  font-size: 13.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.rvm-status-banner--confirmed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #047857;
+}
+.rvm-status-banner--pending {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #b45309;
+}
+.rvm-status-banner span:last-child { margin-left: auto; }
+
+/* ── 본문 ── */
+.rvm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.rvm-body::-webkit-scrollbar { width: 4px; }
+.rvm-body::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.3);
+  border-radius: 4px;
+}
+
+/* ── 섹션 ── */
+.rvm-section { display: flex; flex-direction: column; gap: 10px; }
+.rvm-section-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── 병원 정보 행 ── */
+.rvm-info-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid rgba(20, 184, 166, 0.12);
+}
+.rvm-info-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.rvm-info-primary {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 3px;
+}
+.rvm-info-secondary {
+  font-size: 12.5px;
+  color: #14b8a6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+/* ── 칩 행 ── */
+.rvm-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rvm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.rvm-chip--teal  { background: #f0fdfa; color: #0d9488; border: 1px solid rgba(20,184,166,0.2); }
+.rvm-chip--orange{ background: #fff7ed; color: #f97316; border: 1px solid rgba(249,115,22,0.2); }
+.rvm-chip--gray  { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+.rvm-chip strong { font-weight: 800; color: #0d9488; }
+
+/* ── KV 그리드 ── */
+.rvm-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.rvm-kv {
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+.rvm-kv-key {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.rvm-kv-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.rvm-kv-val--purple {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border-radius: 9999px;
+  font-size: 12px;
+}
+
+/* ── 상태 칩 ── */
+.rvm-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.rvm-status-chip--confirmed { background: #d1fae5; color: #059669; }
+.rvm-status-chip--pending   { background: #fef3c7; color: #d97706; }
+
+/* ── 메모 박스 ── */
+.rvm-memo-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.6;
+}
+.rvm-memo-icon { color: #94a3b8; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+
+/* ── 현재 예약 요약 (변경 모달) ── */
+.rvm-current-box {
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.rvm-current-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 8px;
+}
+.rvm-arrow-down {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #14b8a6;
+  letter-spacing: 1px;
+}
+
+/* ── 날짜 인풋 ── */
+.rvm-date-input {
+  width: 100%;
+  padding: 11px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.rvm-date-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+/* ── 시간 슬롯 그리드 ── */
+.rvm-time-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.rvm-time-slot {
+  padding: 9px 4px;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+.rvm-time-slot:hover {
+  border-color: #14b8a6;
+  color: #14b8a6;
+  background: #f0fdfa;
+}
+.rvm-time-slot--active {
+  border-color: #14b8a6;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff;
+}
+
+/* ── textarea ── */
+.rvm-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rvm-textarea:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+/* ── 에러 / 성공 ── */
+.rvm-error {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+.rvm-success {
+  padding: 10px 14px;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ── 취소 경고 박스 ── */
+.rvm-warn-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 14px;
+}
+.rvm-warn-box-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f97316;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.rvm-warn-box h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #92400e;
+  margin: 0 0 4px;
+}
+.rvm-warn-box p {
+  font-size: 12.5px;
+  color: #b45309;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── 예약 요약 카드 ── */
+.rvm-summary-card {
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rvm-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.rvm-summary-row span:first-child { color: #94a3b8; font-weight: 600; }
+.rvm-summary-row span:last-child  { color: #0f172a; font-weight: 700; }
+
+/* ── 취소 사유 선택 ── */
+.rvm-reason-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rvm-reason-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: #fff;
+}
+.rvm-reason-item:hover { border-color: #14b8a6; background: #f0fdfa; }
+.rvm-reason-item--active {
+  border-color: #14b8a6;
+  background: #f0fdfa;
+}
+.rvm-reason-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.rvm-reason-item--active .rvm-reason-radio {
+  border-color: #14b8a6;
+  background: #14b8a6;
+}
+.rvm-reason-item--active .rvm-reason-radio::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  display: block;
+}
+.rvm-reason-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+}
+.rvm-reason-item--active .rvm-reason-text { color: #0d9488; }
+
+/* ── 푸터 ── */
+.rvm-footer {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(20, 184, 166, 0.1);
+  background: rgba(240, 253, 250, 0.4);
+  flex-shrink: 0;
+}
+.rvm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s;
+  flex: 1;
+}
+.rvm-btn--outline {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  color: #475569;
+}
+.rvm-btn--outline:hover {
+  border-color: #14b8a6;
+  color: #0d9488;
+  background: #f0fdfa;
+  transform: translateY(-1px);
+}
+.rvm-btn--outline-red {
+  background: #fef2f2;
+  border: 2px solid #fca5a5;
+  color: #dc2626;
+}
+.rvm-btn--outline-red:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+.rvm-btn--fill {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+}
+.rvm-btn--fill:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.45);
+}
+.rvm-btn--fill-red {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+.rvm-btn--fill-red:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
+.rvm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+.rvm-btn-spinner { animation: rvm-spin 0.8s linear infinite; }
+@keyframes rvm-spin { to { transform: rotate(360deg); } }
+
+/* ── 반응형 ── */
+@media (max-width: 600px) {
+  .rvm--detail,
+  .rvm--change,
+  .rvm--cancel {
+    width: calc(100vw - 24px);
+  }
+  .rvm-time-grid { grid-template-columns: repeat(4, 1fr); }
+  .rvm-grid2 { grid-template-columns: 1fr; }
+}
