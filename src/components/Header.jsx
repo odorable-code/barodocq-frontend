@@ -737,6 +737,7 @@ const Header = ({ onOpenReservation }) => {
                         ? new Date(msg.timestamp).toLocaleTimeString("ko-KR", {
                             hour: "2-digit",
                             minute: "2-digit",
+                            hour12: false,
                           })
                         : msg.time || ""}
                     </span>
