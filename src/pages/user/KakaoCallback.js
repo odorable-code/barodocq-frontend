@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 
 // 사용자가 카카오 로그인을 마치고 다시 사이트로 돌아왔을 때 실행. url의 인가 코드를 백엔드에 전달.
@@ -12,7 +12,7 @@ function KakaoCallback() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-    
+    const redirectUri = "http://localhost:3000/kakao/callback"; // UserSignup에서 설정한 REDIRECT_URI와 일치해야 함
     const sendCodeToBackend = async (kakaoCode) => {
       // 1. 이미 호출 중이라면 중단
       if (hasCalled.current) return;
@@ -21,7 +21,7 @@ function KakaoCallback() {
       try {
         console.log("서버로 전송할 인가 코드:", kakaoCode);
 
-        const data = await getKakaoUserInfo(kakaoCode);
+        const data = await getKakaoUserInfo(kakaoCode, redirectUri);
         
         console.log("프론트. 카카오 소셜 로그인 백엔드 응답 데이터:", data);
 
@@ -48,7 +48,7 @@ function KakaoCallback() {
   );
 }
 
-function KakaoCallbackAdmin() {
+function KakaoSignupCallback() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const hasCalled = useRef(false); // 중복 호출 방지 플래그
@@ -57,28 +57,31 @@ function KakaoCallbackAdmin() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const redirectUri = "http://localhost:3000/kakao/signup/callback"; // UserSignup에서 설정한 REDIRECT_URI와 일치해야 함
 
-    const sendCodeToBackend = async (kakaoCode) => {
+    const sendCodeToBackend = async (code) => {
       // 1. 이미 호출 중이라면 중단
       if (hasCalled.current) return;
       hasCalled.current = true;
 
       try {
-        const data = await getKakaoUserInfo(code);
+        const data = await getKakaoUserInfo(code, redirectUri);
             
-        console.log("프론트. 카카오 소셜 로그인 백엔드 응답 데이터:", data);
+          console.log("프론트. 카카오 소셜 로그인 백엔드 응답 데이터:", data);
 
-        /** [추가/수정] 로그 확인 결과: 토큰은 data.token에, 유저는 data.user에 있습니다. */
-        const user = data.user;
-        const userInfo = data.userInfo;
+          /** [추가/수정] 로그 확인 결과: 토큰은 data.token에, 유저는 data.user에 있습니다. */
+          const user = data.user;
+          const userInfo = data.userInfo;
 
-        if(user && user.usaNum > 0){
-          alert("이미 가입된 사용자입니다.");
-          login(data, setUser, navigate); // 바로 로그인 처리
-          await getMeAndSetUser(); // 사용자 정보 업데이트
-          return;
-          //navigate("/login");
-        }
+          if(user && user.usaNum > 0){
+            alert("이미 가입된 사용자입니다.");
+            if(window.confirm("로그인 하시겠습니까?")){
+              login(data, setUser, navigate); // 바로 로그인 처리
+              await getMeAndSetUser(); // 사용자 정보 업데이트
+            }
+            return;
+            //navigate("/login");
+          }
         //있어서는 안되는 상황
         // if(userInfo == null){
         //   // alert("카카오 로그인 성공");
@@ -86,36 +89,32 @@ function KakaoCallbackAdmin() {
         //   return;
         // }
 
-        const confirmed = window.confirm("회원가입을 진행하시겠습니까?");
-
-        if(!user && !userInfo){
-          //회원가입 안함 => 어느페이지로 보낼건지 결정
-
+          const confirmed = window.confirm("회원가입을 진행하시겠습니까?");
+          console.log(userInfo);
           if(!confirmed){
             navigate("/user/signup");
-            //return;
+            return;
           }
+          if(userInfo){
+            //회원가입 안함 => 어느페이지로 보낼건지 결정
+            console.log("회원가입 진행할 사용자 정보:", userInfo);
+            const response = await fetch("/api/v1/auth/kakao/signup", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(userInfo)
+            });
 
-          if (confirmed) {
-          // 서버에 userInfo 보내서 회원가입 진행
-          const response = await fetch("/api/v1/auth/kakao/signup", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userInfo)
-          });
-
-        if (response.ok) {
-          const signupData = await response.json();
-          alert("회원가입 성공!");
-          login(signupData, setUser, navigate);
-        }
-        } else {
-          navigate("/login");
-        }
+            if (response.ok) {
+              const signupData = await response.json();
+              alert("회원가입 성공!");
+              login(signupData, setUser, navigate);
+              await getMeAndSetUser();
+            }
+            else {
+              navigate("/login");
+            }
           
           }
-          //회원가입성공후서버에서보낸데이터
-          login(data, setUser, navigate);
         } catch (err) {
           console.error("sendCodeToBackend 오류 발생:", err);
           alert("로그인 처리 중 문제가 발생했습니다.");
@@ -136,9 +135,9 @@ function KakaoCallbackAdmin() {
   );
 }
 
-async function getKakaoUserInfo(kakaoCode) {
+async function getKakaoUserInfo(kakaoCode, redirectUri) {
   // 백엔드 API 호출
-  const response = await fetch(`/api/v1/auth/kakao?code=${kakaoCode}`, {
+  const response = await fetch(`/api/v1/auth/kakao?code=${kakaoCode}&redirect_uri=${redirectUri}`, {
     method: "GET",
   });
 
@@ -185,4 +184,4 @@ async function login(data, setUser, navigate, ) {
   }
   return true;
 }
-export {KakaoCallback, KakaoCallbackAdmin};
+export {KakaoCallback, KakaoSignupCallback};

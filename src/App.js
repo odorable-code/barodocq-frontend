@@ -47,7 +47,7 @@ import Login         from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
-import {KakaoCallback, KakaoCallbackAdmin} from "./pages/user/KakaoCallback";
+import {KakaoCallback, KakaoSignupCallback} from "./pages/user/KakaoCallback";
 
 
 /* ── 아이콘 ── */
@@ -142,7 +142,7 @@ function App() {
               <Route path="resetPw" element={<ResetPassword />} />
 
               <Route path="/kakao/callback" element={<KakaoCallback />} />
-              <Route path="/kakao/callback/admin" element={<KakaoCallbackAdmin />} />
+              <Route path="/kakao/signup/callback" element={<KakaoSignupCallback />} />
               {/* Layout 안 나머지 → 메인으로 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

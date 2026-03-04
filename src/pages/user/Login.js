@@ -64,7 +64,7 @@ function Login() {
   //http://localhost:8080/api/v1/auth/kakao
   //http://localhost:3000/kakao/callback
   //http://localhost:3000/api/v1/auth/kakao
-  const REST_API_KEY = '7167ec309dc09273be6d7b09a108044c';
+  const REST_API_KEY = '8b93cc51be9307b47fbf3b5d6883de0d';
   const REDIRECT_URI = 'http://localhost:3000/kakao/callback';
   const KAKAO_AUTH_URL =`https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
 
