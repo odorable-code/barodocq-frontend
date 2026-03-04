@@ -158,8 +158,8 @@ function Login() {
 
           <div className="login-footer-links">
             <Link to="/find/id"  className="login-link">아이디 찾기</Link>
-            <span className="login-link-divider">|</span>
-            <Link to="/resetPw"  className="login-link">비밀번호 재설정</Link>
+            {/* <span className="login-link-divider">|</span> */}
+            {/* <Link to="/resetPw"  className="login-link">비밀번호 재설정</Link> */}
             <span className="login-link-divider">|</span>
             <Link to="/signup"   className="login-link strong">회원가입</Link>
           </div>

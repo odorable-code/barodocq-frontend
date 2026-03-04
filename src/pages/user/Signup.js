@@ -99,11 +99,11 @@ function Signup() {
         </Link>
 
         {/* 🔥 추가한 테스트 링크들 */}
-        <div style={{ marginTop: "40px", textAlign: "center" }}>
+        {/* <div style={{ marginTop: "40px", textAlign: "center" }}>
           <Link to="/chat">채팅</Link>
           <br />
           <Link to="/chat/list">채팅목록</Link>
-        </div>
+        </div> */}
 
       </div>
     </div>
