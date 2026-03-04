@@ -6,7 +6,7 @@ import ReservationModal from "../components/ReservationModal";
 // ✅ 채팅방 개설을 위해 Socket Context 추가
 import { useSocket } from "../WebSocketContext";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://3.38.49.151:8080";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 /* ── 유틸리티 함수 ── */
 const toBool = (v) => {

@@ -83,7 +83,7 @@ function ReservationAndReview() {
   // ─────────────────────────────────────────────────
   const CreateReservation = async () => {
     try {
-      const response = await authFetch("http://3.38.49.151:8080/api/v1/reservations", {
+      const response = await authFetch("http://localhost:8080/api/v1/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,7 +146,7 @@ function ReservationAndReview() {
     files.forEach((file) => { if (file) formData.append("files", file); });
 
     try {
-      const res  = await authFetch("http://3.38.49.151:8080/api/v1/reviews", {
+      const res  = await authFetch("http://localhost:8080/api/v1/reviews", {
         method: "POST",
         body: formData,
       });
@@ -162,7 +162,7 @@ function ReservationAndReview() {
     useEffect(() => {
       const fetchMyReservations = async () => {
         try {
-          const res = await authFetch("http://3.38.49.151:8080/api/v1/reviews/my");
+          const res = await authFetch("http://localhost:8080/api/v1/reviews/my");
           const data = await res.json();
           setMyReservations(data);
         } catch (err) {
