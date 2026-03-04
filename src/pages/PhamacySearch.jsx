@@ -172,7 +172,7 @@ export default function PharmacySearch() {
         setIsLoading(true);
         setError(null);
 
-        const res = await fetch("http://localhost:8080/api/v1/pharmacy/cards");
+        const res = await fetch("http://3.38.49.151:8080/api/v1/pharmacy/cards");
         if (!res.ok) throw new Error(`API 실패: ${res.status}`);
 
         const data = await res.json();

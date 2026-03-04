@@ -11,7 +11,7 @@ function HospitalAdminLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:8080/api/v1/auth/admin/login', { // ✅ 8080 확인
+      const res = await fetch('http://3.38.49.151:8080/api/v1/auth/admin/login', { // ✅ 8080 확인
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',   // ✅ 필수

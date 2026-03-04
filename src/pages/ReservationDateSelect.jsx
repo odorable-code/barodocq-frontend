@@ -101,7 +101,7 @@ function ReservationDateSelect() {
   };
 
   // 실제 API URL
-  const API_URL = "http://localhost:8080/api/v1/reservations";
+  const API_URL = "http://3.38.49.151:8080/api/v1/reservations";
 
   try {
     // 백엔드 호출 시도

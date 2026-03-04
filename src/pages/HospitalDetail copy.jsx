@@ -4,7 +4,7 @@ import { useSocket }                    from "../WebSocketContext";
 import { useAuth }                      from "../AuthContext";
 import "../assets/styles/HospitalDetail.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://3.38.49.151:8080";
 
 const toBool = (v) => {
   if (v === true || v === false) return v;
