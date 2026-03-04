@@ -24,7 +24,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+      const response = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,6 +61,16 @@ function Login() {
       setIsLoading(false);
     }
   };
+  //http://localhost:8080/api/v1/auth/kakao
+  //http://localhost:3000/kakao/callback
+  //http://localhost:3000/api/v1/auth/kakao
+  const REST_API_KEY = '7167ec309dc09273be6d7b09a108044c';
+  const REDIRECT_URI = 'http://localhost:3000/kakao/callback';
+  const KAKAO_AUTH_URL =`https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+
+  const handleKakaoLogin = () => { 
+    window.location.href = KAKAO_AUTH_URL; //사용자를 카카오 로그인 창으로 보내는 코드
+  }; 
 
   return (
     <div className="login-page">
@@ -132,7 +142,7 @@ function Login() {
                 <span>로그인 상태 유지</span>
               </label>
             </div>
-
+            <div className="circle" onClick={handleKakaoLogin}></div>
             <button
               type="submit"
               className="login-submit-btn"

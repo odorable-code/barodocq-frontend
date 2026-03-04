@@ -161,6 +161,19 @@ function UserSignup() {
     }
   };
 
+  const handleKakaoSignup = () => {
+    // 1. 카카오 개발자 콘솔에서 설정한 내 애플리케이션의 REST API 키
+    const REST_API_KEY = "7167ec309dc09273be6d7b09a108044c"; 
+    
+    // 2. 카카오 로그인 완료 후 돌아올 주소 (이미 만드신 KakaoCallback 주소)
+    const REDIRECT_URI = 'http://localhost:3000/kakao/callback'; 
+
+    // 3. 카카오 인증 URL 생성
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+    // 4. 해당 주소로 이동 (카카오 로그인 창이 뜹니다)
+    window.location.href = kakaoAuthUrl;
+  };
   return (
     <div className="su-page">
       {/* ── 배경 블롭 ── */}
@@ -293,6 +306,10 @@ function UserSignup() {
                 </button>
               </div>
             )}
+
+            <br />
+
+            <div className="circle" onClick={handleKakaoSignup}></div>
 
             {/* ════════ STEP 2 ════════ */}
             {currentStep === 2 && (
@@ -507,6 +524,15 @@ function UserSignup() {
               로그인하기 <i className="fas fa-arrow-right" />
             </Link>
           </div>
+
+          {/* ── 일반 사용자 회원가입 안내 ── */}
+          <div className="as-user-cta">
+            <span>병원 관리자로 가입하시나요?</span>
+            <Link to="/admin/signup" className="as-user-link">
+              병원 관리자 회원가입 <i className="fas fa-arrow-right" />
+            </Link>
+          </div>
+
         </div>
       </div>
     </div>

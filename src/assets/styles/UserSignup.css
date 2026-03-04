@@ -619,6 +619,22 @@
 }
 .su-login-link i { font-size: 0.75rem; }
 
+.circle{
+  width: 50px; height: 50px;
+  border-radius: 100px;
+  background-color: yellow;
+  margin: auto;
+  cursor: pointer;
+}
+
+.as-user-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 /* ════════════════════════════════
    반응형
 ════════════════════════════════ */
