@@ -750,7 +750,7 @@ const MyPage = () => {
 ];
   const handleCancelReservation = (r) => { setCancelTarget(r); openModal("cancelConfirm"); };
   const confirmCancel = () => {
-    setReservations(prev => prev.filter(r => r.reNum !== cancelTarget?.reNum));
+    cancelTarget.reStatus = "예약취소"; 
     (async () => {
       await authFetch(`/api/v1/reservations/${cancelTarget.reNum}/cancel`, {
         method: "PUT"
