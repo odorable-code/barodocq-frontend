@@ -306,7 +306,6 @@ const EditReviewModal = ({ isOpen, review, onClose, onSave }) => {
 /* 채팅 */
 const ChatModal = ({ isOpen, onClose }) => {
   const [msg, setMsg] = useState("");
-  const scrollRef = useRef(null);
   const { 
     activeChatRoom, 
     setActiveChatRoom, 
@@ -316,25 +315,11 @@ const ChatModal = ({ isOpen, onClose }) => {
     chatEndRef        // 소켓 컨텍스트에 이미 선언된 ref 활용 가능
   } = useSocket();
   const currentChatHistory = activeChatRoom ? messages[activeChatRoom.id] || [] : [];
-  useEffect(() => {
-    if (scrollRef.current) {
-      // scrollTop(현재 스크롤 위치)을 scrollHeight(전체 높이)로 설정
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, activeChatRoom]); // 채팅방이 바뀌거나 메시지가 추가될 때 실행
   const send = () => {
     if (!msg.trim()) return;
-    // const newMsg = { id: Date.now(), from: "user", text: msg, time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false}) };
-    // setMessages(prev => [...prev, newMsg]);
     sendMessage(msg);
     setMsg("");
   };
-
-  
-  async function fetchChatHistory(roomId) {
-    const resp = await authFetch(`/api/chat/rooms/${roomId}/messages`);
-    // if (resp.ok) { const data = await resp.json(); setMessages(data); return true; }
-  }
   
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="채팅" size="lg" icon="comment-dots" iconBg="linear-gradient(135deg,#14b8a6,#0d9488)">
@@ -361,7 +346,7 @@ const ChatModal = ({ isOpen, onClose }) => {
           <button className="mp-back-btn" onClick={() => setActiveChatRoom(null)}>
             <i className="fas fa-arrow-left" />{activeChatRoom.hospitalName} 
           </button>
-          <div className="mp-chat-messages" ref={scrollRef} style={{ overflowY: 'auto' }}>
+          <div className="mp-chat-messages">
             {currentChatHistory.map(m => (
               <div key={m.id} className={`mp-chat-bubble-wrap ${m.from === "user" ? "me" : "them"}`}>
                 <div className="mp-chat-bubble">{m.text}</div>
@@ -376,7 +361,7 @@ const ChatModal = ({ isOpen, onClose }) => {
               value={msg}
               onChange={e => setMsg(e.target.value)}
               placeholder="메시지를 입력하세요..."
-              onKeyDown={e => e.key === "Enter" && send()}
+              onKeyPress={e => e.key === "Enter" && send()}
             />
             <button className="mp-btn mp-btn-icon" onClick={send}>
               <i className="fas fa-paper-plane" />
