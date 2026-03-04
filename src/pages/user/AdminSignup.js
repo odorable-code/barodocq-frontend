@@ -15,7 +15,7 @@ function AdminSignup() {
     adminPhone: "",     // 병원 연락처
     adminEmail: "",     // 병원 이메일
     adminAddr: "",      // 병원 주소
-    hoName: ""          // 병원 이름
+    hospitalName: "",          // 병원 이름
   });
 
   // ── UI 상태 ──────────────────────────────────────────────────────
@@ -24,6 +24,9 @@ function AdminSignup() {
     locationAgreed: false,
   });
   const [isIdAvailable, setIsIdAvailable]   = useState(null);  // null | true | false
+  const [isEmailAvailable, setIsEmailAvailable] = useState(null);  // null | true | false
+  const [isBusinessNumAvailable, setIsBusinessNumAvailable] = useState(null);  // null | true | false
+  const [isHospitalNameAvailable, setIsHospitalNameAvailable] = useState(null);  // null | true | false
   const [pwMatch, setPwMatch]               = useState(null);  // null | true | false
   const [showPw, setShowPw]                 = useState(false); // 비밀번호 보기 토글
   const [showPw2, setShowPw2]               = useState(false); // 비밀번호 확인 보기 토글
@@ -44,6 +47,9 @@ function AdminSignup() {
 
     // 아이디 수정 시 중복확인 초기화
     if (name === "adminId") setIsIdAvailable(null);
+    if (name === "adminEmail") setIsEmailAvailable(null);
+    if (name === "businessNum") setIsBusinessNumAvailable(null);
+    if (name === "hospitalName") setIsHospitalNameAvailable(null);
 
     // 비밀번호 일치 여부 실시간 체크
     if (name === "adminPw" || name === "adminPw2") {
@@ -77,8 +83,9 @@ function AdminSignup() {
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
-          alert("이미 사용중인 아이디입니다.");
+          alert("이미 사용중인 아이디입니다.");        
           setIsIdAvailable(false);
+          return true;
         } else {
           setIsIdAvailable(true);
         }
@@ -94,17 +101,18 @@ function AdminSignup() {
   // ㅡㅡ이메일 중복 확인
   const distinctEmail = async () => {
     const { adminEmail } = formData;
-    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+    if (!adminEmail.trim()) { alert("이메일을 입력해주세요."); return; }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
+      const response = await fetch(`/api/v1/check-adminEmail?adminEmail=${adminEmail}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
           alert("이미 사용중인 이메일입니다.");
-          setIsIdAvailable(false);
+          // setIsEmailAvailable(false);
+          return true;
         } else {
-          setIsIdAvailable(true);
+          // setIsEmailAvailable(true);
         }
       } else {
         alert("서버 응답 오류가 발생했습니다.");
@@ -119,17 +127,18 @@ function AdminSignup() {
 
 const distinctBusinessNum = async () => {
     const { businessNum } = formData;
-    if (!businessNum.trim()) { alert("아이디를 입력해주세요."); return; }
+    if (!businessNum.trim()) { alert("사업자등록번호를 입력해주세요."); return; }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${businessNum}`);
+      const response = await fetch(`/api/v1/check-businessNum?businessNum=${businessNum}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
-          alert("이미 사용중인 이메일입니다.");
-          setIsIdAvailable(false);
+          alert("이미 사용중인 사업자등록번호입니다.");      
+          // setIsBusinessNumAvailable(false);
+          return true;
         } else {
-          setIsIdAvailable(true);
+          // setIsBusinessNumAvailable(true);
         }
       } else {
         alert("서버 응답 오류가 발생했습니다.");
@@ -142,19 +151,20 @@ const distinctBusinessNum = async () => {
 
   // ㅡㅡ병원이름 중복 확인
 
-  const distinctHoName = async () => {
-    const { adminEmail } = formData;
-    if (!adminEmail.trim()) { alert("아이디를 입력해주세요."); return; }
+  const distinctHospitalName = async () => {
+    const { hospitalName } = formData;
+    if (!hospitalName.trim()) { alert("병원명을 입력해주세요."); return ; }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${adminEmail}`);
+      const response = await fetch(`/api/v1/check-hospitalName?hospitalName=${hospitalName}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
-          alert("이미 사용중인 이메일입니다.");
-          setIsIdAvailable(false);
+          alert("이미 사용중인 병원명입니다.");         
+          // setIsHospitalNameAvailable(false);
+          return true;
         } else {
-          setIsIdAvailable(true);
+          // setIsHospitalNameAvailable(true);
         }
       } else {
         alert("서버 응답 오류가 발생했습니다.");
@@ -186,14 +196,15 @@ const distinctBusinessNum = async () => {
   // /api/v1/auth/admin/signup 으로 POST 요청 (UserSignup과 동일한 엔드포인트)
   const signupButton = async (e) => {
     e.preventDefault();
-    const { adminPhone, adminName, adminAddr, adminEmail, hoName, businessNum } = formData;
+    const { adminPhone, adminName, adminAddr, adminEmail, hospitalName, businessNum } = formData;
 
     // 필수 항목 검사
     if (!adminName.trim())      { alert("담당자명을 입력해주세요."); return; }
-    if (!hoName.trim())   { alert("병원명을 입력해주세요."); return; }
+    if (!hospitalName.trim())   { alert("병원명을 입력해주세요."); return; }
     if (businessNum.length !== 10) { alert("사업자등록번호는 10자리 숫자여야 합니다."); return; }
     if (!adminEmail.trim())     { alert("병원 이메일을 입력해주세요."); return; }
     if (!adminAddr.trim())      { alert("병원 주소를 입력해주세요."); return; }
+    
 
     const phoneRegex = /^010\d{7,8}$/;
     if (!phoneRegex.test(adminPhone)) {
@@ -208,8 +219,31 @@ const distinctBusinessNum = async () => {
     }
 
     setIsLoading(true);
-    const submitData = { ...formData, termAgreement: true };
+
+    //
+    if(!isIdAvailable){
+      alert("아이디 중복 확인을 해주세요.");
+      return;
+    }
+    console.log("아이디 중복 확인 통과");
+    if(await distinctHospitalName()){
+      setIsLoading(false);
+      return;
+    }
+
+    if(await distinctBusinessNum()){
+      setIsLoading(false);
+      return;
+    }
+
+    if(await distinctEmail()){
+      setIsLoading(false);
+      return;
+    }
+    const submitData = { ...formData, termAgreement: true , hoName : formData.hospitalName};
     console.log(submitData);
+
+
     try {
       const response = await fetch("/api/v1/auth/admin/signup", {
         method: "POST",
@@ -218,8 +252,12 @@ const distinctBusinessNum = async () => {
       });
 
       if (response.ok) {
-        alert("회원가입이 완료되었습니다! 로그인해 주세요.");
-        navigate("/user/login");
+        const data = await response.json();
+        if(data){
+          alert("회원가입이 완료되었습니다! 로그인해 주세요.");
+          navigate("/user/login");
+
+        }
       } else {
         alert("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
@@ -441,9 +479,9 @@ const distinctBusinessNum = async () => {
                     </label>
                     <div className="as-input-wrap">
                       <input
-                        name="hoName"
+                        name="hospitalName"
                         placeholder="병원명을 입력해주세요"
-                        value={formData.hoName}
+                        value={formData.hospitalName}
                         onChange={handleChange}
                       />
                     </div>
