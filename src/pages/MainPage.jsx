@@ -241,7 +241,7 @@ const MainPage = () => {
   const [selectedHospital, setSelectedHospital] = useState(null);
 
   // superadmin 여부 확인 로직
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -252,8 +252,8 @@ const MainPage = () => {
         const payload = JSON.parse(atob(base64Payload));
         console.log(payload.role)
         // 권한이 superadmin인지 확인 (DB의 ENUM 값과 일치해야 함)
-        if (payload.role === "SUPERADMIN") {
-          setIsSuperAdmin(true);
+        if (payload.role === "SUPERADMIN"||payload.role === "ADMIN") {
+          setIsAdmin(true);
         }
       } catch (e) {
         console.error("토큰 파싱 실패:", e);
@@ -345,7 +345,7 @@ const MainPage = () => {
   return (
     <div className="main-container-s2">
       {/* 관리자 퀵 접속 버튼 (SuperAdmin 전용) */}
-      {isSuperAdmin && (
+      {isAdmin && (
         <div className="admin-quick-access" style={{
           position: 'absolute',
           top: '20px',
