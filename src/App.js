@@ -55,6 +55,7 @@ import {KakaoCallback, KakaoSignupCallback} from "./pages/user/KakaoCallback";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import AdminHospitals from "./admin/AdminHospitals";
 import AdminReviews from "./admin/AdminReviews";
+import AdminQnA from "./admin/AdminQnA";
 
 /* ─────────────────────────────────────
    페이지 이동 시 스크롤 최상단으로
@@ -160,6 +161,7 @@ function App() {
               <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
               <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
+              <Route path="posts/qna"    element={<AdminQnA />} />
             </Route>
 
             
