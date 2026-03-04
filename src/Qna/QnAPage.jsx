@@ -37,7 +37,7 @@ const canWriteQnA = isLoggedIn && userRole === "USER"; // USER 테이블만 허�
     try {
       // 서버에서 정렬, 검색, 페이지 처리 가능
       const resp = await authFetch(
-        `http://3.38.49.151:8080/api/v1/qnas?sort=${sort}`
+        `http://localhost:8080/api/v1/qnas?sort=${sort}`
       );
       const data = await resp.json();
       const mappedData = data.map(q => ({
@@ -66,7 +66,7 @@ const canWriteQnA = isLoggedIn && userRole === "USER"; // USER 테이블만 허�
     if (!token) return;
 
     try {
-      const resp = await fetch(`http://3.38.49.151:8080/api/v1/qnas/me`, {
+      const resp = await fetch(`http://localhost:8080/api/v1/qnas/me`, {
         method: "GET", // GET으로 변경
         headers: {
           "Authorization": `Bearer ${token}`, // 토큰 넣기
@@ -91,7 +91,7 @@ const canWriteQnA = isLoggedIn && userRole === "USER"; // USER 테이블만 허�
   setSelectedQnA(qna); // 모달 열기
 
   try {
-    await authFetch(`http://3.38.49.151:8080/api/v1/qnas/${qna.id}/view`, {
+    await authFetch(`http://localhost:8080/api/v1/qnas/${qna.id}/view`, {
       method: "POST", // 일부만 업데이트할 때 PATCH 사용
     });
 
@@ -113,7 +113,7 @@ const canWriteQnA = isLoggedIn && userRole === "USER"; // USER 테이블만 허�
 
     try {
       const token = localStorage.getItem("accessToken");
-      const resp = await fetch(`http://3.38.49.151:8080/api/v1/qnas/${id}`, {
+      const resp = await fetch(`http://localhost:8080/api/v1/qnas/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` },
       });
@@ -326,7 +326,7 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
 
     try {
       const token = localStorage.getItem("accessToken");
-      const resp = await fetch(`http://3.38.49.151:8080/api/v1/qnas/${qna.id}/answer`, {
+      const resp = await fetch(`http://localhost:8080/api/v1/qnas/${qna.id}/answer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -357,7 +357,7 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
   const token = localStorage.getItem("accessToken");
 
   const resp = await fetch(
-    `http://3.38.49.151:8080/api/v1/qnas/${qna.id}/answer`,
+    `http://localhost:8080/api/v1/qnas/${qna.id}/answer`,
     {
       method: "PUT",
       headers: {

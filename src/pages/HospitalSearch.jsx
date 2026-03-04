@@ -28,7 +28,7 @@ const FILTER_TAGS = [
 ];
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://3.38.49.151:8080";
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 /* ─────────────────────────────────────────
    util

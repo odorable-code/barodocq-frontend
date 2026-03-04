@@ -55,7 +55,7 @@ const ReviewCard = ({ review, currentUser, navigate, deletePost }) => {
         <div className="rv-card__thumb-wrap">
           <img
             className="rv-card__thumb"
-            src={`http://3.38.49.151:8080${review.files[0].rfPath}`}
+            src={`http://localhost:8080${review.files[0].rfPath}`}
             alt="review"
           />
         </div>
@@ -116,7 +116,7 @@ function HospitalReviews() {
     const getReviews = async () => {
       if (!token) return;
       try {
-        const response = await authFetch("http://3.38.49.151:8080/api/v1/reviews");
+        const response = await authFetch("http://localhost:8080/api/v1/reviews");
         const data = await response.json(); // 여기서 JSON으로 변환
         console.log("reviews from server (JSON):", data);
         setReviews(data);
@@ -130,7 +130,7 @@ function HospitalReviews() {
   const deletePost = async (rvNum) => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
-      await authFetch(`http://3.38.49.151:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
+      await authFetch(`http://localhost:8080/api/v1/reviews/${rvNum}`, { method: "DELETE" });
       alert("삭제 성공!");
       setReviews((prev) =>
         prev.map((r) => (r.rvNum === rvNum ? { ...r, rvDeletedYn: 1 } : r))
@@ -145,7 +145,7 @@ function HospitalReviews() {
 
       // const response = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
       // const data = await response.json();
-      const res = await authFetch(`http://3.38.49.151:8080/api/v1/reviews?sort=${type}`);
+      const res = await authFetch(`http://localhost:8080/api/v1/reviews?sort=${type}`);
       // ✅ 버그 수정
       // sortReviews에서 JSON 변환 누락 const data = await authFetch(...);
       //setReviews(data);  →  const data = await res.json(); 로 수정

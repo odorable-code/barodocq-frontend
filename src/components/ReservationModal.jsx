@@ -3,7 +3,7 @@ import "../assets/styles/ReservationModal.css";
 import axios from "axios";
 import { useAuth } from "../AuthContext"; // ✅ useAuth만 import
 
-const API = process.env.REACT_APP_API_BASE_URL || "http://3.38.49.151:8080";
+const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 

@@ -43,7 +43,7 @@ const QnAWritePage = () => {
     }
     try {
       const response = await fetch(
-        `http://3.38.49.151:8080/api/v1/hospitals/search?keyword=${keyword}`
+        `http://localhost:8080/api/v1/hospitals/search?keyword=${keyword}`
       );
       const data = await response.json();
       setHospitalList(data);
@@ -84,7 +84,7 @@ const QnAWritePage = () => {
   };
 
     try {
-      await authFetch("http://3.38.49.151:8080/api/v1/qnawrite", {
+      await authFetch("http://localhost:8080/api/v1/qnawrite", {
         method: "POST",
         body: JSON.stringify(qnaData),
       });
