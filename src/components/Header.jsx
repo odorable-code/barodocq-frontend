@@ -47,7 +47,6 @@ const NAV_ITEMS = [
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
   { path: "/mypage", label: "마이페이지", icon: faUser },
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
-  { path: "/community", label: "커뮤니티", icon: faComments },
   { path: "/qna", label: "Q&A", icon: faCircleQuestion },
 ];
 
