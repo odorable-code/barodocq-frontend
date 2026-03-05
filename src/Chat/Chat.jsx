@@ -117,16 +117,14 @@ const Chat = ({
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
         <div className="hdr__cw-avatar">
-          {/* 🌟 관리자면 환자 이름 첫 글자, 아니면 기존 병원 아바타 */}
           {isAdmin
-            ? activeChatRoom?.patientName?.substring(0, 1)
+            ? (activeChatRoom?.patientName || activeChatRoom?.patientId || "?").toString().substring(0, 1).toUpperCase()
             : activeChatRoom?.avatar}
         </div>
         <div className="hdr__cw-hinfo">
           <span className="hdr__cw-hname">
-            {/* 🌟 관리자면 환자 이름, 아니면 병원 이름 */}
             {isAdmin
-              ? activeChatRoom?.patientName
+              ? (activeChatRoom?.patientName || `환자 ${activeChatRoom?.patientId}`)
               : hospitalName || activeChatRoom?.hospitalName}
           </span>
           <span className="hdr__cw-hdept">{activeChatRoom?.dept}</span>
