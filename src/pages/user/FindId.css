@@ -80,7 +80,7 @@
 /* 입력창 아래 구분선 */
 .line2 {
   width: 100%;
-  max-width: 500px;
+  /* max-width: 500px; */
   height: 1px;
   background-color: #cccccc;
   margin-bottom: 20px;
@@ -107,7 +107,7 @@
   width: 100%;
   max-width: 500px;
   padding: 18px;
-  background-color: #333333;
+  background-color: #0d9488;
   color: #ffffff;
   text-align: center;
   font-size: 18px;

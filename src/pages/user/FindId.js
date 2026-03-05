@@ -21,13 +21,14 @@ function FindId(){
         try {
             const response = await fetch("/api/v1/users/findId", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" }, 
                 body: JSON.stringify(findIdData)
             });
             if (response.ok) {
                 const foundId = await response.text();
-                alert("일치하는 아이디를 찾았습니다.", foundId);
+                alert("일치하는 아이디를 찾았습니다." + foundId);
                 //navigate("/main", { state: { userId: findIdData.userId } });
+                console.log(findIdData);
             } else {
                 alert("일치하는 아이디가 없습니다.");
             }
