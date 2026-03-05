@@ -1230,14 +1230,11 @@ const MyPage = () => {
 
   reservations.forEach(async (r) => {
     try {
+      const unvailableState = ['예약거절', '예약취소', '진료완료']
+      if (unvailableState.includes(r.reStatus)) { return; }
       const resp = await authFetch(`/api/v1/reservations/finished/${r.reNum}`);
       const isFinished = await resp.json();
-      if (
-        isFinished &&
-        !["예약거절", "예약취소", "진료완료"].includes(r.reStatus)
-      ) {
-        r.reStatus = "진료완료";
-      }
+      if (isFinished) { r.reStatus = "진료완료"; }
     } catch (err) {
       console.error(err);
     }
