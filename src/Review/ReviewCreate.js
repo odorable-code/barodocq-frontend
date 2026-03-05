@@ -101,6 +101,7 @@ function ReservationAndReview() {
       if (response.ok) {
         const text = await response.text();
         alert(text);
+        await fetchMyReservations();
         setStep(2); // ✅ 예약 성공 → 후기 작성 단계로 전환
       } else {
         alert("예약 등록 실패");
@@ -159,17 +160,17 @@ function ReservationAndReview() {
     }
   };
 
-    useEffect(() => {
-      const fetchMyReservations = async () => {
-        try {
-          const res = await authFetch("http://localhost:8080/api/v1/reviews/my");
-          const data = await res.json();
-          setMyReservations(data);
-        } catch (err) {
-          console.error(err);
-        }
-      };
+  const fetchMyReservations = async () => {
+    try {
+      const res = await authFetch("http://localhost:8080/api/v1/reviews/my");
+      const data = await res.json();
+      setMyReservations(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+    useEffect(() => {
       fetchMyReservations();
   }, []);
 
