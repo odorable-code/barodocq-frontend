@@ -21,8 +21,7 @@ function UserSignup() {
   });
 
   const [userAlert, setUserAlert] = useState({
-    termsAgreed: false,
-    locationAgreed: false,
+    alertOk: 1
   });
 
   const [isIdAvailable, setIsIdAvailable] = useState(null); // null | true | false
@@ -139,7 +138,7 @@ function UserSignup() {
     if (!userAlert) { alert("알림허용여부를 선택하세요"); return; }
 
     setIsLoading(true);
-    const submitData = { ...formData, termAgreement: true, userAlert: true };
+    const submitData = { ...formData, termAgreement: true, userAlert: userAlert.alertOk };
 
     try {
       const response = await fetch("/api/v1/auth/signup", {
@@ -436,25 +435,25 @@ function UserSignup() {
                     <span className="su-required">*</span>
                   </label>
                   <div className="su-gender-group">
-                    <label className={`su-gender-btn ${formData.userAlert === "isGranted" ? "selected" : ""}`}>
+                    <label className={`su-gender-btn ${userAlert.alertOk === 1 ? "selected" : ""}`}>
                       <input
                         type="radio"
                         name="userAlert"
-                        value={formData.userAlert}
+                        checked={userAlert.alertOk === 1}
                         onChange={(e) =>
-                        setAgreements({ ...agreements, termsAgreed: e.target.checked })
+                        setUserAlert({ ...userAlert, alertOk: 1 })
                       }
                         hidden
                       />
                       <i className="fas fa-mars" />허용
                     </label>
-                    <label className={`su-gender-btn ${formData.userAlert === "isDenied" ? "selected" : ""}`}>
+                    <label className={`su-gender-btn ${userAlert.alertOk === 0 ? "selected" : ""}`}>
                       <input
                         type="radio"
                         name="userAlert"
-                        value={formData.userAlert}
+                        checked={userAlert.alertOk === 0}
                         onChange={(e) =>
-                        setAgreements({ ...agreements, termsAgreed: e.target.checked })
+                        setUserAlert({ ...userAlert, alertOk: 0 })
                       }
                         hidden
                       />

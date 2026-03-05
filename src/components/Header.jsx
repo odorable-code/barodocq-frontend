@@ -196,7 +196,6 @@ const Header = ({ onOpenReservation }) => {
 
   /* 검색 */
   const handleSearch = useCallback(() => {
-    <DeptSearch />;
     const q = searchValue.trim();
     if (q) {
       navigate(`/search?q=${encodeURIComponent(q)}`);
