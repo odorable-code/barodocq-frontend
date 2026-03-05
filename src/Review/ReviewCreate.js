@@ -23,8 +23,61 @@ function ReservationAndReview() {
   const [revisittype,  setRevisittype]  = useState("");   // 방문 유형 (초진/재진)
   const [rememo,       setRememo]       = useState("");   // 요청사항 메모
   const [usernum,      setUsernum]      = useState("");   // 사용자 번호
-  const [honum,        setHonum]        = useState("");   // 병원 번호
-  const [deptnum,      setDeptnum]      = useState("");   // 진료과 번호
+  // 병원 & 진료과 선택 관련
+  const [honum, setHonum] = useState("");
+  const [hospitalKeyword, setHospitalKeyword] = useState("");
+  const [hospitalList, setHospitalList] = useState([]);
+  const [deptnum, setDeptnum] = useState("");
+  const [deptList, setDeptList] = useState([]); // 서버에서 받아올 진료과 목록
+
+  // 1. 사용자 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const resp = await authFetch("http://localhost:8080/api/v1/qnas/me"); // 기존에 쓰시던 유저정보 API
+        const data = await resp.json();
+        setUsernum(data.num); 
+      } catch (err) {
+        console.error("사용자 정보 로드 실패", err);
+      }
+    };
+    fetchUserInfo();
+    fetchMyReservations();
+  }, []);
+
+  // 2. 병원 검색 로직 (QnA 코드 이식)
+  const searchHospital = async (keyword) => {
+    if (keyword.length < 2) {
+      setHospitalList([]);
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/hospitals/search?keyword=${keyword}`);
+      const data = await response.json();
+      setHospitalList(data);
+    } catch (err) {
+      console.error("병원 검색 에러:", err);
+    }
+  };
+
+  // 3. 병원이 선택될 때마다 진료과 목록 불러오기
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (!honum) {
+        setDeptList([]);
+        return;
+      }
+      try {
+        // 백엔드에 새로 만드셔야 할 엔드포인트입니다.
+        const res = await authFetch(`http://localhost:8080/api/v1/reservations/hospitals/${honum}/departments`);
+        const data = await res.json();
+        setDeptList(data);
+      } catch (err) {
+        console.error("진료과 로드 에러:", err);
+      }
+    };
+    fetchDepartments();
+  }, [honum]);
 
   // ── [ Step 2 ] 후기 관련 상태 ──────────────────────
   const [renum,        setRenum]        = useState(null); // 예약 고유번호 (후기와 예약 연결 키)
@@ -260,6 +313,55 @@ function ReservationAndReview() {
 
                   {/* 2컬럼 입력 그리드 */}
                   <div className="rc-form-grid">
+                    {/* 병원 검색 (QnA 스타일) */}
+                    <div className="rc-form-group" style={{ position: 'relative' }}>
+                      <label>병원 선택 <span className="rc-required">*</span></label>
+                      <div className="rc-input-icon">
+                        <i className="fas fa-hospital" />
+                        <input
+                          type="text"
+                          placeholder="병원명을 입력하세요"
+                          value={hospitalKeyword}
+                          onChange={(e) => {
+                            setHospitalKeyword(e.target.value);
+                            searchHospital(e.target.value);
+                          }}
+                        />
+                      </div>
+                      {hospitalList.length > 0 && (
+                        <ul className="hospital-list-dropdown"> {/* CSS 필요 */}
+                          {hospitalList.map((ho) => (
+                            <li key={ho.hoNum} onClick={() => {
+                              setHonum(ho.hoNum);
+                              setHospitalKeyword(ho.hoName);
+                              setHospitalList([]);
+                            }}>
+                              {ho.hoName} <small>{ho.hoAddr}</small>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* 진료과 선택 (자동 로드된 목록) */}
+                    <div className="rc-form-group">
+                      <label>진료과 <span className="rc-required">*</span></label>
+                      <div className="rc-input-icon">
+                        <i className="fas fa-stethoscope" />
+                        <select 
+                          value={deptnum} 
+                          onChange={(e) => setDeptnum(e.target.value)}
+                          disabled={!honum}
+                        >
+                          <option value="">{honum ? "진료과 선택" : "병원을 먼저 검색하세요"}</option>
+                          {deptList && deptList.map((dept) => (
+                            <option key={dept?.deptNum || Math.random()} value={dept?.deptNum}>
+                              {dept?.deptName || "이름 없는 진료과"}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
                     {/* 날짜 */}
                     <div className="rc-form-group">
@@ -311,48 +413,6 @@ function ReservationAndReview() {
                           <option value="초진">초진</option>
                           <option value="재진">재진</option>
                         </select>
-                      </div>
-                    </div>
-
-                    {/* 사용자 번호 */}
-                    <div className="rc-form-group">
-                      <label>사용자 번호</label>
-                      <div className="rc-input-icon">
-                        <i className="fas fa-user" />
-                        <input
-                          type="number"
-                          value={usernum}
-                          onChange={(e) => setUsernum(e.target.value)}
-                          placeholder="사용자 번호"
-                        />
-                      </div>
-                    </div>
-
-                    {/* 병원 번호 */}
-                    <div className="rc-form-group">
-                      <label>병원 번호</label>
-                      <div className="rc-input-icon">
-                        <i className="fas fa-hospital" />
-                        <input
-                          type="number"
-                          value={honum}
-                          onChange={(e) => setHonum(e.target.value)}
-                          placeholder="병원 번호"
-                        />
-                      </div>
-                    </div>
-
-                    {/* 진료과 번호 */}
-                    <div className="rc-form-group">
-                      <label>진료과 번호</label>
-                      <div className="rc-input-icon">
-                        <i className="fas fa-stethoscope" />
-                        <input
-                          type="number"
-                          value={deptnum}
-                          onChange={(e) => setDeptnum(e.target.value)}
-                          placeholder="진료과 번호"
-                        />
                       </div>
                     </div>
 
