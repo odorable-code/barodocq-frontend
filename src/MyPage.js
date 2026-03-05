@@ -644,7 +644,7 @@ const MyPage = () => {
   const [form, setForm] = useState({});
   const [chatRooms, setChatRooms] = useState([]);
 
-  // 모달 상태
+  // 모달 상ㄹ
   const [modal, setModal] = useState(null); // 'points' | 'reservationAll' | 'historyAll' | 'scrapAll' | 'notifications' | 'qna' | 'reviews' | 'chat' | 'editProfile' | 'changePassword' | 'security' | 'notices' | 'support' | 'terms' | 'logout' | 'withdraw' | 'cancelConfirm'
   const [cancelTarget, setCancelTarget] = useState(null);
 
@@ -1025,7 +1025,7 @@ const ReservationCard = ({ hoName, deptName, reDate, reTime, reStatus, onCancel 
     </div>
     <div className="mp-res-actions">
       <span className="mp-res-chip upcoming">{reStatus}</span>
-      { reStatus === "예약취소" ? null : <button className="mp-res-cancel" onClick={onCancel}>취소</button>}
+      { !["예약대기", "예약확정"].includes(reStatus) ? null : <button className="mp-res-cancel" onClick={onCancel}>취소</button>}
     </div>
   </div>
 );
