@@ -113,8 +113,8 @@ const Header = ({ onOpenReservation }) => {
     notifOpen,
     setNotifOpen,
     isAdmin,
-    sysNotifications,      // ✅ useSocket() 에서 꺼내오도록 추가!
-    setSysNotifications    // ✅ useSocket() 에서 꺼내오도록 추가!
+    sysNotifications, // ✅ useSocket() 에서 꺼내오도록 추가!
+    setSysNotifications, // ✅ useSocket() 에서 꺼내오도록 추가!
   } = useSocket();
 
   /* 스크롤 감지 */
@@ -176,7 +176,7 @@ const Header = ({ onOpenReservation }) => {
       try {
         const res = await authFetch(`/api/v1/notifications/${user.userNum}`); // 본인 user 객체의 PK 변수명에 맞게 수정
         if (!res.ok) throw new Error(`알림 데이터 응답 에러: ${res.status}`);
-        
+
         const data = await res.json();
         setSysNotifications(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -196,7 +196,7 @@ const Header = ({ onOpenReservation }) => {
 
   /* 검색 */
   const handleSearch = useCallback(() => {
-    <DeptSearch />
+    <DeptSearch />;
     const q = searchValue.trim();
     if (q) {
       navigate(`/search?q=${encodeURIComponent(q)}`);
@@ -217,16 +217,19 @@ const Header = ({ onOpenReservation }) => {
     if (!notif.ntIsRead) {
       try {
         // nt_num -> ntNum 으로 변경
-        const res = await authFetch(`/api/v1/notifications/${notif.ntNum}/read`, {
-          method: "PATCH",
-        });
-        
+        const res = await authFetch(
+          `/api/v1/notifications/${notif.ntNum}/read`,
+          {
+            method: "PATCH",
+          },
+        );
+
         if (res.ok) {
           setSysNotifications((prev) =>
             prev.map((n) =>
               // 여기도 ntNum, ntIsRead 로 변경
-              n.ntNum === notif.ntNum ? { ...n, ntIsRead: true } : n
-            )
+              n.ntNum === notif.ntNum ? { ...n, ntIsRead: true } : n,
+            ),
           );
         }
       } catch (err) {
@@ -265,7 +268,7 @@ const Header = ({ onOpenReservation }) => {
 
   // ✅ 읽지 않은 시스템 알림 개수 계산 (nt_is_read -> ntIsRead)
   const unreadSysNotifCount = sysNotifications.filter(
-    (n) => !n.ntIsRead
+    (n) => !n.ntIsRead,
   ).length;
 
   return (
@@ -326,7 +329,7 @@ const Header = ({ onOpenReservation }) => {
                   >
                     <FontAwesomeIcon icon={faBell} />
                     {/* ✅ 총 안 읽은 메시지 + 시스템 알림 합산 뱃지 */}
-                    {(totalUnread + unreadSysNotifCount) > 0 && (
+                    {totalUnread + unreadSysNotifCount > 0 && (
                       <span className="hdr__notif-badge">
                         {totalUnread + unreadSysNotifCount}
                       </span>
@@ -576,11 +579,15 @@ const Header = ({ onOpenReservation }) => {
                     className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
                     onClick={() => setActiveChatRoom(room)}
                   >
-                    <div className="hdr__cr-avatar">{room.avatar}</div>
+                    <div className="hdr__cr-avatar">
+                      {isAdmin
+                        ? room.patientName?.substring(0, 1)
+                        : room.avatar}
+                    </div>
                     <div className="hdr__cr-info">
                       <div className="hdr__cr-top">
                         <span className="hdr__cr-name">
-                          {room.hospitalName}
+                          {isAdmin ? room.patientName : room.hospitalName}
                         </span>
                         <span className="hdr__cr-time">{room.lastTime}</span>
                       </div>
@@ -658,14 +665,17 @@ const Header = ({ onOpenReservation }) => {
                           lineHeight: "1.4",
                         }}
                       >
-                        {notif.ntFinalContent} {/* ✅ nt_final_content -> ntFinalContent 변경 */}
+                        {notif.ntFinalContent}{" "}
+                        {/* ✅ nt_final_content -> ntFinalContent 변경 */}
                       </span>
                       <span
                         className="hdr__hl-sub"
                         style={{ marginTop: "4px", display: "block" }}
                       >
                         {/* ✅ Invalid Date 방지: ntCreatedAt이 null이면 현재 시간 출력 */}
-                        {new Date(notif.ntCreatedAt || Date.now()).toLocaleDateString()}
+                        {new Date(
+                          notif.ntCreatedAt || Date.now(),
+                        ).toLocaleDateString()}
                       </span>
                     </div>
 
@@ -702,10 +712,20 @@ const Header = ({ onOpenReservation }) => {
             >
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
-            <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
+            <div className="hdr__cw-avatar">
+              {isAdmin
+                ? activeChatRoom.patientName?.substring(0, 1)
+                : activeChatRoom.avatar}
+            </div>
             <div className="hdr__cw-hinfo">
               <span className="hdr__cw-hname">
-                {activeChatRoom.hospitalName}
+                {!isMine && (
+                  <div className="hdr__cw-msg-avatar">
+                    {isAdmin
+                      ? activeChatRoom.patientName?.substring(0, 1)
+                      : activeChatRoom.avatar}
+                  </div>
+                )}
               </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
             </div>
