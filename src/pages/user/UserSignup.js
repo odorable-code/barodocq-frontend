@@ -1,4 +1,5 @@
 import "../../assets/styles/UserSignup.css";
+import "../../assets/images/kakao.png";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -359,6 +360,12 @@ function UserSignup() {
                 </button>
               </div>
             )}
+
+            <br />
+
+            <div className="circle" onClick={handleKakaoSignup}>
+              <img src=""/>
+            </div>
 
             {/* ════════ STEP 2 ════════ */}
             {currentStep === 2 && (
