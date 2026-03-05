@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 import axios from "axios";
 
 export default function TopHeader() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const ACCESS_TOKEN_KEY = "accessToken";
   const REFRESH_TOKEN_KEY = "refreshToken";
@@ -12,33 +14,8 @@ export default function TopHeader() {
   const [subText, setSubText] = useState("환영합니다"); // ✅ 회색 안내문구
 
   const handleLogout = async () => {
-    try {
-      const token =
-        localStorage.getItem(ACCESS_TOKEN_KEY) ||
-        sessionStorage.getItem(ACCESS_TOKEN_KEY);
-
-      if (token) {
-        await axios.post(
-          "/api/v1/auth/logout",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-    } catch (e) {
-      console.warn("logout api failed", e);
-    } finally {
-      // 토큰 삭제
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
-      localStorage.removeItem(REFRESH_TOKEN_KEY);
-      sessionStorage.removeItem(ACCESS_TOKEN_KEY);
-      sessionStorage.removeItem(REFRESH_TOKEN_KEY);
-
-      navigate("/admin/login");
-    }
+    await logout(); // AuthContext logout 사용
+    navigate("/admin/login");
   };
 
   useEffect(() => {
@@ -133,7 +110,7 @@ export default function TopHeader() {
           </div>
         </div>
 
-        <button className="adm-th-btn" onClick={handleLogout}>
+        <button type ="button" className="adm-th-btn" onClick={handleLogout}>
           로그아웃
         </button>
       </div>
