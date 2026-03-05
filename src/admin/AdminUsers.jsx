@@ -4,45 +4,42 @@ import axios from "axios";
 const GENDER_OPTIONS = ["전체", "남", "여"];
 const PAGE_SIZES = [20, 50, 100];
 
-/**
- * ✅ 백엔드 응답 형태가 다양할 수 있어서 "배열 뽑기"를 최대한 유연하게 처리
- * - res.data 가 배열이면 그대로
- * - res.data.items / res.data.data / res.data.result 등 흔한 케이스 대응
- */
 function extractList(data) {
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.list)) return data.list;  
+  if (Array.isArray(data?.list)) return data.list;
   if (Array.isArray(data?.items)) return data.items;
   if (Array.isArray(data?.data)) return data.data;
   if (Array.isArray(data?.result)) return data.result;
-  if (Array.isArray(data?.content)) return data.content; // spring pageable 흔한 키
+  if (Array.isArray(data?.content)) return data.content;
   return [];
 }
 
-/**
- * ✅ snake_case / camelCase 섞여도 UI가 안 깨지게 안전 매핑
- * (너희 백엔드 DTO 이름에 맞춰 여기만 살짝 수정하면 끝)
- */
 function normalizeUser(u) {
+  const genderRaw = (u.gender ?? u.userGender ?? u.user_gender ?? u.sex ?? "").toString().trim();
+
+  // ✅ MALE/FEMALE/남/여 섞여와도 "남/여"로 통일
+  const genderKR =
+    genderRaw === "MALE" || genderRaw === "M" || genderRaw === "남" ? "남" :
+    genderRaw === "FEMALE" || genderRaw === "F" || genderRaw === "여" ? "여" :
+    genderRaw || "-";
+
   return {
     userNum: u.userNum ?? u.user_num ?? u.id ?? u.userIdNum ?? u.user_no,
     userId: u.userId ?? u.user_id ?? u.userid ?? u.loginId ?? u.user_login_id,
     name: u.name ?? u.userName ?? u.user_name ?? u.username ?? u.user_nm,
     birth: u.birth ?? u.userBirth ?? u.user_birth ?? u.birthDay ?? u.user_birth_day,
-    gender: u.gender ?? u.userGender ?? u.user_gender ?? u.sex,
+    gender: genderKR,
     address: u.address ?? u.userAddr ?? u.user_addr ?? u.addr ?? u.user_address,
     phone: u.phone ?? u.userPhone ?? u.user_phone ?? u.tel ?? u.user_tel,
     email: u.email ?? u.userEmail ?? u.user_email ?? u.mail,
     joinedAt: u.joinedAt ?? u.userCreatedAt ?? u.user_created_at ?? u.createdAt ?? u.created_at,
     updatedAt: u.updatedAt ?? u.userUpdatedAt ?? u.user_updated_at ?? u.updatedAt ?? u.updated_at,
-    alertAllowed:
-      u.alertAllowed ?? u.userAlert ?? u.user_alert ?? u.alert_yn ?? u.alertYn ?? false,
-    kakaoLinked:
-      u.kakaoLinked ?? u.kakaoLinkedYn ?? u.kakao_linked ?? u.kakao_yn ?? u.kakaoYn ?? false,
+    alertAllowed: u.alertAllowed ?? u.userAlert ?? u.user_alert ?? u.alert_yn ?? u.alertYn ?? false,
+    kakaoLinked: u.kakaoLinked ?? u.kakaoLinkedYn ?? u.kakao_linked ?? u.kakao_yn ?? u.kakaoYn ?? false,
   };
 }
 
-export default function UserMembersPage() {
+export default function AdminUsers() {
   const [usersRaw, setUsersRaw] = useState([]);
 
   const [keyword, setKeyword] = useState("");
@@ -57,7 +54,6 @@ export default function UserMembersPage() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
-  // ✅ 실제 데이터 로드
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -73,7 +69,6 @@ export default function UserMembersPage() {
       setUsersRaw(list);
       setTotal(res.data?.total ?? list.length);
       setTotalPages(res.data?.totalPages ?? 1);
-      // setPage(1) 여기서는 빼야 함! (페이지 이동이 막혀버림)
     } catch (e) {
       setLoadError(e?.response?.data?.message || e?.message || "회원 목록을 불러오지 못했습니다.");
       setUsersRaw([]);
@@ -89,7 +84,6 @@ export default function UserMembersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, size]);
 
-  // ✅ [기능] 검색 및 필터링 로직
   const filteredData = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
 
@@ -111,16 +105,65 @@ export default function UserMembersPage() {
     });
   }, [usersRaw, keyword, genderFilter, searchField]);
 
-
-  // page가 totalPages보다 커지는 상황 방지(필터링 후)
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
 
-
-
   return (
-    <div className="adm-page">
+    // ✅ 여기 핵심: um-scope를 루트에 붙여야 CSS가 먹음
+    <div className="adm-page um-scope">
+      <style>{`
+
+      /* ✅ 글자색/기본 톤을 admin 테마처럼 맞추기 */
+        .um-scope table.um-table tbody td{
+          color: var(--text-secondary);
+          font-weight: 600;
+        }
+
+        /* ✅ 강조되는 값만 */
+        .um-scope table.um-table tbody td strong{
+          color: var(--text-primary);
+        }
+
+        /* ✅ 아이디처럼 포인트 주는 컬럼은 이미 inline로 teal 줬지만,
+          혹시 다른 데도 쓰고 싶으면 클래스 방식으로 */
+        .um-scope .um-accent{
+          color: var(--primary-teal);
+          font-weight: 800;
+        }
+        .um-scope .um-table-wrap{
+          background:#fff;
+          border:1px solid var(--border-color);
+          border-radius:16px;
+          overflow:hidden;
+        }
+        .um-scope .um-table-scroll{ overflow-x:auto; }
+
+        .um-scope table.um-table{
+          width:100%;
+          min-width:1200px;
+          border-collapse:collapse;
+          table-layout:fixed;
+        }
+        .um-scope table.um-table th,
+        .um-scope table.um-table td{
+          padding:14px 12px;
+          border-bottom:1px solid var(--border-color);
+          font-size:0.9rem;
+          vertical-align:middle;
+        }
+        .um-scope table.um-table thead th{
+          background:rgba(20,184,166,0.06);
+          font-weight:900;
+          color:var(--primary-dark-teal);
+          white-space:nowrap;
+          text-align:center;
+        }
+        .um-scope .um-nowrap{ white-space:nowrap; word-break:keep-all; }
+        .um-scope .um-ellipsis{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .um-scope tbody tr:hover{ background:rgba(20,184,166,0.04); }
+      `}</style>
+
       {/* 🟢 헤더 영역 */}
       <div
         style={{
@@ -131,14 +174,7 @@ export default function UserMembersPage() {
         }}
       >
         <div>
-          <div
-            style={{
-              color: "var(--text-muted)",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              marginBottom: "0.5rem",
-            }}
-          >
+          <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.5rem" }}>
             <i className="fas fa-home" style={{ marginRight: "4px" }} /> 회원관리{" "}
             <i className="fas fa-chevron-right" style={{ fontSize: ".6rem", margin: "0 6px" }} />{" "}
             <span style={{ color: "var(--primary-teal)" }}>사용자 회원관리</span>
@@ -167,7 +203,6 @@ export default function UserMembersPage() {
         </button>
       </div>
 
-      {/* ✅ 로딩/에러 배너 */}
       {loadError && (
         <div
           className="adm-card"
@@ -187,9 +222,7 @@ export default function UserMembersPage() {
       <div className="adm-card" style={{ padding: "1.5rem 2rem" }}>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <span style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--text-secondary)" }}>
-              성별필터
-            </span>
+            <span style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--text-secondary)" }}>성별필터</span>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               {GENDER_OPTIONS.map((g) => (
                 <button
@@ -265,16 +298,7 @@ export default function UserMembersPage() {
                 setKeyword(e.target.value);
                 setPage(1);
               }}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") setKeyword("");
-              }}
-              style={{
-                flex: 1,
-                border: "none",
-                background: "transparent",
-                height: "40px",
-                outline: "none",
-              }}
+              style={{ flex: 1, border: "none", background: "transparent", height: "40px", outline: "none" }}
             />
 
             <button
@@ -296,8 +320,8 @@ export default function UserMembersPage() {
         </div>
       </div>
 
-      {/* 🟢 데이터 테이블 영역 */}
-      <div className="adm-table-wrap">
+      {/* ✅ 테이블 영역: um-table-wrap + um-table-scroll + um-table */}
+      <div className="um-table-wrap" style={{ marginTop: "1.25rem" }}>
         <div
           style={{
             padding: "1.25rem 1.5rem",
@@ -338,110 +362,112 @@ export default function UserMembersPage() {
           </div>
         </div>
 
-        {/* ✅ 빈 데이터 처리 */}
         {!loading && total === 0 ? (
-          <div
-            style={{
-              background: "#fff",
-              padding: "3rem 1.5rem",
-              textAlign: "center",
-              color: "var(--text-muted)",
-              borderTop: "1px solid var(--border-color)",
-              borderBottom: "1px solid var(--border-color)",
-            }}
-          >
-            <div style={{ fontSize: "1.05rem", fontWeight: 900, marginBottom: 6 }}>
-              표시할 회원이 없습니다
-            </div>
+          <div style={{ background: "#fff", padding: "3rem 1.5rem", textAlign: "center", color: "var(--text-muted)" }}>
+            <div style={{ fontSize: "1.05rem", fontWeight: 900, marginBottom: 6 }}>표시할 회원이 없습니다</div>
             <div style={{ fontSize: ".9rem" }}>필터/검색 조건을 바꿔보세요.</div>
           </div>
         ) : (
-          <table className="adm-table" style={{ tableLayout: "fixed", width: "100%", minWidth: "1500px" }}>
-            <thead>
-              <tr>
-                <th style={{ width: "60px", textAlign: "center" }}>NO.</th>
-                <th style={{ width: "130px", textAlign: "left" }}>아이디</th>
-                <th style={{ width: "100px", textAlign: "left" }}>성함</th>
-                <th style={{ width: "110px", textAlign: "center" }}>생년월일</th>
-                <th style={{ width: "80px", textAlign: "center" }}>성별</th>
-                <th style={{ textAlign: "left" }}>주소</th>
-                <th style={{ width: "140px", textAlign: "left" }}>전화번호</th>
-                <th style={{ width: "180px", textAlign: "left" }}>이메일</th>
-                <th style={{ width: "110px", textAlign: "center" }}>가입일</th>
-                <th style={{ width: "90px", textAlign: "center" }}>알림</th>
-                <th style={{ width: "80px", textAlign: "center" }}>소셜</th>
-              </tr>
-            </thead>
+          <div className="um-table-scroll">
+            <table className="um-table">
+              <colgroup>
+                <col style={{ width: "60px" }} />
+                <col style={{ width: "140px" }} />
+                <col style={{ width: "120px" }} />
+                <col style={{ width: "120px" }} />
+                <col style={{ width: "90px" }} />
+                <col style={{ width: "380px" }} />
+                <col style={{ width: "150px" }} />
+                <col style={{ width: "220px" }} />
+                <col style={{ width: "120px" }} />
+                <col style={{ width: "90px" }} />
+                <col style={{ width: "80px" }} />
+              </colgroup>
 
-            <tbody>
-              {filteredData.map((r, idx) => (
-                <tr key={r.userNum ?? `${r.userId}-${idx}`} style={{ height: "64px" }}>
-                  <td style={{ textAlign: "center", color: "var(--text-muted)" }}>
-                    {(page - 1) * size + idx + 1}
-                  </td>
-
-                  <td style={{ textAlign: "left", fontWeight: 800, color: "var(--primary-teal)" }}>
-                    {r.userId ?? "-"}
-                  </td>
-
-                  <td style={{ textAlign: "left", fontWeight: 700 }}>{r.name ?? "-"}</td>
-
-                  <td style={{ textAlign: "center" }}>{r.birth ?? "-"}</td>
-
-                  <td style={{ textAlign: "center" }}>{r.gender ?? "-"}</td>
-
-                  <td
-                    style={{
-                      textAlign: "left",
-                      fontSize: "0.85rem",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                    title={r.address || ""}
-                  >
-                    {r.address ?? "-"}
-                  </td>
-
-                  <td style={{ textAlign: "left" }}>{r.phone ?? "-"}</td>
-
-                  <td style={{ textAlign: "left", fontSize: "0.85rem" }}>{r.email ?? "-"}</td>
-
-                  <td style={{ textAlign: "center", fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                    {r.joinedAt ?? "-"}
-                  </td>
-
-                  <td style={{ textAlign: "center" }}>
-                    <span
-                      className={`adm-badge ${r.alertAllowed ? "adm-on" : "adm-off"}`}
-                      style={{ width: "55px" }}
-                    >
-                      {r.alertAllowed ? "ON" : "OFF"}
-                    </span>
-                  </td>
-
-                  <td style={{ textAlign: "center" }}>
-                    {r.kakaoLinked ? (
-                      <i
-                        className="fa-solid fa-comment"
-                        style={{
-                          color: "#FEE500",
-                          fontSize: "1.3rem",
-                          filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))",
-                        }}
-                        title="Kakao"
-                      />
-                    ) : (
-                      <span style={{ color: "var(--border-color)" }}>-</span>
-                    )}
-                  </td>
+              <thead>
+                <tr>
+                  <th>NO.</th>
+                  <th style={{ textAlign: "left" }}>아이디</th>
+                  <th style={{ textAlign: "left" }}>성함</th>
+                  <th>생년월일</th>
+                  <th>성별</th>
+                  <th style={{ textAlign: "left" }}>주소</th>
+                  <th style={{ textAlign: "left" }}>전화번호</th>
+                  <th style={{ textAlign: "left" }}>이메일</th>
+                  <th>가입일</th>
+                  <th>알림</th>
+                  <th>소셜</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {filteredData.map((r, idx) => (
+                  <tr key={r.userNum ?? `${r.userId}-${idx}`} style={{ height: "64px" }}>
+                    <td className="um-nowrap" style={{ textAlign: "center", color: "var(--text-muted)" }}>
+                      {(page - 1) * size + idx + 1}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "left", fontWeight: 800, color: "var(--primary-teal)" }}>
+                      {r.userId ?? "-"}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "left", fontWeight: 700 }}>
+                      {r.name ?? "-"}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "center" }}>
+                      {r.birth ?? "-"}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "center" }}>
+                      {r.gender ?? "-"}
+                    </td>
+
+                    <td className="um-ellipsis" style={{ textAlign: "left", fontSize: "0.85rem" }} title={r.address || ""}>
+                      {r.address ?? "-"}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "left" }}>
+                      {r.phone ?? "-"}
+                    </td>
+
+                    <td className="um-ellipsis" style={{ textAlign: "left", fontSize: "0.85rem" }} title={r.email || ""}>
+                      {r.email ?? "-"}
+                    </td>
+
+                    <td className="um-nowrap" style={{ textAlign: "center", fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                      {r.joinedAt ?? "-"}
+                    </td>
+
+                    <td style={{ textAlign: "center" }}>
+                      <span className={`adm-badge ${r.alertAllowed ? "adm-on" : "adm-off"}`} style={{ width: "55px" }}>
+                        {r.alertAllowed ? "ON" : "OFF"}
+                      </span>
+                    </td>
+
+                    <td style={{ textAlign: "center" }}>
+                      {r.kakaoLinked ? (
+                        <i
+                          className="fa-solid fa-comment"
+                          style={{
+                            color: "#FEE500",
+                            fontSize: "1.3rem",
+                            filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))",
+                          }}
+                          title="Kakao"
+                        />
+                      ) : (
+                        <span style={{ color: "var(--border-color)" }}>-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
-        {/* 🟢 페이지네이션 */}
+        {/* 페이지네이션 */}
         <div
           style={{
             padding: "1.5rem",
