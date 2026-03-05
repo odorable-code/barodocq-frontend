@@ -23,7 +23,7 @@ const MENUS = [
       { key: "qna", label: "Q&A", to: "/admin/posts/qna" },
     ],
   },
-  { key: "chats", label: "1:1문의", to: "/admin/chats", icon: "fa-comments" },
+  { key: "chats", label: "1:1문의", to: "/admin/inquiry", icon: "fa-comments" },
   { key: "settings", label: "설정", to: "/admin/settings", icon: "fa-cog" },
 ];
 

@@ -10,7 +10,7 @@ import SockJS from "sockjs-client";
 import { useAuth } from "./AuthContext";
 import UseNotification from "./hooks/UseNotification";
 
-const API = "http://3.38.49.151:8080";
+const API = "http://localhost:8080";
 export const SocketContext = createContext(null);
 
 export function WebSocketProvider({ children }) {
@@ -50,6 +50,7 @@ export function WebSocketProvider({ children }) {
     if (!u) return;
     try {
       const token = localStorage.getItem("accessToken");
+      console.log("url : " , getRoomsUrl(u))
       const res = await fetch(getRoomsUrl(u), {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -60,8 +61,7 @@ export function WebSocketProvider({ children }) {
       console.log("[DEBUG] fetchRooms rooms:", rooms);
       console.log("[DEBUG] isAdmin(u):", isAdmin(u));
       if (rooms[0]) {
-        console.log("[DEBUG] room[0].patientName:", rooms[0].patientName);
-        console.log("[DEBUG] room[0].patientId:", rooms[0].patientId);
+      console.log("[DEBUG] room[0].paientName:", rooms[0].paientName);
       }
 
       setChatRooms(rooms);

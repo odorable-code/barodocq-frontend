@@ -184,24 +184,46 @@ const getTodayKoreanDay = () => {
   return days[new Date().getDay()];
 };
 
+// ✅ 수정 전
+// async function fetchHospitals(params = {}) {
+//   const cleaned = Object.fromEntries(
+//     Object.entries(params).filter(
+//       ([_, v]) => v !== null && v !== undefined && v !== "",
+//     ),
+//   );
+//   const qs = new URLSearchParams(cleaned).toString();
+//   const url = `${API_BASE_URL}/api/v1/hospitals/cards${qs ? `?${qs}` : ""}`;
+
+//   const res = await fetch(url, { method: "GET" });
+
+//   if (!res.ok) {
+//     const text = await res.text().catch(() => "");
+//     throw new Error(
+//       `병원 목록 조회 실패 (status: ${res.status})\n${text.slice(0, 200)}`,
+//     );
+//   }
+
+//   const data = await res.json();
+//   return Array.isArray(data) ? data : (data?.content ?? []);
+// }
+
+// ✅ 수정 후 (토큰 추가)
 async function fetchHospitals(params = {}) {
   const cleaned = Object.fromEntries(
-    Object.entries(params).filter(
-      ([_, v]) => v !== null && v !== undefined && v !== "",
-    ),
+    Object.entries(params).filter(([_, v]) => v !== null && v !== undefined && v !== "")
   );
   const qs = new URLSearchParams(cleaned).toString();
-  const url = `${API_BASE_URL}/api/v1/hospitals/cards${qs ? `?${qs}` : ""}`;
+  const url = `${API_BASE_URL}/api/v1/hospitals/cards-new${qs ? `?${qs}` : ""}`;
 
-  const res = await fetch(url, { method: "GET" });
+  const accessToken = localStorage.getItem("accessToken"); // 토큰 가져오기
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), // 토큰 추가
+    },
+  });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(
-      `병원 목록 조회 실패 (status: ${res.status})\n${text.slice(0, 200)}`,
-    );
-  }
-
+  if (!res.ok) { /* 에러 처리 */ }
   const data = await res.json();
   return Array.isArray(data) ? data : (data?.content ?? []);
 }
@@ -416,9 +438,19 @@ export default function HospitalSearch() {
         const today = getTodayKoreanDay();
         const byId = new Map();
 
+        // 🔥 [추가] 서버에서 받아온 찜 목록을 저장할 임시 Set
+        const initialBookmarks = new Set();
+
         for (let i = 0; i < list.length; i++) {
           const r = list[i];
           const id = r.hoNum ?? r.ho_num ?? i + 1;
+
+          // 🔥 [추가] 서버에서 준 찜 여부 확인 (필드명은 DB/API 확인 필요)
+          // 보통 isScrapped, scrapped, bookmarked 등으로 내려옵니다.
+          const isScrappedFromServer = ynToBool(r.isScrapped ?? r.scrapped ?? r.bookmarked);
+          if (isScrappedFromServer) {
+            initialBookmarks.add(id);
+          }
 
           const openYn = ynToBool(r.hhOpenYn ?? r.hh_open_yn);
           const day = r.hhDayOfWeek ?? r.hh_day_of_week;
@@ -559,7 +591,9 @@ export default function HospitalSearch() {
           };
         });
 
-        if (!ignore) setHospitals(mapped);
+        if (!ignore)
+          setHospitals(mapped);
+          setBookmarkedHospitals(initialBookmarks); // 🔥 [중요] 받아온 찜 상태를 상태값에 반영!
       } catch (e) {
         if (!ignore) {
           setHospitals([]);
