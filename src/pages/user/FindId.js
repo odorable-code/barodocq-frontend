@@ -40,24 +40,27 @@ function FindId(){
     
     return (
         <div className="entireContainer">
-        <div className="title">아이디 찾기</div>
+            <div className="upperBar"></div>
+            <div className="title">아이디 찾기</div>
+            <div className="welcome">바로닥큐에 오신 것을 환영합니다.</div>
 
-        <div className="lineWrapper">
-            <div className="line"></div>
-        </div>
-        <form onSubmit={findId}>
-            <div className="mergePhone">
-                <input className="putPhone" placeholder='휴대전화번호 입력("-"제외)' value={phone} onChange={(e) => setPhone(e.target.value)}/>
-            </div>
-            <div className="line2"></div>
-                <div className="mergeEmail">
-                    <input className="putEmail" type="email" placeholder="이메일 입력" value={email} onChange={(e) => setEmail(e.target.value)}/>
+            {/* <div className="lineWrapper"></div> */}
+                <div className="line"></div>
+            <form onSubmit={findId}>
+                <div className="mergePhone">휴대전화번호
+                    <div>
+                        <input className="putPhone" placeholder='휴대전화번호를 입력해주세요.("-"제외)' value={phone} onChange={(e) => setPhone(e.target.value)}/>
+                    </div>
                 </div>
-            <div className="line2"></div>
-            <button type="submit" className="go" >아이디 찾기</button>
-            {/* <Link to="/found/id"  */}
-        </form>
-            </div>
+                <div className="line2"></div>
+                    <div className="mergeEmail">
+                        <div className="email">이메일</div>
+                            <input className="putEmail" type="email" placeholder="이메일을 입력해주세요." value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    </div>
+                <div className="line2"></div>
+                <button type="submit" className="go" >아이디 찾기</button>
+            </form>
+        </div>
         
     );
 }
