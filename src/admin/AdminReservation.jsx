@@ -478,13 +478,12 @@ export default function AdminReservation() {
           <thead>
             <tr>
               <th style={{ width: "60px", textAlign: "center" }}>NO.</th>
-              <th style={{ width: "180px", textAlign: "left" }}>예약병원</th>
-              <th style={{ width: "100px", textAlign: "center" }}>진료과</th>
-              <th style={{ width: "110px", textAlign: "left" }}>예약자성함</th>
+              <th style={{ width: "180px", textAlign: "center" }}>예약병원</th>
+              <th style={{ width: "110px", textAlign: "center" }}>예약자성함</th>
               <th style={{ width: "90px", textAlign: "center" }}>유형</th>
               <th style={{ width: "150px", textAlign: "center" }}>예약시간</th>
               <th style={{ width: "110px", textAlign: "center" }}>상태</th>
-              <th style={{ width: "240px", textAlign: "left" }}>요청사항</th>
+              <th style={{ width: "240px", textAlign: "center" }}>요청사항</th>
               <th style={{ width: "150px", textAlign: "center" }}>신청일시</th>
               <th style={{ width: "160px", textAlign: "center" }}>처리</th>
             </tr>
@@ -494,7 +493,7 @@ export default function AdminReservation() {
             {!loading && filtered.length === 0 ? (
               <tr>
                 <td
-                  colSpan={10}
+                  colSpan={9}
                   style={{
                     textAlign: "center",
                     padding: "2.5rem 1rem",
@@ -513,36 +512,53 @@ export default function AdminReservation() {
                   >
                     {(page - 1) * size + idx + 1}
                   </td>
-                  <td style={{ textAlign: "left", fontWeight: 700 }}>
+                  <td style={{ textAlign: "center", fontWeight: 700 }}>
                     {r.hospitalName}
+                  </td>
+                  <td style={{ textAlign: "center", fontWeight: 700 }}>
+                    {r.patientName}
                   </td>
                   <td style={{ textAlign: "center" }}>
                     <span
                       style={{
-                        padding: "0.2rem 0.5rem",
-                        background: "var(--bg-tertiary)",
-                        color: "var(--primary-dark-teal)",
-                        borderRadius: "4px",
+                        display: "inline-block",
+                        padding: "4px 10px",
+                        borderRadius: "999px",
                         fontSize: "0.75rem",
-                        fontWeight: 700,
+                        fontWeight: 800,
+                        background:
+                          r.visitType === "초진"
+                            ? "#dcfce7"     // 연한 초록
+                            : "#fef9c3",    // 연한 노랑
+                        color:
+                          r.visitType === "초진"
+                            ? "#16a34a"     // 초록 글자
+                            : "#ca8a04",    // 노랑 글자
+                        border:
+                          r.visitType === "초진"
+                            ? "1px solid #86efac"
+                            : "1px solid #fde047",
                       }}
                     >
-                      {r.department}
+                      {r.visitType}
                     </span>
                   </td>
-                  <td style={{ textAlign: "left", fontWeight: 700 }}>
-                    {r.patientName}
-                  </td>
-                  <td style={{ textAlign: "center" }}>{r.visitType}</td>
-                  <td
-                    style={{
-                      textAlign: "center",
-                      fontWeight: 600,
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    {r.reservedAt}
-                  </td>
+                <td style={{ textAlign: "center", fontWeight: 600, color: "var(--text-secondary)" }}>
+                  {(() => {
+                    const v = String(r.reservedAt ?? "").replace("T", " ");
+                    const [date, time] = v.split(" ");
+                    const hhmm = time ? time.slice(0, 5) : "";
+
+                    return (
+                      <div style={{ lineHeight: 1.4 }}>
+                        <div>{date || "-"}</div>
+                        <div style={{ fontSize: "0.85rem", color: "var(--primary-teal)", fontWeight: 700 }}>
+                          {hhmm}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </td>
                   <td style={{ textAlign: "center" }}>
                     <span
                       className={`adm-badge ${r.status === "예약대기" ? "adm-st-wait" : r.status === "예약확정" ? "adm-on" : ""}`}
