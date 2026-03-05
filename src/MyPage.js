@@ -657,41 +657,69 @@ const MyPage = () => {
   useEffect(() => {
     if (!auth?.user) return;
     async function fetchScraps() {
-      const result = await authFetch("/api/v1/hospitals/me/scraps?limit=1000");
-      if (result.ok) { const data = await result.json(); setScraps(data); }
+      try {
+        const result = await authFetch("/api/v1/hospitals/me/scraps?limit=1000");
+        if (result.ok) { const data = await result.json(); setScraps(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function fetchHistories() {
-      const result = await authFetch("/api/v1/reviews/me");
-      if (result.ok) { const data = await result.json(); setReviews(data); }
+      try {
+        const result = await authFetch("/api/v1/reviews/me");
+        if (result.ok) { const data = await result.json(); setReviews(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function fetchReservaions() {
-      const result = await authFetch("/api/v1/reservations/my");
-      if (result.ok) { const data = await result.json(); setReservations(data); }
+      try {
+        const result = await authFetch("/api/v1/reservations/my");
+        if (result.ok) { const data = await result.json(); setReservations(data); }
+      } catch (err) {
+        console.error(err);
+      }
     } 
 
     async function fetchQNAs() {
-      const resp = await authFetch('/api/v1/qnas')
-      if (resp.ok) {
-        let data = await resp.json();
-        data = data.filter(q => q.userNum === auth.user.num);
-        setMyQNA(data);
+      try {
+        const resp = await authFetch('/api/v1/qnas')
+        if (resp.ok) {
+          let data = await resp.json();
+          data = data.filter(q => q.userNum === auth.user.num);
+          setMyQNA(data);
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
 
     async function fetchChatRooms() {
-      const resp = await authFetch(`/api/chat/rooms/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setChatRooms(data); }
+      try {
+        const resp = await authFetch(`/api/chat/rooms/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setChatRooms(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     const fetchNotifications = async () => {
-      const resp = await authFetch(`/api/v1/notifications/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setNotifications(data); }
+      try {
+        const resp = await authFetch(`/api/v1/notifications/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setNotifications(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
     async function fetchUserInfo() {
-      const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
+      try {
+        const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     fetchChatRooms();
@@ -707,9 +735,26 @@ const MyPage = () => {
   const { user } = auth;
   
   scraps.forEach(async d => {
-    const resp = await authFetch(`/api/v1/hospitals/${d.ho_num}/hours/available`);
-    const status = await resp.text();
-    d.status = status;
+    try {
+      const resp = await authFetch(`/api/v1/hospitals/${d.ho_num}/hours/available`);
+      const status = await resp.text();
+      d.status = status;
+    } catch (err) {
+      console.error(err);
+      d.status = "확인요망";
+    }
+  });
+
+  reservations.forEach(async r => {
+    try {
+      const resp = await authFetch(`/api/v1/reservations/finished/${r.reNum}`);
+      const isFinished = await resp.json();
+      if (isFinished && !['예약거절', '예약취소', '진료완료'].includes(r.reStatus)) {
+        r.reStatus = "진료완료";
+      }
+    } catch (err) {
+      console.error(err);
+    }
   });
  
 
@@ -729,7 +774,7 @@ const MyPage = () => {
       { id: 1, icon: "bell",         title: "알림",       badge: notifications.length,    color: "#14b8a6" },
       { id: 2, icon: "comments",     title: "내 Q&A",     badge: myQNA.length, color: "#0d9488" },
       { id: 3, icon: "star",         title: "나의 후기",  badge: reviews.length,    color: "#0f766e" },
-      { id: 4, icon: "comment-dots", title: "채팅",       badge: messages.length,    color: "#14b8a6" },
+      { id: 4, icon: "comment-dots", title: "채팅",       badge: chatRooms.length,    color: "#14b8a6" },
     ],
   },
   {
@@ -980,7 +1025,7 @@ const ReservationCard = ({ hoName, deptName, reDate, reTime, reStatus, onCancel 
     </div>
     <div className="mp-res-actions">
       <span className="mp-res-chip upcoming">{reStatus}</span>
-      <button className="mp-res-cancel" onClick={onCancel}>취소</button>
+      { reStatus === "예약취소" ? null : <button className="mp-res-cancel" onClick={onCancel}>취소</button>}
     </div>
   </div>
 );
