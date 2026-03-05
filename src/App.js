@@ -35,6 +35,7 @@ import { WebSocketProvider } from "./WebSocketContext";
 /* ── 관리자 컴포넌트 ── */
 import AdminUsers   from "./admin/AdminUsers";
 import AdminAdmins   from "./admin/AdminAdmins";
+import AdminMe   from "./admin/AdminMe";
 import AdminLayout      from "./admin/adminComponents/AdminLayout";
 import AdminMainPage        from "./admin/AdminMainPage";
 import AdminReservation from "./admin/AdminReservation";
@@ -50,6 +51,7 @@ import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
 import {KakaoCallback, KakaoSignupCallback} from "./pages/user/KakaoCallback";
+import AuthLayout from "./pages/AuthLayout";
 
 
 /* ── 아이콘 ── */
@@ -80,12 +82,11 @@ function App() {
   const [showReservation, setShowReservation] = useState(false);
 
   return (
-    <AuthProvider>                   {/* ✅ 1) 인증 최상위 */}
-      <WebSocketProvider>            {/* ✅ 2) 소켓 (useAuth 접근 가능) */}
-        <BrowserRouter>              {/* ✅ 3) 라우터 */}
+    <AuthProvider>
+      <WebSocketProvider>
+        <BrowserRouter>
           <ScrollToTop />
 
-          {/* 전역 모달 */}
           {showReservation && (
             <ReservationDetail onClose={() => setShowReservation(false)} />
           )}
@@ -96,18 +97,26 @@ function App() {
           <Routes>
 
             {/* ══════════════════════════════════════
-                인증 페이지 — Header/Footer 없이 단독
+                ✅ 인증 페이지 — 로고만 있는 AuthLayout
             ══════════════════════════════════════ */}
-            <Route path="/login"        element={<Login />} />
-            <Route path="/signup"       element={<Signup />} />
-            <Route path="/user/signup"  element={<UserSignup />} />
-            <Route path="/admin/signup" element={<AdminSignup />} />
-            <Route path="/find/id"      element={<FindId />} />
-            <Route path="/found/id"     element={<FoundId />} />
-            <Route path="/resetPw"      element={<ResetPassword />} />
+            <Route element={<AuthLayout />}>
+              <Route path="/login"         element={<Login />} />
+              <Route path="/signup"        element={<Signup />} />
+              <Route path="/user/signup"   element={<UserSignup />} />
+              <Route path="/admin/signup"  element={<AdminSignup />} />
+              <Route path="/find/id"       element={<FindId />} />
+              <Route path="/found/id"      element={<FoundId />} />
+              <Route path="/resetPw"       element={<ResetPassword />} />
+            </Route>
 
             {/* ══════════════════════════════════════
-                사용자 영역 — Layout(Header+Footer) 포함
+                ✅ 카카오 콜백 — 헤더 불필요
+            ══════════════════════════════════════ */}
+            <Route path="/kakao/callback"         element={<KakaoCallback />} />
+            <Route path="/kakao/signup/callback"  element={<KakaoSignupCallback />} />
+
+            {/* ══════════════════════════════════════
+                ✅ 사용자 영역 — Layout(Header+Footer)
             ══════════════════════════════════════ */}
             <Route
               path="/"
@@ -118,57 +127,43 @@ function App() {
                 />
               }
             >
-              <Route index                        element={<MainPage />} />
-              <Route path="mainpage"              element={<MainPage />} />
-              <Route path="mypage"                element={<MyPage />} />
-              <Route path="mypage/reservations"   element={<MyReservationsPage />} />
-              <Route path="details/:hospitalId"   element={<HospitalDetail />} />
-              <Route path="hospitals"             element={<HospitalSearch />} />
-              <Route path="pharmacy"              element={<PharmacySearch />} />
-              <Route path="reviews"               element={<HospitalReviews />} />
-              <Route path="reviews/create"        element={<ReviewCreate />} />
-              <Route path="reviews/revise/:rvNum" element={<ReviewRevise />} />
-              <Route path="reviews/:rvNum"        element={<ReviewDetail />} />
-              <Route path="qna"                   element={<QnAPage />} />
-              <Route path="qna/write"             element={<QnAWritePage />} />
-              <Route path="main"                  element={<Main />} />
-              <Route path="chat"                  element={<Chat />} />
-              <Route path="chat/list"             element={<ChatList />} />
-              <Route path="deptsearch"            element={<DeptSearch />} />
-
-
-              <Route path="login" element={<Login />} />
-              <Route path="signup" element={<Signup />} />
-              <Route path="user/signup" element={<UserSignup />} />
-              <Route path="admin/signup" element={<AdminSignup />} />
-              <Route path="find/id" element={<FindId />} />
-              <Route path="found/id" element={<FoundId />} />
-              <Route path="resetPw" element={<ResetPassword />} />
-
-              <Route path="/kakao/callback" element={<KakaoCallback />} />
-              <Route path="/kakao/signup/callback" element={<KakaoSignupCallback />} />
-              {/* Layout 안 나머지 → 메인으로 */}
+              <Route index                          element={<MainPage />} />
+              <Route path="mainpage"                element={<MainPage />} />
+              <Route path="mypage"                  element={<MyPage />} />
+              <Route path="mypage/reservations"     element={<MyReservationsPage />} />
+              <Route path="details/:hospitalId"     element={<HospitalDetail />} />
+              <Route path="hospitals"               element={<HospitalSearch />} />
+              <Route path="pharmacy"                element={<PharmacySearch />} />
+              <Route path="reviews"                 element={<HospitalReviews />} />
+              <Route path="reviews/create"          element={<ReviewCreate />} />
+              <Route path="reviews/revise/:rvNum"   element={<ReviewRevise />} />
+              <Route path="reviews/:rvNum"          element={<ReviewDetail />} />
+              <Route path="qna"                     element={<QnAPage />} />
+              <Route path="qna/write"               element={<QnAWritePage />} />
+              <Route path="main"                    element={<Main />} />
+              <Route path="chat"                    element={<Chat />} />
+              <Route path="chat/list"               element={<ChatList />} />
+              <Route path="deptsearch"              element={<DeptSearch />} />
+              {/* ❌ 여기서 auth 라우트 중복 제거됨 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
 
             {/* ══════════════════════════════════════
-                관리자 영역 — AdminLayout 포함
+                ✅ 관리자 영역 — AdminLayout
             ══════════════════════════════════════ */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index               element={<AdminMainPage />} />
               <Route path="admins"    element={<AdminAdmins />} />
+              <Route path="me"    element={<AdminMe />} />
               <Route path="users"    element={<AdminUsers />} />
               <Route path="hospitals"    element={<AdminHospitals />} />
               <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
               <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
-              <Route path="posts/qna"    element={<AdminQnA />} />
-              <Route path="inquiry"    element={<AdminInquiryPage />} />
-              
+              <Route path="posts/qna"        element={<AdminQnA />} />
+              <Route path="inquiry"          element={<AdminInquiryPage />} />
             </Route>
 
-            
-            {/* 최상위 매칭 실패 → 메인으로 */}
             <Route path="*" element={<Navigate to="/" replace />} />
 
           </Routes>

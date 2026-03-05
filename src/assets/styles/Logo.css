@@ -1,0 +1,65 @@
+/* src/components/Logo.css */
+
+/* ── 공통 토큰 (Header.css 변수가 없어도 독립 동작) ── */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* ── 아이콘 박스 ── */
+.logo__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(20, 184, 166, 0.4);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.logo:hover .logo__icon {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 6px 24px rgba(20, 184, 166, 0.55);
+}
+
+/* ── 텍스트 ── */
+.logo__text {
+  font-weight: 800;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+.logo__plus {
+  -webkit-text-fill-color: #0d9488;
+  font-weight: 900;
+}
+
+/* ── 사이즈 variants ── */
+
+/* md (기본값 — Header와 동일) */
+.logo--md .logo__icon {
+  width: 46px;
+  height: 46px;
+  font-size: 20px;
+}
+.logo--md .logo__text {
+  font-size: 22px;
+}
+
+/* sm (AuthLayout 헤더용) */
+.logo--sm .logo__icon {
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  border-radius: 11px;
+}
+.logo--sm .logo__text {
+  font-size: 18px;
+}

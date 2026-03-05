@@ -13,7 +13,6 @@ const MENUS = [
     children: [
       { key: "allHospitals", label: "전체 병원 정보", to: "/admin/hospitals" },
       { key: "myHospital", label: "내 병원 정보", to: "/admin/hospitals/me" },
-      { key: "hours", label: "운영시간/휴무변경", to: "/admin/hospitals/hours" },
     ],
   },
   { key: "reservations", label: "예약관리", to: "/admin/reservations", icon: "fa-calendar-check" },
@@ -24,7 +23,6 @@ const MENUS = [
     ],
   },
   { key: "chats", label: "1:1문의", to: "/admin/inquiry", icon: "fa-comments" },
-  { key: "settings", label: "설정", to: "/admin/settings", icon: "fa-cog" },
 ];
 
 export default function Sidebar() {

@@ -1,7 +1,8 @@
-import "../../assets/styles/Login.css";   // ✅ 원래 경로 그대로
+// src/pages/user/Login.jsx
+import "../../assets/styles/Login.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext"; // ✅ 원래 경로 그대로
+import { useAuth } from "../../AuthContext";
 
 function Login() {
   const [userId,    setUserId]    = useState("");
@@ -13,16 +14,14 @@ function Login() {
   const { getMeAndSetUser } = useAuth();
   const navigate = useNavigate();
 
+  /* ── 로그인 제출 ── */
   const handleLogin = async (e) => {
     e.preventDefault();
-
     if (!userId.trim() || !userPw.trim()) {
       alert("아이디와 비밀번호를 모두 입력해주세요.");
       return;
     }
-
     setIsLoading(true);
-
     try {
       const response = await fetch("/api/v1/auth/login", {
         method: "POST",
@@ -30,30 +29,19 @@ function Login() {
         credentials: "include",
         body: JSON.stringify({ userId, userPw, keepLogin }),
       });
-
       if (!response.ok) {
-        const errText = await response.text().catch(() => "");
-        console.error("로그인 실패:", response.status, errText);
         alert("아이디 또는 비밀번호를 확인하세요.");
         return;
       }
-
       const data = await response.json();
-
-      if (data.accessToken) {
-        localStorage.setItem("accessToken", data.accessToken);
-      }
-
+      if (data.accessToken) localStorage.setItem("accessToken", data.accessToken);
       const me = await getMeAndSetUser();
-
       if (!me) {
         alert("사용자 정보를 불러오지 못했습니다. 다시 로그인해주세요.");
         localStorage.removeItem("accessToken");
         return;
       }
-
       navigate("/");
-
     } catch (error) {
       console.error("로그인 중 에러 발생:", error);
       alert("서버와 통신 중 오류가 발생했습니다.");
@@ -61,24 +49,26 @@ function Login() {
       setIsLoading(false);
     }
   };
-  //http://localhost:8080/api/v1/auth/kakao
-  //http://localhost:3000/kakao/callback
-  //http://localhost:3000/api/v1/auth/kakao
-  const REST_API_KEY = '8b93cc51be9307b47fbf3b5d6883de0d';
-  const REDIRECT_URI = 'http://localhost:3000/kakao/callback';
-  const KAKAO_AUTH_URL =`https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
 
-  const handleKakaoLogin = () => { 
-    window.location.href = KAKAO_AUTH_URL; //사용자를 카카오 로그인 창으로 보내는 코드
-  }; 
+  /* ── 카카오 로그인 ── */
+  const REST_API_KEY  = "8b93cc51be9307b47fbf3b5d6883de0d";
+  const REDIRECT_URI  = "http://localhost:3000/kakao/callback";
+  const handleKakaoLogin = () => {
+    window.location.href =
+      `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}` +
+      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+  };
 
   return (
     <div className="login-page">
+      {/* 배경 블롭 */}
       <div className="login-blob login-blob-1" />
       <div className="login-blob login-blob-2" />
 
       <div className="login-wrapper">
         <div className="login-card">
+
+          {/* ── 카드 헤더 ── */}
           <div className="login-card-header">
             <h1 className="login-card-title">로그인</h1>
             <p className="login-card-subtitle">
@@ -86,7 +76,10 @@ function Login() {
             </p>
           </div>
 
+          {/* ── 폼 ── */}
           <form className="login-form" onSubmit={handleLogin}>
+
+            {/* 아이디 */}
             <div className="login-field">
               <label className="login-label">
                 <i className="fas fa-user" /> 아이디
@@ -104,6 +97,7 @@ function Login() {
               </div>
             </div>
 
+            {/* 비밀번호 */}
             <div className="login-field">
               <label className="login-label">
                 <i className="fas fa-lock" /> 비밀번호
@@ -128,6 +122,7 @@ function Login() {
               </div>
             </div>
 
+            {/* 로그인 상태 유지 */}
             <div className="login-options">
               <label className="login-keep-label">
                 <input
@@ -142,33 +137,60 @@ function Login() {
                 <span>로그인 상태 유지</span>
               </label>
             </div>
-            <div className="circle" onClick={handleKakaoLogin}></div>
+
+            {/* 로그인 버튼 */}
             <button
               type="submit"
               className="login-submit-btn"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <><i className="fas fa-spinner fa-spin" /> 로그인 중...</>
-              ) : (
-                "로그인"
-              )}
+              {isLoading
+                ? <><i className="fas fa-spinner fa-spin" /> 로그인 중...</>
+                : <><i className="fas fa-right-to-bracket" /> 로그인</>}
             </button>
+
+            {/* ✅ 구분선 */}
+            <div className="login-divider">
+              <span>또는 소셜 계정으로 로그인</span>
+            </div>
+
+            {/* ✅ 카카오 로그인 버튼 (circle div 제거 → 정식 버튼으로 교체) */}
+            <button
+              type="button"
+              className="login-kakao-btn"
+              onClick={handleKakaoLogin}
+            >
+              <img
+                src="/kakao_icon.png"
+                alt=""
+                className="login-kakao-icon"
+                onError={(e) => { e.currentTarget.style.display = "none"; }}
+              />
+              <span>카카오로 로그인</span>
+            </button>
+
           </form>
 
+          {/* ── 하단 링크 (아이디 찾기 | 회원가입) ── */}
           <div className="login-footer-links">
-            <Link to="/find/id"  className="login-link">아이디 찾기</Link>
-            {/* <span className="login-link-divider">|</span> */}
-            {/* <Link to="/resetPw"  className="login-link">비밀번호 재설정</Link> */}
+            <Link to="/find/id" className="login-link">아이디 찾기</Link>
             <span className="login-link-divider">|</span>
-            <Link to="/signup"   className="login-link strong">회원가입</Link>
+            <Link to="/signup"  className="login-link strong">
+              회원가입 <i className="fas fa-arrow-right" />
+            </Link>
           </div>
-        </div>
 
+        </div>
+        {/* // login-card */}
+
+        {/* ✅ 카드 밖 회원가입 유도 CTA (UserSignup의 su-admin-cta와 동일 구조) */}
         <div className="login-signup-cta">
           <span>아직 계정이 없으신가요?</span>
-          <Link to="/signup" className="login-signup-link">회원가입하기</Link>
+          <Link to="/signup" className="login-signup-link">
+            회원가입하기 <i className="fas fa-arrow-right" />
+          </Link>
         </div>
+
       </div>
     </div>
   );
