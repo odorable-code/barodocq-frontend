@@ -1696,7 +1696,7 @@ const ReservationCard = ({
     </div>
     <div className="mp-res-actions">
       <span className="mp-res-chip upcoming">{reStatus}</span>
-      {!["예약대기", "예약확정"].includes(reStatus) ? null : (
+      {!["예약대기"].includes(reStatus.trim()) ? null : (
         <button className="mp-res-cancel" onClick={onCancel}>
           취소
         </button>
