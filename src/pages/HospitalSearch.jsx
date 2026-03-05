@@ -184,49 +184,43 @@ const getTodayKoreanDay = () => {
   return days[new Date().getDay()];
 };
 
-// ✅ 수정 전
-// async function fetchHospitals(params = {}) {
-//   const cleaned = Object.fromEntries(
-//     Object.entries(params).filter(
-//       ([_, v]) => v !== null && v !== undefined && v !== "",
-//     ),
-//   );
-//   const qs = new URLSearchParams(cleaned).toString();
-//   const url = `${API_BASE_URL}/api/v1/hospitals/cards${qs ? `?${qs}` : ""}`;
 
-//   const res = await fetch(url, { method: "GET" });
-
-//   if (!res.ok) {
-//     const text = await res.text().catch(() => "");
-//     throw new Error(
-//       `병원 목록 조회 실패 (status: ${res.status})\n${text.slice(0, 200)}`,
-//     );
-//   }
-
-//   const data = await res.json();
-//   return Array.isArray(data) ? data : (data?.content ?? []);
-// }
-
-// ✅ 수정 후 (토큰 추가)
 async function fetchHospitals(params = {}) {
   const cleaned = Object.fromEntries(
     Object.entries(params).filter(([_, v]) => v !== null && v !== undefined && v !== "")
   );
-  const qs = new URLSearchParams(cleaned).toString();
-  const url = `${API_BASE_URL}/api/v1/hospitals/cards-new${qs ? `?${qs}` : ""}`;
 
-  const accessToken = localStorage.getItem("accessToken"); // 토큰 가져오기
+  // ✅ 초기 20개만 받기(백엔드가 page/size 받는다는 가정)
+  // 백엔드 파라미터명이 limit이면 size 대신 limit로 바꾸면 됨
+  if (!cleaned.page) cleaned.page = 1;
+  if (!cleaned.size) cleaned.size = 20;
+
+  const qs = new URLSearchParams(cleaned).toString();
+  const url = `${API_BASE_URL}/api/v1/hospitals/cards${qs ? `?${qs}` : ""}`;
+
+  const accessToken = localStorage.getItem("accessToken");
+
   const res = await fetch(url, {
     method: "GET",
     headers: {
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), // 토큰 추가
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      Accept: "application/json",
     },
+    // ✅ 쿠키 기반 인증도 같이 쓰면(서버가 그럴 경우) 이거 필요
+    // credentials: "include",
   });
 
-  if (!res.ok) { /* 에러 처리 */ }
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `병원 목록 조회 실패 (status: ${res.status})\n${text.slice(0, 300)}`
+    );
+  }
+
   const data = await res.json();
   return Array.isArray(data) ? data : (data?.content ?? []);
 }
+
 
 // ✅ 찜(scraps) 토글
 async function toggleHospitalScrap(hospitalId) {
@@ -425,7 +419,6 @@ export default function HospitalSearch() {
     return params;
   }, [searchQuery, selectedDept, region]);
 
-  // ✅ 병원 데이터 로드 + 1개 병원=1카드로 정리
   useEffect(() => {
     let ignore = false;
 
@@ -435,32 +428,47 @@ export default function HospitalSearch() {
 
       try {
         const list = await fetchHospitals(queryParams);
+
+        // ✅ 여기서 찍으면 됨 (프론트에서 서버 응답 확인)
+        console.log("hospital raw list length:", list?.length);
+        console.log("hoNum sample:", (list ?? []).slice(0, 20).map((x) => x.hoNum));
+        console.log(
+          "deptNames sample:",
+          (list ?? []).slice(0, 5).map((x) => x.deptNames),
+        );
+
         const today = getTodayKoreanDay();
         const byId = new Map();
 
-        // 🔥 [추가] 서버에서 받아온 찜 목록을 저장할 임시 Set
+        // 🔥 서버에서 받아온 찜 목록 임시 저장
         const initialBookmarks = new Set();
 
         for (let i = 0; i < list.length; i++) {
           const r = list[i];
           const id = r.hoNum ?? r.ho_num ?? i + 1;
 
-          // 🔥 [추가] 서버에서 준 찜 여부 확인 (필드명은 DB/API 확인 필요)
-          // 보통 isScrapped, scrapped, bookmarked 등으로 내려옵니다.
-          const isScrappedFromServer = ynToBool(r.isScrapped ?? r.scrapped ?? r.bookmarked);
-          if (isScrappedFromServer) {
-            initialBookmarks.add(id);
-          }
+          // ✅ 서버 찜 여부
+          const isScrappedFromServer = ynToBool(
+            r.isScrapped ?? r.scrapped ?? r.bookmarked,
+          );
+          if (isScrappedFromServer) initialBookmarks.add(id);
 
           const openYn = ynToBool(r.hhOpenYn ?? r.hh_open_yn);
           const day = r.hhDayOfWeek ?? r.hh_day_of_week;
 
+          // ✅ 병원 1개 최초 생성
           if (!byId.has(id)) {
             const night = ynToBool(r.hoNightYn ?? r.ho_night_yn) === true;
             const holiday = ynToBool(r.hoHolidayYn ?? r.ho_holiday_yn) === true;
             const reservable =
               ynToBool(r.hoReservableYn ?? r.ho_reservable_yn) === true;
             const parking = ynToBool(r.hoParking ?? r.ho_parking) === true;
+
+            // ✅ 핵심: deptNames(콤마 문자열) → 배열로 변환해서 태그로 사용
+            const deptNamesArr = String(r.deptNames ?? "")
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
 
             const photo = r.hoPhoto ?? r.ho_photo;
             const thumbnail =
@@ -471,11 +479,14 @@ export default function HospitalSearch() {
             byId.set(id, {
               id,
               name: r.hoName ?? r.ho_name ?? "병원명",
-              dept: r.deptName ?? r.dept_name ?? "",
+              dept: r.deptName ?? "", // 대표 진료과(표시용)
+              departments: deptNamesArr, // ✅ 진료과목 태그(여러개)
+
               lat: pickFirstNumber(r.hoLat, r.ho_lat, r.lat),
               lng: pickFirstNumber(r.hoLng, r.ho_lng, r.lng),
               address: r.hoAddr ?? r.ho_addr ?? "",
               phone: r.hoPhone ?? r.ho_phone ?? "",
+
               rating: pickFirstNumber(r.rvRating, r.rv_rating, r.rating),
               reviews: pickFirstNumber(
                 r.rvReviewCount,
@@ -490,6 +501,7 @@ export default function HospitalSearch() {
                 r.rvCount,
                 r.rv_count,
               ),
+
               distance: r.distance ?? "0km",
               thumbnail,
 
@@ -563,12 +575,9 @@ export default function HospitalSearch() {
           if (tags.includes("parking")) features.push("주차가능");
 
           const apiClosed = String(acc.closedTextFromApi ?? "").trim();
-
           const closedText =
             apiClosed ||
-            (acc.closedDays.length
-              ? acc.closedDays.join(", ")
-              : "휴진일 정보 없음");
+            (acc.closedDays.length ? acc.closedDays.join(", ") : "휴진일 정보 없음");
 
           const hasCoord = acc.lat != null && acc.lng != null;
           const distKm = hasCoord
@@ -585,15 +594,15 @@ export default function HospitalSearch() {
             closedText,
             distanceKm: distKm,
             distance:
-              distKm != null
-                ? `${distKm.toFixed(1)}km`
-                : (acc.distance ?? "0km"),
+              distKm != null ? `${distKm.toFixed(1)}km` : (acc.distance ?? "0km"),
           };
         });
 
-        if (!ignore)
+        // ✅ 중괄호로 묶어서 ignore일 때 둘 다 막기
+        if (!ignore) {
           setHospitals(mapped);
-          setBookmarkedHospitals(initialBookmarks); // 🔥 [중요] 받아온 찜 상태를 상태값에 반영!
+          setBookmarkedHospitals(initialBookmarks);
+        }
       } catch (e) {
         if (!ignore) {
           setHospitals([]);
@@ -1044,6 +1053,53 @@ function HospitalDetailCard({
     ? Number(hospital.reviews)
     : 0;
 
+  const renderDeptBadges = (departments = []) => {
+      const shown = departments.slice(0, 2);
+      const extra = Math.max(0, departments.length - shown.length);
+
+      return (
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: 6 }}>
+          {shown.map((name) => (
+            <span
+              key={name}
+              style={{
+                padding: "0.2rem 0.6rem",
+                background: "rgba(20,184,166,0.10)",
+                color: "var(--primary-dark-teal)",
+                borderRadius: "999px",
+                fontSize: "0.78rem",
+                fontWeight: 900,
+                border: "1px solid var(--border-color)",
+                whiteSpace: "nowrap",
+                lineHeight: 1.2,
+              }}
+            >
+              {name}
+            </span>
+          ))}
+
+          {extra > 0 && (
+            <span
+              style={{
+                padding: "0.2rem 0.55rem",
+                background: "#fff",
+                color: "var(--text-muted)",
+                borderRadius: "999px",
+                fontSize: "0.78rem",
+                fontWeight: 900,
+                border: "1px dashed var(--border-color)",
+                whiteSpace: "nowrap",
+                lineHeight: 1.2,
+              }}
+              title={departments.join(", ")}
+            >
+              +{extra}
+            </span>
+          )}
+        </div>
+      );
+    };
+
   return (
     <article
       className={`hdc ${isOpenNow ? "hdc--open" : "hdc--closed"}`}
@@ -1146,15 +1202,43 @@ function HospitalDetailCard({
               점심시간: {hospital.lunchTime}
             </p>
           )}
-
+          
+          {/*휴진일*/}
           {hospital.closedText && (
             <p className="hdc__hours">
               <i className="fas fa-calendar-xmark" />
               {hospital.closedText}
             </p>
           )}
+
+          {/* ✅ 진료과목 태그 */}
+          {(hospital.departments?.length ?? 0) > 0 && (
+            <div className="hdc__tags" onClick={(e) => e.stopPropagation()}>
+              {hospital.departments.slice(0, expanded ? 999 : 4).map((name) => (
+                <span key={name} className="hdc__tag">
+                  {name}
+                </span>
+              ))}
+
+              {/* 더보기 */}
+              {!expanded && hospital.departments.length > 4 && (
+                <span
+                  className="hdc__tag hdc__tag--more"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpanded(true);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  +{hospital.departments.length - 4}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
+      
 
       <div className="hdc__actions" onClick={(e) => e.stopPropagation()}>
         <button
