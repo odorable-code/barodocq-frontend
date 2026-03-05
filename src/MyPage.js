@@ -2,27 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import "./MyPage.css";
 import { useAuth } from "./AuthContext";
 import { authFetch } from "./utils/AuthFetch";
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "./WebSocketContext";
 
 
 /* ─────────────────────────────────────────
    데이터 상수
 ───────────────────────────────────────── */
 
-
-const RESERVATIONS = [
-  { id: 1, hospital: "서울아동병원",   dept: "소아청소년과", date: "2026-03-05", time: "14:30", status: "예정" },
-  { id: 2, hospital: "강남메디컬센터", dept: "내과",         date: "2026-03-12", time: "10:00", status: "예정" },
-  { id: 3, hospital: "이대목동병원",   dept: "신경과",       date: "2026-04-01", time: "09:00", status: "예정" },
-  { id: 4, hospital: "세브란스병원",   dept: "정형외과",     date: "2026-04-10", time: "11:30", status: "예정" },
-];
-
-
-const RECENT_REVIEWS = [
-  { id: 1, hospital: "한강정형외과의원", dept: "정형외과", rating: 5, text: "친절하고 대기 시간도 짧았어요.", date: "2026-02-10" },
-  { id: 2, hospital: "밝은눈안과",       dept: "안과",    rating: 4, text: "시설이 깔끔하고 선생님이 자세히 설명해주셨습니다.", date: "2026-01-25" },
-  { id: 3, hospital: "서울아동병원",      dept: "소아청소년과", rating: 5, text: "아이가 무서워했는데 선생님이 너무 잘 달래줘서 감사했어요.", date: "2025-12-30" },
-  { id: 4, hospital: "강남메디컬센터",    dept: "내과",    rating: 3, text: "대기 시간이 조금 길었지만 진료는 만족스러웠습니다.", date: "2025-11-18" },
-];
 
 const NOTICES = [
   { id: 1, title: "2026년 설 연휴 운영 안내", date: "2026-01-20", isNew: true },
@@ -32,24 +19,6 @@ const NOTICES = [
   { id: 5, title: "연말 이벤트: 포인트 2배 적립!", date: "2025-12-10", isNew: false },
 ];
 
-const NOTIFICATIONS = [
-  { id: 1, icon: "calendar-check", color: "#14b8a6", title: "예약 확정", desc: "서울아동병원 소아청소년과 예약이 확정되었습니다.", time: "10분 전", isRead: false },
-  { id: 2, icon: "star",           color: "#f59e0b", title: "후기 작성 요청", desc: "강남메디컬센터 방문 후기를 작성해주세요!", time: "1시간 전", isRead: false },
-  { id: 3, icon: "gift",           color: "#8b5cf6", title: "포인트 적립", desc: "진료 완료로 50P가 적립되었습니다.", time: "3시간 전", isRead: false },
-  { id: 4, icon: "bell",           color: "#0d9488", title: "공지사항", desc: "앱 버전 업데이트 안내입니다.", time: "1일 전", isRead: true },
-  { id: 5, icon: "heart",          color: "#ef4444", title: "찜 병원 알림", desc: "찜한 병원 '밝은눈안과'에 이벤트가 있습니다!", time: "2일 전", isRead: true },
-];
-
-const QNA_LIST = [
-  { id: 1, title: "예약 취소 시 환불이 되나요?", date: "2026-01-22", status: "답변완료", answer: "네, 예약 취소는 진료 24시간 전까지 가능하며 결제 금액은 전액 환불됩니다." },
-  { id: 2, title: "비급여 진료도 예약할 수 있나요?", date: "2026-01-10", status: "답변완료", answer: "일부 비급여 항목은 예약이 가능합니다. 병원별 상세 안내를 확인해주세요." },
-  { id: 3, title: "앱에서 처방전 발급이 가능한가요?", date: "2025-12-20", status: "답변대기", answer: null },
-];
-
-const CHAT_LIST = [
-  { id: 1, hospital: "서울아동병원", lastMsg: "안녕하세요! 예약 관련 문의 주셨는데요.", time: "오후 2:30", unread: 1 },
-  { id: 2, hospital: "강남메디컬센터", lastMsg: "감사합니다. 내방 시 신분증을 꼭 지참해주세요.", time: "어제", unread: 0 },
-];
 
 const TERMS_TEXT = `제1조 (목적)
 이 약관은 헬스케어 서비스(이하 "서비스")를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -220,10 +189,10 @@ const NotificationsModal = ({ isOpen, onClose, notifications, setNotifications }
 /* 내 Q&A */
 const QnaModal = ({ isOpen, onClose, myQNA }) => {
   const [expanded, setExpanded] = useState(null);
-
+  const navigator = useNavigate();
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="내 Q&A" size="md" icon="comments" iconBg="linear-gradient(135deg,#0d9488,#0f766e)">
-      <button className="mp-btn mp-btn-full" style={{ marginBottom: "1rem" }}>
+      <button className="mp-btn mp-btn-full" style={{ marginBottom: "1rem" }} onClick={() => navigator("/qna/write")}>
         <i className="fas fa-plus" /> 문의하기
       </button>
       <div className="mp-list">
@@ -335,22 +304,29 @@ const EditReviewModal = ({ isOpen, review, onClose, onSave }) => {
 };
 
 /* 채팅 */
-const ChatModal = ({ isOpen, onClose, messages, setMessages }) => {
-  const [activeChat, setActiveChat] = useState(null);
+const ChatModal = ({ isOpen, onClose }) => {
   const [msg, setMsg] = useState("");
+  const { 
+    activeChatRoom, 
+    setActiveChatRoom, 
+    messages,         // 소켓이 관리하는 전체 메시지 객체
+    sendMessage, 
+    chatRooms,
+    chatEndRef        // 소켓 컨텍스트에 이미 선언된 ref 활용 가능
+  } = useSocket();
+  const currentChatHistory = activeChatRoom ? messages[activeChatRoom.id] || [] : [];
   const send = () => {
     if (!msg.trim()) return;
-    setMessages(prev => [...prev, { id: Date.now(), from: "me", text: msg, time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }) }]);
+    sendMessage(msg);
     setMsg("");
   };
-
   
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="채팅" size="lg" icon="comment-dots" iconBg="linear-gradient(135deg,#14b8a6,#0d9488)">
-      {!activeChat ? (
+      {!activeChatRoom ? (
         <div className="mp-list">
-          {messages.map(c => (
-            <div key={c.id} className="mp-list-item mp-chat-row" onClick={() => setActiveChat(c)}>
+          {chatRooms.map(c => (
+            <div key={c.id} className="mp-list-item mp-chat-row" onClick={async () => /*await fetchChatHistory(c.id) &&*/ setActiveChatRoom(c) }>
               <div className="mp-list-icon" style={{ background: "#14b8a622", color: "#14b8a6" }}>
                 <i className="fas fa-hospital" />
               </div>
@@ -367,16 +343,17 @@ const ChatModal = ({ isOpen, onClose, messages, setMessages }) => {
         </div>
       ) : (
         <div className="mp-chat-room">
-          <button className="mp-back-btn" onClick={() => setActiveChat(null)}>
-            <i className="fas fa-arrow-left" /> {activeChat.hospital}
+          <button className="mp-back-btn" onClick={() => setActiveChatRoom(null)}>
+            <i className="fas fa-arrow-left" />{activeChatRoom.hospitalName} 
           </button>
           <div className="mp-chat-messages">
-            {messages.map(m => (
-              <div key={m.id} className={`mp-chat-bubble-wrap ${m.from === "me" ? "me" : "them"}`}>
+            {currentChatHistory.map(m => (
+              <div key={m.id} className={`mp-chat-bubble-wrap ${m.from === "user" ? "me" : "them"}`}>
                 <div className="mp-chat-bubble">{m.text}</div>
                 <span className="mp-chat-time">{m.time}</span>
               </div>
             ))}
+            <div ref={chatEndRef} />
           </div>
           <div className="mp-chat-input-row">
             <input
@@ -384,7 +361,7 @@ const ChatModal = ({ isOpen, onClose, messages, setMessages }) => {
               value={msg}
               onChange={e => setMsg(e.target.value)}
               placeholder="메시지를 입력하세요..."
-              onKeyDown={e => e.key === "Enter" && send()}
+              onKeyPress={e => e.key === "Enter" && send()}
             />
             <button className="mp-btn mp-btn-icon" onClick={send}>
               <i className="fas fa-paper-plane" />
@@ -664,10 +641,10 @@ const MyPage = () => {
     { id: 3, from: "hospital", text: "네, 가능합니다. 원하시는 날짜를 알려주세요.", time: "14:30" },
   ]);
   const [notifications, setNotifications] = useState([]);
-  const [hospitalHours, setHospitalHours] = useState([]);
   const [form, setForm] = useState({});
+  const [chatRooms, setChatRooms] = useState([]);
 
-  // 모달 상태
+  // 모달 상ㄹ
   const [modal, setModal] = useState(null); // 'points' | 'reservationAll' | 'historyAll' | 'scrapAll' | 'notifications' | 'qna' | 'reviews' | 'chat' | 'editProfile' | 'changePassword' | 'security' | 'notices' | 'support' | 'terms' | 'logout' | 'withdraw' | 'cancelConfirm'
   const [cancelTarget, setCancelTarget] = useState(null);
 
@@ -680,40 +657,72 @@ const MyPage = () => {
   useEffect(() => {
     if (!auth?.user) return;
     async function fetchScraps() {
-      const result = await authFetch("/api/v1/hospitals/me/scraps?limit=1000");
-      if (result.ok) { const data = await result.json(); setScraps(data); }
+      try {
+        const result = await authFetch("/api/v1/hospitals/me/scraps?limit=1000");
+        if (result.ok) { const data = await result.json(); setScraps(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function fetchHistories() {
-      const result = await authFetch("/api/v1/reviews/me");
-      if (result.ok) { const data = await result.json(); setReviews(data); }
+      try {
+        const result = await authFetch("/api/v1/reviews/me");
+        if (result.ok) { const data = await result.json(); setReviews(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function fetchReservaions() {
-      const result = await authFetch("/api/v1/reservations/my");
-      if (result.ok) { const data = await result.json(); setReservations(data); }
+      try {
+        const result = await authFetch("/api/v1/reservations/my");
+        if (result.ok) { const data = await result.json(); setReservations(data); }
+      } catch (err) {
+        console.error(err);
+      }
     } 
 
     async function fetchQNAs() {
-      const resp = await authFetch('/api/v1/qnas/answers')
-      if (resp.ok) { const data = await resp.json(); setMyQNA(data); }
+      try {
+        const resp = await authFetch('/api/v1/qnas')
+        if (resp.ok) {
+          let data = await resp.json();
+          data = data.filter(q => q.userNum === auth.user.num);
+          setMyQNA(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    async function fetchChatHistory() {
-      const resp = await authFetch(`/api/chat/rooms/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setMessages(data); }
+    async function fetchChatRooms() {
+      try {
+        const resp = await authFetch(`/api/chat/rooms/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setChatRooms(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     const fetchNotifications = async () => {
-      const resp = await authFetch(`/api/v1/notifications/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setNotifications(data); }
+      try {
+        const resp = await authFetch(`/api/v1/notifications/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setNotifications(data); }
+      } catch (err) {
+        console.error(err);
+      }
     }
     async function fetchUserInfo() {
-      const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
-      if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
+      try {
+        const resp = await authFetch(`/api/v1/users/${auth.user.num}`);
+        if (resp.ok) { const data = await resp.json(); setForm({name: data.userName, email: data.userEmail, phone: data.userPhone, birth: data.userBirth }); }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    fetchChatHistory();
+    fetchChatRooms();
     fetchScraps();
     fetchHistories();
     fetchReservaions();
@@ -725,12 +734,30 @@ const MyPage = () => {
   if (!auth) return null;
   const { user } = auth;
   
-
   scraps.forEach(async d => {
-    const resp = await authFetch(`/api/v1/hospitals/${d.ho_num}/hours/available`);
-    const status = await resp.text();
-    d.status = status;
+    try {
+      const resp = await authFetch(`/api/v1/hospitals/${d.ho_num}/hours/available`);
+      const status = await resp.text();
+      d.status = status;
+    } catch (err) {
+      console.error(err);
+      d.status = "확인요망";
+    }
   });
+
+  reservations.forEach(async r => {
+    try {
+      const resp = await authFetch(`/api/v1/reservations/finished/${r.reNum}`);
+      const isFinished = await resp.json();
+      if (isFinished && !['예약거절', '예약취소', '진료완료'].includes(r.reStatus)) {
+        r.reStatus = "진료완료";
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+ 
+
   const openModal = (type) => setModal(type);
   const closeModal = () => setModal(null);
 
@@ -747,7 +774,7 @@ const MyPage = () => {
       { id: 1, icon: "bell",         title: "알림",       badge: notifications.length,    color: "#14b8a6" },
       { id: 2, icon: "comments",     title: "내 Q&A",     badge: myQNA.length, color: "#0d9488" },
       { id: 3, icon: "star",         title: "나의 후기",  badge: reviews.length,    color: "#0f766e" },
-      { id: 4, icon: "comment-dots", title: "채팅",       badge: messages.length,    color: "#14b8a6" },
+      { id: 4, icon: "comment-dots", title: "채팅",       badge: chatRooms.length,    color: "#14b8a6" },
     ],
   },
   {
@@ -768,7 +795,7 @@ const MyPage = () => {
 ];
   const handleCancelReservation = (r) => { setCancelTarget(r); openModal("cancelConfirm"); };
   const confirmCancel = () => {
-    setReservations(prev => prev.filter(r => r.reNum !== cancelTarget?.reNum));
+    cancelTarget.reStatus = "예약취소"; 
     (async () => {
       await authFetch(`/api/v1/reservations/${cancelTarget.reNum}/cancel`, {
         method: "PUT"
@@ -941,7 +968,7 @@ const MyPage = () => {
       <NotificationsModal   isOpen={modal === "notifications"}   onClose={closeModal} notifications={notifications} setNotifications={setNotifications}/>
       <QnaModal             isOpen={modal === "qna"}             onClose={closeModal} myQNA={myQNA}/>
       <ReviewsModal         isOpen={modal === "reviews"}         onClose={closeModal} reviews={reviews} setReviews={setReviews}/>
-      <ChatModal            isOpen={modal === "chat"}            onClose={closeModal} messages={messages} setMessages={setMessages}/>
+      <ChatModal            isOpen={modal === "chat"}            onClose={closeModal} chatRooms={chatRooms} />
       <EditProfileModal     isOpen={modal === "editProfile"}     onClose={closeModal} form={form} setForm={setForm} />
       <ChangePasswordModal  isOpen={modal === "changePassword"}  onClose={closeModal} />
       <NoticesModal         isOpen={modal === "notices"}         onClose={closeModal} />
@@ -998,7 +1025,7 @@ const ReservationCard = ({ hoName, deptName, reDate, reTime, reStatus, onCancel 
     </div>
     <div className="mp-res-actions">
       <span className="mp-res-chip upcoming">{reStatus}</span>
-      <button className="mp-res-cancel" onClick={onCancel}>취소</button>
+      { !["예약대기", "예약확정"].includes(reStatus) ? null : <button className="mp-res-cancel" onClick={onCancel}>취소</button>}
     </div>
   </div>
 );
