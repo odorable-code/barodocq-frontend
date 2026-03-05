@@ -50,22 +50,28 @@ export function WebSocketProvider({ children }) {
     if (!u) return;
     try {
       const token = localStorage.getItem("accessToken");
-
       const res = await fetch(getRoomsUrl(u), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return;
       const rooms = await res.json();
+
+      // ✅ 진단용 로그
       console.log("[DEBUG] fetchRooms rooms:", rooms);
+      console.log("[DEBUG] isAdmin(u):", isAdmin(u));
+      if (rooms[0]) {
+        console.log("[DEBUG] room[0].patientName:", rooms[0].patientName);
+        console.log("[DEBUG] room[0].patientId:", rooms[0].patientId);
+      }
+
       setChatRooms(rooms);
       const total = rooms.reduce((s, r) => s + (r.unread || 0), 0);
       setTabTitle(total);
     } catch (e) {
       console.error("fetchRooms 오류:", e);
     }
-  };
+};
+
 
   // ─── REST: 메시지 기록 ────────────────────────────────────────
   const fetchMessages = async (roomId) => {

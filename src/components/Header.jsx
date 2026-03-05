@@ -573,40 +573,46 @@ const Header = ({ onOpenReservation }) => {
                   <p>병원 찾기에서 1:1 대화를 시작해보세요</p>
                 </div>
               ) : (
-                chatRooms.map((room) => (
-                  <div
-                    key={room.id}
-                    className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
-                    onClick={() => setActiveChatRoom(room)}
-                  >
-                    <div className="hdr__cr-avatar">
-                      {/* 🌟 환자 아이디가 없으면 번호라도 띄워서 첫 글자 추출 */}
-                      {isAdmin
-                        ? (room.patientName || room.patientId || "?").toString().substring(0, 1).toUpperCase()
-                        : room.avatar}
-                    </div>
-                    <div className="hdr__cr-info">
-                      <div className="hdr__cr-top">
-                        <span className="hdr__cr-name">
-                          {/* 🌟 방 이름도 확실하게 출력 */}
-                          {isAdmin 
-                            ? (room.patientName || `환자 ${room.patientId}`) 
-                            : room.hospitalName}
-                        </span>
-                        <span className="hdr__cr-time">{room.lastTime}</span>
+                chatRooms.map((room) => {
+                  const displayName = isAdmin
+                    ? room.patientName && room.patientName.trim() !== ""
+                      ? room.patientName
+                      : room.patientId
+                        ? `환자 ${room.patientId}`
+                        : "알수없음"
+                    : room.hospitalName;
+
+                  const avatarChar = displayName.charAt(0).toUpperCase();
+
+                  return (
+                    <div
+                      key={room.id}
+                      className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
+                      onClick={() => setActiveChatRoom(room)}
+                    >
+                      <div className="hdr__cr-avatar">
+                        {isAdmin ? avatarChar : room.avatar}
                       </div>
-                      <div className="hdr__cr-bottom">
-                        <span className="hdr__cr-last">
-                          {room.lastMsg || "대화를 시작해보세요"}
-                        </span>
-                        {room.unread > 0 && (
-                          <span className="hdr__cr-unread">{room.unread}</span>
-                        )}
+                      <div className="hdr__cr-info">
+                        <div className="hdr__cr-top">
+                          <span className="hdr__cr-name">{displayName}</span>
+                          <span className="hdr__cr-time">{room.lastTime}</span>
+                        </div>
+                        <div className="hdr__cr-bottom">
+                          <span className="hdr__cr-last">
+                            {room.lastMsg || "대화를 시작해보세요"}
+                          </span>
+                          {room.unread > 0 && (
+                            <span className="hdr__cr-unread">
+                              {room.unread}
+                            </span>
+                          )}
+                        </div>
+                        <span className="hdr__cr-dept">{room.dept}</span>
                       </div>
-                      <span className="hdr__cr-dept">{room.dept}</span>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -718,13 +724,21 @@ const Header = ({ onOpenReservation }) => {
             </button>
             <div className="hdr__cw-avatar">
               {isAdmin
-                ? (activeChatRoom.patientName || activeChatRoom.patientId || "?").toString().substring(0, 1).toUpperCase()
+                ? (
+                    activeChatRoom.patientName ||
+                    activeChatRoom.patientId ||
+                    "?"
+                  )
+                    .toString()
+                    .substring(0, 1)
+                    .toUpperCase()
                 : activeChatRoom.avatar}
             </div>
             <div className="hdr__cw-hinfo">
               <span className="hdr__cw-hname">
-                {isAdmin 
-                  ? (activeChatRoom.patientName || `환자 ${activeChatRoom.patientId}`) 
+                {isAdmin
+                  ? activeChatRoom.patientName ||
+                    `환자 ${activeChatRoom.patientId}`
                   : activeChatRoom.hospitalName}
               </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
@@ -739,7 +753,7 @@ const Header = ({ onOpenReservation }) => {
               // 🌟 isMine 변수가 선언되는 매우 중요한 부분!
               const isFromHospital = msg.from?.startsWith("hospital");
               const isMine = isAdmin ? isFromHospital : !isFromHospital;
-              
+
               return (
                 <div
                   key={msg.id || i}
@@ -748,10 +762,12 @@ const Header = ({ onOpenReservation }) => {
                   {/* 🌟 수정했던 상대방 아바타 표시 부분 */}
                   {!isMine && (
                     <div className="hdr__cw-msg-avatar">
-                      {isAdmin ? activeChatRoom.patientName?.substring(0, 1) : activeChatRoom.avatar}
+                      {isAdmin
+                        ? activeChatRoom.patientName?.substring(0, 1)
+                        : activeChatRoom.avatar}
                     </div>
                   )}
-                  
+
                   <div className="hdr__cw-msg-wrap">
                     <div
                       className="hdr__cw-bubble"
