@@ -719,13 +719,8 @@ const Header = ({ onOpenReservation }) => {
             </div>
             <div className="hdr__cw-hinfo">
               <span className="hdr__cw-hname">
-                {!isMine && (
-                  <div className="hdr__cw-msg-avatar">
-                    {isAdmin
-                      ? activeChatRoom.patientName?.substring(0, 1)
-                      : activeChatRoom.avatar}
-                  </div>
-                )}
+                {/* ✅ 정상적으로 방 이름만 출력되도록 수정 */}
+                {isAdmin ? activeChatRoom.patientName : activeChatRoom.hospitalName}
               </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
             </div>
@@ -736,18 +731,22 @@ const Header = ({ onOpenReservation }) => {
 
           <div className="hdr__cw-body">
             {(messages[activeChatRoom.id] || []).map((msg, i) => {
+              // 🌟 isMine 변수가 선언되는 매우 중요한 부분!
               const isFromHospital = msg.from?.startsWith("hospital");
               const isMine = isAdmin ? isFromHospital : !isFromHospital;
+              
               return (
                 <div
                   key={msg.id || i}
                   className={`hdr__cw-msg hdr__cw-msg--${isMine ? "user" : "hospital"}`}
                 >
+                  {/* 🌟 수정했던 상대방 아바타 표시 부분 */}
                   {!isMine && (
                     <div className="hdr__cw-msg-avatar">
-                      {activeChatRoom.avatar}
+                      {isAdmin ? activeChatRoom.patientName?.substring(0, 1) : activeChatRoom.avatar}
                     </div>
                   )}
+                  
                   <div className="hdr__cw-msg-wrap">
                     <div
                       className="hdr__cw-bubble"
@@ -768,7 +767,6 @@ const Header = ({ onOpenReservation }) => {
                         ? new Date(msg.timestamp).toLocaleTimeString("ko-KR", {
                             hour: "2-digit",
                             minute: "2-digit",
-                            hour12: false,
                           })
                         : msg.time || ""}
                     </span>
