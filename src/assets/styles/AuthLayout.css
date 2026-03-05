@@ -1,0 +1,42 @@
+/* src/assets/styles/AuthLayout.css */
+
+body:has(.auth-layout) {
+  padding-top: 0 !important;
+}
+
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f0fdfa;
+}
+
+.auth-header {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 2.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid rgba(20, 184, 166, 0.18);
+  box-shadow: 0 2px 12px rgba(20, 184, 166, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.auth-body {
+  flex: 1;
+  width: 100%;                    /* ✅ 전체 너비 허용 */
+  display: flex;
+  align-items: flex-start;        /* ✅ center → flex-start (내용이 위로 붙음) */
+  justify-content: center;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .auth-header { padding: 0 1.25rem; height: 68px; }
+  .auth-body   { padding: 2rem 1rem; }
+}

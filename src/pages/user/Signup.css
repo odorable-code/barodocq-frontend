@@ -561,3 +561,45 @@
     text-align: center;
   }
 }
+/* ── Signup.css 하단에 추가 ── */
+
+/* 전체 래퍼: auth-body 안에서 꽉 차도록 */
+.signup-page {
+  width: 100%;
+  min-height: auto;         /* ✅ 100vh 제거 (AuthLayout이 담당) */
+  background: transparent;  /* ✅ 배경 AuthLayout에 위임 */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+}
+
+.signup-wrapper {
+  width: 100%;
+  max-width: 900px;         /* ✅ 두 카드가 넉넉하게 들어오는 너비 */
+  margin: 0 auto;
+  padding: 2rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* 카드 그리드: 두 카드 균등 배치 */
+.signup-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* 각 카드: 고정 너비 해제 */
+.signup-type-card {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .signup-card-grid {
+    grid-template-columns: 1fr;  /* 모바일: 1열 */
+  }
+}

@@ -37,6 +37,7 @@ import {
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
+import Logo from "./Logo";
 import ReservationDetailModal from "./ReservationDetailModal";
 import ReservationChangeModal from "./ReservationChangeModal";
 import ReservationCancelModal from "./ReservationCancelModal";
@@ -46,7 +47,6 @@ const NAV_ITEMS = [
   { path: "/hospitals", label: "병원 찾기", icon: faHospital },
   { path: "/mypage", label: "마이페이지", icon: faUser },
   { path: "/reviews", label: "리뷰", icon: faNotesMedical },
-  { path: "/community", label: "커뮤니티", icon: faComments },
   { path: "/qna", label: "Q&A", icon: faCircleQuestion },
 ];
 
@@ -275,15 +275,7 @@ const Header = ({ onOpenReservation }) => {
       {/* ════ 상단 바 ════ */}
       <div className="hdr__top">
         <div className="hdr__inner">
-          <Link to="/" className="hdr__logo" aria-label="홈으로">
-            <span className="hdr__logo-icon">
-              <FontAwesomeIcon icon={faHeart} />
-            </span>
-            <span className="hdr__logo-text">
-              바로닥큐<span className="hdr__logo-plus">+</span>
-            </span>
-          </Link>
-
+          <Logo size="md" to="/" />
           <div
             className={`hdr__search${searchFocused ? " hdr__search--focused" : ""}`}
           >
@@ -313,7 +305,6 @@ const Header = ({ onOpenReservation }) => {
               검색
             </button>
           </div>
-
           <div className="hdr__actions">
             {user && (
               <>

@@ -612,3 +612,83 @@
     margin: 0;
   }
 }
+/* ──────────────────────────────────────────────────
+   AuthLayout 적용 시 레이아웃 충돌 방지
+────────────────────────────────────────────────── */
+
+/* AuthLayout이 감싸면 login-page 자체는 투명 배경으로 */
+.login-page {
+  min-height: auto;          /* ✅ 90vh → auto (AuthLayout이 높이 담당) */
+  background: transparent;   /* ✅ AuthLayout 배경 사용 */
+  padding: 0;                /* ✅ AuthLayout.auth-body 패딩 사용 */
+  width: 100%;
+}
+
+.login-wrapper {
+  max-width: 480px;          /* 기존 유지 */
+  width: 100%;
+  padding: 2rem 0;
+}
+
+/* ──────────────────────────────────────────────────
+   카카오 로그인 버튼 (UserSignup su-kakao-btn 동일 스타일)
+────────────────────────────────────────────────── */
+.login-kakao-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.875rem 1rem;
+  background: #FEE500;
+  color: #3C1E1E;            /* 카카오 공식 텍스트 색상 */
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: -0.2px;
+  box-shadow: 0 2px 8px rgba(254, 229, 0, 0.45);
+  transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.login-kakao-btn:hover {
+  filter: brightness(0.96);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(254, 229, 0, 0.55);
+}
+.login-kakao-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(254, 229, 0, 0.4);
+}
+
+.login-kakao-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────────────
+   구분선 — UserSignup su-divider와 동일
+────────────────────────────────────────────────── */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.25rem 0;        /* ✅ 기존 padding 방식 → margin으로 통일 */
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+.login-divider span {
+  white-space: nowrap;
+}
