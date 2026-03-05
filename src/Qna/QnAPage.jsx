@@ -316,7 +316,16 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
     const QnAModal = ({ qna, onClose, isAdmin, setQnas }) => {
   const [answerContent, setAnswerContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(qna.answer || "");
+  const [editContent, setEditContent] = useState("");
+
+  //내부에서 최신 답변 내용을 관리할 상태 추가
+  const [currentAnswer, setCurrentAnswer] = useState(qna.answer || "");
+
+  // 모달이 열릴 때나 qna 데이터가 바뀔 때 상태 초기화
+  useEffect(() => {
+    setCurrentAnswer(qna.answer || "");
+    setEditContent(qna.answer || "");
+  }, [qna]);
 
   const handleAnswerSubmit = async () => {
     if (!answerContent.trim()) {
@@ -340,11 +349,15 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
       setQnas(prev =>
         prev.map(item =>
           item.id === qna.id
-            ? { ...item, hasAnswer: true, status: "답변완료" }
+            ? { ...item, hasAnswer: true, status: "답변완료", answer: answerContent 
+
+            }
             : item
         )
       );
 
+      // ✅ 2. 현재 모달 화면 업데이트
+      setCurrentAnswer(answerContent);
       alert("답변이 등록되었습니다!");
       onClose();
     } catch (err) {
@@ -381,6 +394,7 @@ const QnACard = ({ id, title, author, authorNum, date, views, status, hasAnswer,
     )
   );
 
+  setCurrentAnswer(editContent);
   setIsEditing(false);
   alert("수정 완료");
   onClose();

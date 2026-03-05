@@ -26,7 +26,7 @@ import PharmacySearch        from "./pages/PhamacySearch";
 import Chat                  from "./Chat/Chat";
 import ChatList              from "./Chat/ChatList";
 import MyReservationsPage    from "./pages/MyReservationsPage";
-import DeptSearch            from "./pages/DeptSearch";
+import {DeptSearch}            from "./pages/DeptSearch";
 
 /* ── 인증 / 소켓 Provider ── */
 import { AuthProvider }      from "./AuthContext";
@@ -40,6 +40,7 @@ import AdminLayout      from "./admin/adminComponents/AdminLayout";
 import AdminMainPage        from "./admin/AdminMainPage";
 import AdminReservation from "./admin/AdminReservation";
 import AdminHospitalsMe from "./admin/AdminHospitalsMe"
+import AdminInquiryPage from "./admin/AdminInquiryPage";
 
 /* ── 인증 관련 페이지 ── */
 import AdminSignup   from "./pages/user/AdminSignup";
@@ -164,6 +165,8 @@ function App() {
               <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
               <Route path="posts/qna"    element={<AdminQnA />} />
+              <Route path="inquiry"    element={<AdminInquiryPage />} />
+              
             </Route>
 
             

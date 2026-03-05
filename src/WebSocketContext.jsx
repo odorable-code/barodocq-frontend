@@ -10,7 +10,7 @@ import SockJS from "sockjs-client";
 import { useAuth } from "./AuthContext";
 import UseNotification from "./hooks/UseNotification";
 
-const API = "http://3.38.49.151:8080";
+const API = "http://localhost:8080";
 export const SocketContext = createContext(null);
 
 export function WebSocketProvider({ children }) {
@@ -50,22 +50,28 @@ export function WebSocketProvider({ children }) {
     if (!u) return;
     try {
       const token = localStorage.getItem("accessToken");
-
+      console.log("url : " , getRoomsUrl(u))
       const res = await fetch(getRoomsUrl(u), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return;
       const rooms = await res.json();
+
+      // ✅ 진단용 로그
       console.log("[DEBUG] fetchRooms rooms:", rooms);
+      console.log("[DEBUG] isAdmin(u):", isAdmin(u));
+      if (rooms[0]) {
+      console.log("[DEBUG] room[0].paientName:", rooms[0].paientName);
+      }
+
       setChatRooms(rooms);
       const total = rooms.reduce((s, r) => s + (r.unread || 0), 0);
       setTabTitle(total);
     } catch (e) {
       console.error("fetchRooms 오류:", e);
     }
-  };
+};
+
 
   // ─── REST: 메시지 기록 ────────────────────────────────────────
   const fetchMessages = async (roomId) => {
