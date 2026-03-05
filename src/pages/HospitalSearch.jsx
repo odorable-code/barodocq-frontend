@@ -800,9 +800,11 @@ export default function HospitalSearch() {
               </button>
             </div>
 
-            {geoError && (
-              <div style={{ marginTop: 8, color: "#b91c1c" }}>{geoError}</div>
-            )}
+
+            {/* {geoError && (
+              //<div style={{ marginTop: 8, color: "#b91c1c" }}>{geoError}</div>
+              <span>지역별 찾기</span>
+            )} */}
           </div>
         </div>
       </section>
