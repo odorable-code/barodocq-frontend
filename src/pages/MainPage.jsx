@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/styles/MainPage.css";
 import ReservationModal from "../components/ReservationModal";
+import { DeptSearch, DeptSearch2 } from "./DeptSearch";
 
 /* ─────────────────────────────────────────
    데이터 상수
@@ -392,7 +393,7 @@ const MainPage = () => {
                 간편한 예약부터 진료 후기까지, 모든 것을 한곳에서
               </p>
               <div className="hero-search-s2">
-                <div className="search-container-s2">
+                {/* <div className="search-container-s2">
                   <div className="search-field-s2">
                     <i className="fas fa-search" />
                     <input type="text" placeholder="증상이나 진료과를 검색하세요" />
@@ -400,7 +401,8 @@ const MainPage = () => {
                   <button className="btn-search-s2">
                     검색하기 <i className="fas fa-arrow-right" />
                   </button>
-                </div>
+                </div> */}
+                <DeptSearch2 />
                 <div className="search-tags-s2">
                   {["감기", "소아청소년과", "내과", "두통", "피부과"].map((t) => (
                     <span className="tag-s2" key={t}>

@@ -33,7 +33,6 @@ const itemStyle = {
   backgroundColor: "white",
 };
 
-// 3. 함수 선언은 한 번만!
 function DeptSearch() {
   const [searchTerm, setSearchTerm] = useState(""); 
   const [showList, setShowList] = useState(false); 
@@ -43,7 +42,9 @@ function DeptSearch() {
   );
 
   return (
-    <div style={{ position: "relative", width: "300px", margin: "50px auto" }}>
+    <div 
+    //style={{ position: "relative", width: "300px", margin: "50px auto" }}
+    >
       <input
         type="text"
         placeholder="진료과목 검색 (예: 이)"
@@ -53,11 +54,14 @@ function DeptSearch() {
           setShowList(true);
         }}
         onFocus={() => setShowList(true)}
-        style={{ width: "100%", padding: "10px", boxSizing: "border-box" }}
+        //style={{ width: "100%", padding: "10px", boxSizing: "border-box" }}
       />
 
+      {/* showList가 true이고, searchTerm이 빈 값이 아닐 때만 <ul> 태그를 화면에 그린다. */}
       {showList && searchTerm && (
-        <ul style={listStyle}>
+        <ul 
+        //style={listStyle}
+        >
           {filteredDepts.length > 0 ? (
             filteredDepts.map((dept, index) => (
               <li
@@ -66,7 +70,7 @@ function DeptSearch() {
                   setSearchTerm(dept);
                   setShowList(false);
                 }}
-                style={itemStyle}
+                //style={itemStyle}
               >
                 {dept}
               </li>
@@ -78,6 +82,103 @@ function DeptSearch() {
       )}
     </div>
   );
-} // 함수 닫기
+}
 
-export default DeptSearch;
+
+
+
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡDeptSearch2ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+function DeptSearch2() {
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [showList, setShowList] = useState(false); 
+
+  const filteredDepts = DEPARTMENTS.filter((dept) =>
+    dept.includes(searchTerm)
+  );
+  
+
+  return (
+    <div style={{position : "relative"}}>
+
+      <style>
+        {`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 16px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 0 0 15px 15px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #14b8a6;
+            border-radius: 10px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #0d9488;
+          }
+          /* 마우스 올렸을 때 배경색 변화 추가 (선택사항) */
+          .custom-scrollbar li:hover {
+            background-color: #f0fdfa;
+            cursor: pointer;
+          }
+        `}
+      </style>
+
+      <div className="search-container-s2"
+      style={{borderRadius: searchTerm ? "15px 15px 0 0" : "15px"}}
+      >  
+        <div className="search-field-s2"
+        >
+          <i className="fas fa-search" />
+          <input
+            type="text"
+            placeholder="증상이나 진료과를 검색하세요"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowList(true);
+            }}
+            onFocus={() => setShowList(true)}
+          />
+        </div>
+        <button className="btn-search-s2">
+          검색하기 <i className="fas fa-arrow-right" />
+        </button>
+      </div>
+      <div className="custom-scrollbar" style={{background:"white", position:"absolute", top:"100%", left:0, right:0, zIndex:10,
+                  overflow: "auto", maxHeight: "250px"
+      }}>
+
+        {/* showList가 true이고, searchTerm이 빈 값이 아닐 때만 <ul> 태그를 화면에 그린다. */}
+        {showList && searchTerm && (
+          <ul
+            style={{listStyle:"none"}}
+          >
+            {filteredDepts.length > 0 ? (
+              filteredDepts.map((dept, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setSearchTerm(dept);
+                    setShowList(false);
+                  }}
+
+                  style={{padding: "3px 15px 0 15px", boxSizing: "border-box",  borderStyle: "solid",
+                          borderColor: "#14b8a6",
+                          borderWidth: "0 0.5px 0 0.5px"}}
+                >
+                  {dept} 
+                </li>
+              ))
+            ) : (
+              <li style={{ padding: "10px", color: "#999" }}>검색 결과가 없습니다.</li>
+            )}
+          </ul>
+        )}
+      </div>
+
+    </div>
+  );
+}
+
+export { DeptSearch, DeptSearch2 } ;
