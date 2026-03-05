@@ -26,6 +26,7 @@ import PharmacySearch        from "./pages/PhamacySearch";
 import Chat                  from "./Chat/Chat";
 import ChatList              from "./Chat/ChatList";
 import MyReservationsPage    from "./pages/MyReservationsPage";
+import DeptSearch            from "./pages/DeptSearch";
 
 /* ── 인증 / 소켓 Provider ── */
 import { AuthProvider }      from "./AuthContext";
@@ -47,13 +48,14 @@ import Login         from "./pages/user/Login";
 import ResetPassword from "./pages/user/ResetPassword";
 import Signup from "./pages/user/Signup";
 import UserSignup from "./pages/user/UserSignup";
-import {KakaoCallback, KakaoCallbackAdmin} from "./pages/user/KakaoCallback";
+import {KakaoCallback, KakaoSignupCallback} from "./pages/user/KakaoCallback";
 
 
 /* ── 아이콘 ── */
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import AdminHospitals from "./admin/AdminHospitals";
 import AdminReviews from "./admin/AdminReviews";
+import AdminQnA from "./admin/AdminQnA";
 
 /* ─────────────────────────────────────
    페이지 이동 시 스크롤 최상단으로
@@ -131,6 +133,7 @@ function App() {
               <Route path="main"                  element={<Main />} />
               <Route path="chat"                  element={<Chat />} />
               <Route path="chat/list"             element={<ChatList />} />
+              <Route path="deptsearch"            element={<DeptSearch />} />
 
 
               <Route path="login" element={<Login />} />
@@ -142,7 +145,7 @@ function App() {
               <Route path="resetPw" element={<ResetPassword />} />
 
               <Route path="/kakao/callback" element={<KakaoCallback />} />
-              <Route path="/kakao/callback/admin" element={<KakaoCallbackAdmin />} />
+              <Route path="/kakao/signup/callback" element={<KakaoSignupCallback />} />
               {/* Layout 안 나머지 → 메인으로 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
@@ -158,6 +161,7 @@ function App() {
               <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
               <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
+              <Route path="posts/qna"    element={<AdminQnA />} />
             </Route>
 
             

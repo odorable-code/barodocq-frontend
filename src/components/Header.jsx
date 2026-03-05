@@ -5,6 +5,7 @@ import { useSocket } from "../WebSocketContext";
 import { useAuth } from "../AuthContext";
 import { authFetch } from "../utils/AuthFetch";
 import ReactDOM from "react-dom";
+import DeptSearch from "../pages/DeptSearch";
 import {
   faHeart,
   faMagnifyingGlass,
@@ -195,6 +196,7 @@ const Header = ({ onOpenReservation }) => {
 
   /* 검색 */
   const handleSearch = useCallback(() => {
+    <DeptSearch />
     const q = searchValue.trim();
     if (q) {
       navigate(`/search?q=${encodeURIComponent(q)}`);
@@ -746,6 +748,7 @@ const Header = ({ onOpenReservation }) => {
                         ? new Date(msg.timestamp).toLocaleTimeString("ko-KR", {
                             hour: "2-digit",
                             minute: "2-digit",
+                            hour12: false,
                           })
                         : msg.time || ""}
                     </span>

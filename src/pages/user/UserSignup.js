@@ -163,10 +163,10 @@ function UserSignup() {
 
   const handleKakaoSignup = () => {
     // 1. 카카오 개발자 콘솔에서 설정한 내 애플리케이션의 REST API 키
-    const REST_API_KEY = "7167ec309dc09273be6d7b09a108044c"; 
+    const REST_API_KEY = "8b93cc51be9307b47fbf3b5d6883de0d"; 
     
     // 2. 카카오 로그인 완료 후 돌아올 주소 (이미 만드신 KakaoCallback 주소)
-    const REDIRECT_URI = 'http://localhost:3000/kakao/callback'; 
+    const REDIRECT_URI = 'http://localhost:3000/kakao/signup/callback'; 
 
     // 3. 카카오 인증 URL 생성
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
