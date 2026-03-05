@@ -35,6 +35,7 @@ import { WebSocketProvider } from "./WebSocketContext";
 /* ── 관리자 컴포넌트 ── */
 import AdminUsers   from "./admin/AdminUsers";
 import AdminAdmins   from "./admin/AdminAdmins";
+import AdminMe   from "./admin/AdminMe";
 import AdminLayout      from "./admin/adminComponents/AdminLayout";
 import AdminMainPage        from "./admin/AdminMainPage";
 import AdminReservation from "./admin/AdminReservation";
@@ -151,12 +152,13 @@ function App() {
                 ✅ 관리자 영역 — AdminLayout
             ══════════════════════════════════════ */}
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index                   element={<AdminMainPage />} />
-              <Route path="admins"           element={<AdminAdmins />} />
-              <Route path="users"            element={<AdminUsers />} />
-              <Route path="hospitals"        element={<AdminHospitals />} />
-              <Route path="hospitals/me"     element={<AdminHospitalsMe />} />
-              <Route path="reservations"     element={<AdminReservation />} />
+              <Route index               element={<AdminMainPage />} />
+              <Route path="admins"    element={<AdminAdmins />} />
+              <Route path="me"    element={<AdminMe />} />
+              <Route path="users"    element={<AdminUsers />} />
+              <Route path="hospitals"    element={<AdminHospitals />} />
+              <Route path="hospitals/me"    element={<AdminHospitalsMe />} />
+              <Route path="reservations" element={<AdminReservation />} />
               <Route path="posts/reviews"    element={<AdminReviews />} />
               <Route path="posts/qna"        element={<AdminQnA />} />
               <Route path="inquiry"          element={<AdminInquiryPage />} />
