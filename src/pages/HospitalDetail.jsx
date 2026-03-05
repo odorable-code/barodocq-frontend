@@ -85,7 +85,7 @@ export default function HospitalDetail() {
   const navigate = useNavigate();
 
   // ✅ Socket Context 연동
-  const { createRoom, setActiveChatRoom, setNotifOpen } = useSocket();
+  const { createRoom, setActiveChatRoom, setIsChatOpen } = useSocket();
 
   // 상태 관리
   const [isReserveModalOpen, setIsReserveModalOpen] = useState(false);
@@ -115,26 +115,31 @@ export default function HospitalDetail() {
     if (checkLogin()) setIsReserveModalOpen(true);
   };
 
-  // ✅ 1:1 문의하기 핸들러 (채팅방 개설 및 알림창 활성화)
+  // ✅ 1:1 문의하기 핸들러 (채팅방 개설 + 채팅창 열기)
   const handleInquiry = async () => {
-    if (!checkLogin()) return;
-    if (!summary) return;
+  if (!checkLogin()) return;
+  if (!summary) return;
 
-    try {
-      const room = await createRoom({
-        hospitalId: hospitalId,
-        hospitalName: summary.hoName,
-      });
+  try {
+    const room = await createRoom({
+      hospitalId: hospitalId,
+      hospitalName: summary.hoName,
+      // dept: summary.deptName,  // 필요 시 추가
+    });
 
-      if (room) {
-        setActiveChatRoom(room);
-        setNotifOpen(true); // 헤더의 알림/채팅창 열기
-      }
-    } catch (err) {
-      console.error("채팅 연결 실패:", err);
-      alert("상담 연결 중 오류가 발생했습니다.");
+    if (room) {
+      setActiveChatRoom(room);   // ✅ 해당 채팅방 활성화
+      setIsChatOpen(true);       // ✅ Fix #2: 채팅 패널 열기
+    } else {
+      // createRoom이 null을 반환한 경우 (401, 서버 오류 등)
+      alert("채팅 연결에 실패했습니다.\n로그인 상태를 확인하거나 잠시 후 다시 시도해 주세요.");
     }
-  };
+  } catch (err) {
+    console.error("채팅 연결 실패:", err);
+    alert("상담 연결 중 오류가 발생했습니다.");
+  }
+};
+
 
   useEffect(() => {
     setReviewLimit(STEP);

@@ -86,41 +86,51 @@ export function WebSocketProvider({ children }) {
   };
 
   // ─── REST: 채팅방 생성 (환자만) ──────────────────────────────
-  const createRoom = async ({ hospitalId, hospitalName, dept }) => {
-    if (!user || isAdmin(user)) return null;
+  // ─── REST: 채팅방 생성 (환자만) ──────────────────────────────
+const createRoom = async ({ hospitalId, hospitalName, dept }) => {
+  if (!user || isAdmin(user)) return null;
 
-    try {
-      const firstChar = hospitalName?.trim()?.charAt(0) || "?";
+  try {
+    // ✅ Fix #1: 토큰 가져와서 Authorization 헤더에 실어 보내기
+    const token = localStorage.getItem("accessToken");
+    const firstChar = hospitalName?.trim()?.charAt(0) || "?";
 
-      const res = await fetch(`${API}/api/chat/rooms`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          patientId: user.num,
-          hospitalId,
-          hospitalName,
-          dept,
-          avatar: firstChar,
-        }),
-      });
+    const res = await fetch(`${API}/api/chat/rooms`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // ✅ 추가
+      },
+      body: JSON.stringify({
+        patientId: user.num,
+        hospitalId,
+        hospitalName,
+        dept,
+        avatar: firstChar,
+      }),
+    });
 
-      if (!res.ok) return null;
-      const room = await res.json();
-
-      setChatRooms((prev) => {
-        const exists = prev.find((r) => r.id === room.id);
-        if (exists) {
-          return [room, ...prev.filter((r) => r.id !== room.id)];
-        }
-        return [room, ...prev];
-      });
-
-      return room;
-    } catch (e) {
-      console.error("createRoom 오류:", e);
+    if (!res.ok) {
+      console.error("createRoom 서버 오류:", res.status, await res.text());
       return null;
     }
-  };
+
+    const room = await res.json();
+
+    // 채팅방 목록 업데이트 (기존 방이면 맨 앞으로 이동)
+    setChatRooms((prev) => {
+      const exists = prev.find((r) => r.id === room.id);
+      if (exists) return [room, ...prev.filter((r) => r.id !== room.id)];
+      return [room, ...prev];
+    });
+
+    return room;
+  } catch (e) {
+    console.error("createRoom 오류:", e);
+    return null;
+  }
+};
+
 
   // ─── STOMP: 메시지 전송 ───────────────────────────────────────
   const sendMessage = (text) => {
