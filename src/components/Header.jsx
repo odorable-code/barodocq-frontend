@@ -580,14 +580,18 @@ const Header = ({ onOpenReservation }) => {
                     onClick={() => setActiveChatRoom(room)}
                   >
                     <div className="hdr__cr-avatar">
+                      {/* 🌟 환자 아이디가 없으면 번호라도 띄워서 첫 글자 추출 */}
                       {isAdmin
-                        ? room.patientName?.substring(0, 1)
+                        ? (room.patientName || room.patientId || "?").toString().substring(0, 1).toUpperCase()
                         : room.avatar}
                     </div>
                     <div className="hdr__cr-info">
                       <div className="hdr__cr-top">
                         <span className="hdr__cr-name">
-                          {isAdmin ? room.patientName : room.hospitalName}
+                          {/* 🌟 방 이름도 확실하게 출력 */}
+                          {isAdmin 
+                            ? (room.patientName || `환자 ${room.patientId}`) 
+                            : room.hospitalName}
                         </span>
                         <span className="hdr__cr-time">{room.lastTime}</span>
                       </div>
@@ -714,13 +718,14 @@ const Header = ({ onOpenReservation }) => {
             </button>
             <div className="hdr__cw-avatar">
               {isAdmin
-                ? activeChatRoom.patientName?.substring(0, 1)
+                ? (activeChatRoom.patientName || activeChatRoom.patientId || "?").toString().substring(0, 1).toUpperCase()
                 : activeChatRoom.avatar}
             </div>
             <div className="hdr__cw-hinfo">
               <span className="hdr__cw-hname">
-                {/* ✅ 정상적으로 방 이름만 출력되도록 수정 */}
-                {isAdmin ? activeChatRoom.patientName : activeChatRoom.hospitalName}
+                {isAdmin 
+                  ? (activeChatRoom.patientName || `환자 ${activeChatRoom.patientId}`) 
+                  : activeChatRoom.hospitalName}
               </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
             </div>
