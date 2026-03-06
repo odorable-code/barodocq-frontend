@@ -120,7 +120,7 @@ export default function HospitalDetail() {
   const navigate = useNavigate();
 
   // ✅ Socket Context 연동
-  const { createRoom, setActiveChatRoom, setIsChatOpen } = useSocket();
+  const { createRoom, setActiveChatRoom, setIsChatOpen, setNotifOpen } = useSocket();
   const { user } = useAuth(); // ✅ 추가 — createRoom 내부의 user 가드와 동기화
 
   // 상태 관리
@@ -181,6 +181,7 @@ export default function HospitalDetail() {
       if (room) {
         setActiveChatRoom(room);
         setIsChatOpen(true);
+        setNotifOpen(true);
       } else {
         alert("채팅방 생성에 실패했습니다.\n잠시 후 다시 시도해 주세요.");
       }
@@ -450,9 +451,12 @@ export default function HospitalDetail() {
             >
               <i className="fas fa-calendar-plus" /> 예약하기
             </button>
+            {/* hd2__reserveCard 안의 1:1 문의 버튼 */}
             <button
               className="hd2__actionBtn hd2__actionBtn--ghost"
               onClick={handleInquiry}
+              disabled={!user} // ✅ user 로드 전 클릭 방지
+              title={!user ? "로그인 정보 로드 중..." : "1:1 문의하기"}
             >
               <i className="far fa-comment-dots" /> 1:1 문의
             </button>

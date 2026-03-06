@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../assets/styles/HospitalSearch.css";
 
 import RegionSelect from "../components/RegionSelect";
 import HospitalDeptSelect from "../components/HospitalDeptSelect";
 import ReservationModal from "../components/ReservationModal";
 import { useSocket } from "../WebSocketContext";
+
 
 /* ─────────────────────────────────────────
    필터 태그
@@ -273,6 +275,10 @@ const openKakaoDirections = ({
 ───────────────────────────────────────── */
 export default function HospitalSearch() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const params = new URLSearchParams(location.search);
+  const q = params.get("q") || "";
   const headerRef = useRef(null);
   const { createRoom, setActiveChatRoom, setNotifOpen  } = useSocket();
 
@@ -285,6 +291,7 @@ export default function HospitalSearch() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState("distance");
   const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [keyword, setKeyword] = useState("");
 
   // 모달
   const [isDeptOpen, setIsDeptOpen] = useState(false);
@@ -326,6 +333,10 @@ export default function HospitalSearch() {
     }
     return true;
   };
+
+  useEffect(() => {
+    setSearchQuery(q);
+  }, [q]);
 
   useEffect(() => {
     if (!navigator.geolocation) {

@@ -1,18 +1,19 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../../AuthContext";
 
 const MENUS = [
   { key: "members", label: "회원관리", to: "/admin/users", icon: "fa-users",
     children: [
-      { key: "admins", label: "관리자 회원관리", to: "/admin/admins" },
-      { key: "users", label: "사용자 회원관리", to: "/admin/users" },
-      { key: "me", label: "내 정보 보기", to: "/admin/me" },
+      { key: "admins", label: "관리자 회원관리", to: "/admin/admins", roles: ["SUPERADMIN"] },
+      { key: "users", label: "사용자 회원관리", to: "/admin/users", roles: ["SUPERADMIN"] },
+      { key: "me", label: "내 정보 보기", to: "/admin/me", roles: ["ADMIN"] },
     ],
   },
   { key: "hospitals", label: "병원관리", to: "/admin/hospitals", icon: "fa-hospital",
     children: [
-      { key: "allHospitals", label: "전체 병원 정보", to: "/admin/hospitals" },
-      { key: "myHospital", label: "내 병원 정보", to: "/admin/hospitals/me" },
+      { key: "allHospitals", label: "전체 병원 정보", to: "/admin/hospitals", roles: ["SUPERADMIN"] },
+      { key: "myHospital", label: "내 병원 정보", to: "/admin/hospitals/me", roles: ["ADMIN"] },
     ],
   },
   { key: "reservations", label: "예약관리", to: "/admin/reservations", icon: "fa-calendar-check" },
@@ -26,10 +27,18 @@ const MENUS = [
 ];
 
 export default function Sidebar() {
+  
   const { pathname } = useLocation();
+  const { user, isLoading } = useAuth();
+
+  const role = user?.role;
+  console.log("현재 role =", role, user);
+
   const [openKey, setOpenKey] = useState(null);
 
   // ✅ 현재 URL 경로를 파악해서 해당 부모 메뉴를 자동으로 열어줍니다
+
+  
   useEffect(() => {
     const activeParent = MENUS.find(m => 
       pathname === m.to || (m.children && m.children.some(c => pathname.startsWith(c.to)))
@@ -39,7 +48,10 @@ export default function Sidebar() {
     }
   }, [pathname]);
 
+  if (isLoading) return null;
+
   return (
+    
     <div className="adm-sb">
       <NavLink to="/admin" className="adm-sb-logo">
         Barodoc<span>Q</span>
@@ -78,7 +90,9 @@ export default function Sidebar() {
 
               {hasChildren && (
                 <div className={"adm-sb-sub" + (isOpen ? " adm-open" : "")}>
-                  {m.children.map((c) => (
+                  {m.children
+                    .filter((c) => !c.roles || c.roles.includes(role))
+                    .map((c) => (
                     <NavLink 
                       key={c.key} 
                       to={c.to} 

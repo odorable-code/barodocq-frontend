@@ -2,6 +2,7 @@ import "../../assets/styles/UserSignup.css";
 import "../../assets/images/kakao.png";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 
 function UserSignup() {
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ function UserSignup() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { getMeAndSetUser } = useAuth(); 
 
   /* ── 입력값 변경 ── */
   const handleChange = (e) => {
@@ -149,9 +151,21 @@ function UserSignup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
       });
+      // ✅ 변경 후
       if (response.ok) {
-        alert("회원가입이 완료되었습니다! 로그인해 주세요.");
-        navigate("/user/login");
+        const data = await response.json();
+
+        if (data.accessToken) {
+          // ✅ 자동 로그인 성공 → 메인으로
+          localStorage.setItem("accessToken", data.accessToken);
+          await getMeAndSetUser();
+          alert("🎉 회원가입을 환영합니다!");
+          navigate("/");
+        } else {
+          // ⚠️ 자동 로그인 실패했지만 회원가입은 됨 → 로그인 페이지로
+          alert("회원가입이 완료되었습니다! 로그인해 주세요.");
+          navigate("/user/login");
+        }
       } else {
         alert("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
@@ -363,9 +377,9 @@ function UserSignup() {
 
             <br />
 
-            <div className="circle" onClick={handleKakaoSignup}>
-              <img src=""/>
-            </div>
+            {/* <div className="circle" onClick={handleKakaoSignup}>
+              <img src="" />
+            </div> */}
 
             {/* ════════ STEP 2 ════════ */}
             {currentStep === 2 && (
@@ -670,15 +684,15 @@ function PwStrengthBar({ pw }) {
   const getStrength = (pw) => {
     if (!pw) return { level: 0, label: "", color: "" };
     let score = 0;
-    if (pw.length >= 8)          score++;  // 길이 조건
-    if (/[A-Za-z]/.test(pw))     score++;  // 영문 포함
-    if (/\d/.test(pw))           score++;  // 숫자 포함
-    if (/[!@#$%^&*]/.test(pw))   score++;  // 특수문자 포함
+    if (pw.length >= 8) score++; // 길이 조건
+    if (/[A-Za-z]/.test(pw)) score++; // 영문 포함
+    if (/\d/.test(pw)) score++; // 숫자 포함
+    if (/[!@#$%^&*]/.test(pw)) score++; // 특수문자 포함
 
     if (score <= 1) return { level: 1, label: "매우 약함", color: "#ef4444" };
-    if (score === 2) return { level: 2, label: "약함",     color: "#f97316" };
-    if (score === 3) return { level: 3, label: "보통",     color: "#eab308" };
-    return              { level: 4, label: "강함",     color: "#0d9488" }; // 병원 테마 색
+    if (score === 2) return { level: 2, label: "약함", color: "#f97316" };
+    if (score === 3) return { level: 3, label: "보통", color: "#eab308" };
+    return { level: 4, label: "강함", color: "#0d9488" }; // 병원 테마 색
   };
 
   const { level, label, color } = getStrength(pw);
@@ -695,10 +709,11 @@ function PwStrengthBar({ pw }) {
           />
         ))}
       </div>
-      <span className="as-pw-label" style={{ color }}>{label}</span>
+      <span className="as-pw-label" style={{ color }}>
+        {label}
+      </span>
     </div>
   );
 }
-
 
 export default UserSignup;

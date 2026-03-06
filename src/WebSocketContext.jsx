@@ -50,7 +50,7 @@ export function WebSocketProvider({ children }) {
     if (!u) return;
     try {
       const token = localStorage.getItem("accessToken");
-      console.log("url : " , getRoomsUrl(u))
+      console.log("url : ", getRoomsUrl(u));
       const res = await fetch(getRoomsUrl(u), {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -61,7 +61,7 @@ export function WebSocketProvider({ children }) {
       console.log("[DEBUG] fetchRooms rooms:", rooms);
       console.log("[DEBUG] isAdmin(u):", isAdmin(u));
       if (rooms[0]) {
-      console.log("[DEBUG] room[0].paientName:", rooms[0].paientName);
+        console.log("[DEBUG] room[0].paientName:", rooms[0].paientName);
       }
 
       setChatRooms(rooms);
@@ -70,8 +70,24 @@ export function WebSocketProvider({ children }) {
     } catch (e) {
       console.error("fetchRooms 오류:", e);
     }
-};
+  };
 
+  // ─── REST: 저장된 시스템 알림 불러오기 ──── ✅ 여기 추가
+  const fetchStoredNotifications = async (u) => {
+    if (!u || isAdmin(u)) return; // 관리자는 시스템 알림 없음
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${API}/api/v1/notifications/user/${u.num}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const notifications = await res.json();
+      setSysNotifications(Array.isArray(notifications) ? notifications : []);
+      console.log("[DEBUG] 저장된 알림 로드:", notifications.length, "건");
+    } catch (e) {
+      console.error("fetchStoredNotifications 오류:", e);
+    }
+  };
 
   // ─── REST: 메시지 기록 ────────────────────────────────────────
   const fetchMessages = async (roomId) => {
@@ -87,50 +103,49 @@ export function WebSocketProvider({ children }) {
 
   // ─── REST: 채팅방 생성 (환자만) ──────────────────────────────
   // ─── REST: 채팅방 생성 (환자만) ──────────────────────────────
-const createRoom = async ({ hospitalId, hospitalName, dept }) => {
-  if (!user || isAdmin(user)) return null;
+  const createRoom = async ({ hospitalId, hospitalName, dept }) => {
+    if (!user || isAdmin(user)) return null;
 
-  try {
-    // ✅ Fix #1: 토큰 가져와서 Authorization 헤더에 실어 보내기
-    const token = localStorage.getItem("accessToken");
-    const firstChar = hospitalName?.trim()?.charAt(0) || "?";
+    try {
+      // ✅ Fix #1: 토큰 가져와서 Authorization 헤더에 실어 보내기
+      const token = localStorage.getItem("accessToken");
+      const firstChar = hospitalName?.trim()?.charAt(0) || "?";
 
-    const res = await fetch(`${API}/api/chat/rooms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ 추가
-      },
-      body: JSON.stringify({
-        patientId: user.num,
-        hospitalId,
-        hospitalName,
-        dept,
-        avatar: firstChar,
-      }),
-    });
+      const res = await fetch(`${API}/api/chat/rooms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ 추가
+        },
+        body: JSON.stringify({
+          patientId: user.num,
+          hospitalId,
+          hospitalName,
+          dept,
+          avatar: firstChar,
+        }),
+      });
 
-    if (!res.ok) {
-      console.error("createRoom 서버 오류:", res.status, await res.text());
+      if (!res.ok) {
+        console.error("createRoom 서버 오류:", res.status, await res.text());
+        return null;
+      }
+
+      const room = await res.json();
+
+      // 채팅방 목록 업데이트 (기존 방이면 맨 앞으로 이동)
+      setChatRooms((prev) => {
+        const exists = prev.find((r) => r.id === room.id);
+        if (exists) return [room, ...prev.filter((r) => r.id !== room.id)];
+        return [room, ...prev];
+      });
+
+      return room;
+    } catch (e) {
+      console.error("createRoom 오류:", e);
       return null;
     }
-
-    const room = await res.json();
-
-    // 채팅방 목록 업데이트 (기존 방이면 맨 앞으로 이동)
-    setChatRooms((prev) => {
-      const exists = prev.find((r) => r.id === room.id);
-      if (exists) return [room, ...prev.filter((r) => r.id !== room.id)];
-      return [room, ...prev];
-    });
-
-    return room;
-  } catch (e) {
-    console.error("createRoom 오류:", e);
-    return null;
-  }
-};
-
+  };
 
   // ─── STOMP: 메시지 전송 ───────────────────────────────────────
   const sendMessage = (text) => {
@@ -158,6 +173,7 @@ const createRoom = async ({ hospitalId, hospitalName, dept }) => {
       return;
     }
     fetchRooms(user);
+    fetchStoredNotifications(user);
   }, [user]);
 
   // ─── useEffect: STOMP 연결 ────────────────────────────────────
@@ -320,8 +336,8 @@ const createRoom = async ({ hospitalId, hospitalName, dept }) => {
         isAdmin: isAdmin(user),
         isChatOpen,
         setIsChatOpen,
-        sysNotifications,      // ✅ 새로 추가: Header가 갖다 쓸 수 있도록 배포
-        setSysNotifications,   // ✅ 새로 추가
+        sysNotifications, // ✅ 새로 추가: Header가 갖다 쓸 수 있도록 배포
+        setSysNotifications, // ✅ 새로 추가
       }}
     >
       {children}
