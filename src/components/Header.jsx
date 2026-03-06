@@ -5,7 +5,8 @@ import { useSocket } from "../WebSocketContext";
 import { useAuth } from "../AuthContext";
 import { authFetch } from "../utils/AuthFetch";
 import ReactDOM from "react-dom";
-import  { AutoCompleteResult, DeptSearch, DeptSearch4 } from "../pages/DeptSearch";
+import  {AutoCompleteResult} from "../pages/DeptSearch";
+import NotificationsModal from "./NotificationsModal";
 import { getNotifMeta } from "../constants/notifTypes";
 import {
   faHeart,
@@ -658,9 +659,16 @@ const Header = ({ onOpenReservation }) => {
               )}
             </div>
 
-            <Link to="/mypage/notifications" className="hdr__np-footer-link">
+            <button 
+              className="hdr__np-footer-link" 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' }}
+              onClick={() => {
+                setNotifOpen(false); // 패널 닫기
+                setModalType("notifications"); // 모달 열기
+              }}
+            >
               전체 알림 보기 <FontAwesomeIcon icon={faChevronRight} />
-            </Link>
+            </button>
           </div>
         </div>
       )}
@@ -753,6 +761,17 @@ const Header = ({ onOpenReservation }) => {
         </div>
       )}
 
+      {modalType === "notifications" &&
+        ReactDOM.createPortal(
+          <NotificationsModal
+            isOpen={true}
+            onClose={closeModal}
+            notifications={sysNotifications}
+            setNotifications={setSysNotifications}
+            userNum={user?.num} 
+          />,
+          document.body
+        )}
       {/* ════ 예약 모달들 ════ */}
       {modalType === "detail" &&
         ReactDOM.createPortal(

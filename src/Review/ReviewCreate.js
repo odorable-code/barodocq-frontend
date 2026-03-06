@@ -622,19 +622,6 @@ function ReservationAndReview() {
               </ul>
             </div>
 
-            {/* 포인트 적립 안내 카드 */}
-            <div className="rc-info-card rc-info-card--reward">
-              <div className="rc-info-card__icon rc-info-card__icon--gold">
-                <i className="fas fa-coins" />
-              </div>
-              <h3>포인트 적립 안내</h3>
-              <ul>
-                <li><i className="fas fa-star" /> 후기 작성 시 <strong>50P</strong> 적립</li>
-                <li><i className="fas fa-image" /> 사진 첨부 시 <strong>+30P</strong> 추가</li>
-                <li><i className="fas fa-thumbs-up" /> 추천 10개 달성 시 <strong>+100P</strong></li>
-              </ul>
-            </div>
-
             {/* 현재 진행 단계 카드 */}
             <div className="rc-info-card rc-info-card--progress">
               <div className="rc-info-card__icon">
