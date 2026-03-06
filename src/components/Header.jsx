@@ -170,7 +170,7 @@ const Header = ({ onOpenReservation }) => {
   const handleSearch = useCallback(() => {
     const q = searchValue.trim();
     if (q) {
-      navigate(`/search?q=${encodeURIComponent(q)}`);
+      navigate(`/hospitals?q=${encodeURIComponent(q)}`);
       setSearchValue("");
     }
   }, [searchValue, navigate]);
