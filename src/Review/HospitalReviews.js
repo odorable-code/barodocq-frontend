@@ -55,7 +55,7 @@ const ReviewCard = ({ review, currentUser, navigate, deletePost }) => {
         <div className="rv-card__thumb-wrap">
           <img
             className="rv-card__thumb"
-            src={`http://localhost:8080${review.files[0].rfPath}`}
+            src={review.files[0].rfPath}
             alt="review"
           />
         </div>
