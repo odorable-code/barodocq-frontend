@@ -619,6 +619,101 @@
 }
 .su-login-link i { font-size: 0.75rem; }
 
+.circle{
+  width: 50px; height: 50px;
+  border-radius: 100px;
+  background-color: yellow;
+  margin: auto;
+  cursor: pointer;
+}
+
+.as-user-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* ════════════════════════════════════════════
+   카드 하단 CTA (관리자 가입 유도)
+   ✅ as-user-cta 대신 su-admin-cta 사용
+      AdminSignup.css 의존성 제거
+════════════════════════════════════════════ */
+.su-admin-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.su-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #14b8a6;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.su-admin-link:hover {
+  color: #0d9488;
+  gap: 0.55rem;
+}
+
+/* ════════════════════════════════════════════
+   카카오 소셜 가입 버튼
+════════════════════════════════════════════ */
+.su-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 0.75rem;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.su-divider::before,
+.su-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.su-kakao-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  background: #FEE500;
+  color: #191919;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.su-kakao-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.su-kakao-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+
 /* ════════════════════════════════
    반응형
 ════════════════════════════════ */
@@ -635,4 +730,151 @@
 @media (max-width: 400px) {
   .su-page { padding: 1.5rem 0.75rem 2.5rem; }
   .su-form { padding: 1.25rem; }
+}
+/* ── UserSignup.css 하단에 추가 ── */
+
+/* 전체 래퍼 */
+.su-page {
+  width: 100%;
+  min-height: auto;
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+}
+
+.su-wrapper {
+  width: 100%;
+  max-width: 540px;         /* ✅ 기존보다 넓게 */
+  margin: 0 auto;
+  padding: 2rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.su-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── 카카오 버튼 (AdminSignup as-* 디자인과 동일 계열) ── */
+.su-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0.875rem;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.su-divider::before,
+.su-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+.su-divider span {
+  white-space: nowrap;
+  padding: 0 0.25rem;
+}
+
+.su-kakao-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.875rem 1rem;
+  background: #FEE500;
+  color: #3C1E1E;            /* ✅ 카카오 공식 텍스트 색 */
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: -0.2px;
+  box-shadow: 0 2px 8px rgba(254, 229, 0, 0.45);
+  transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.su-kakao-btn::before {
+  /* 호버 시 내부 shimmer 효과 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.2s;
+  border-radius: inherit;
+}
+.su-kakao-btn:hover {
+  filter: brightness(0.96);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(254, 229, 0, 0.55);
+}
+.su-kakao-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(254, 229, 0, 0.4);
+}
+
+/* 카카오 아이콘 */
+.su-kakao-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* 아이콘 로드 실패 시 대체 이모지 */
+.su-kakao-btn .su-kakao-icon-fallback {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .su-wrapper { padding: 1.5rem 0; }
+}
+
+/* ──────────────────────────────────────
+   비밀번호 강도 바  (AdminSignup as-pw-* 와 동일 구조)
+────────────────────────────────────── */
+
+/* 래퍼: 입력창 아래 붙는 영역 */
+.su-pw-strength {
+  margin-top: 0.5rem;
+}
+
+.su-pw-strength-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 4칸 막대 컨테이너 */
+.su-pw-bars {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+/* 개별 막대 */
+.su-pw-bar {
+  flex: 1;
+  height: 5px;
+  border-radius: 99px;
+  transition: background 0.3s ease;
+}
+
+/* 강도 텍스트 */
+.su-pw-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 48px;
+  text-align: right;
+  transition: color 0.3s ease;
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/styles/MainPage.css";
 import ReservationModal from "../components/ReservationModal";
+import { DeptSearch, DeptSearch2 } from "./DeptSearch";
 
 /* ─────────────────────────────────────────
    데이터 상수
@@ -233,10 +235,32 @@ const VACCINES = [
    MainPage Component
 ───────────────────────────────────────── */
 const MainPage = () => {
+  const navigate = useNavigate();
   const heroStatsRef = useRef(null);
   const [activeDept, setActiveDept] = useState("all");
   const [activeTab, setActiveTab] = useState("review");
   const [selectedHospital, setSelectedHospital] = useState(null);
+
+  // superadmin 여부 확인 로직
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      try {
+        // base64 디코딩으로 토큰의 payload 추출
+        const base64Payload = token.split(".")[1];
+        const payload = JSON.parse(atob(base64Payload));
+        console.log(payload.role)
+        // 권한이 superadmin인지 확인 (DB의 ENUM 값과 일치해야 함)
+        if (payload.role === "SUPERADMIN"||payload.role === "ADMIN") {
+          setIsAdmin(true);
+        }
+      } catch (e) {
+        console.error("토큰 파싱 실패:", e);
+      }
+    }
+  }, []);
 
   const filteredHospitals =
     activeDept === "all"
@@ -321,7 +345,37 @@ const MainPage = () => {
 
   return (
     <div className="main-container-s2">
-      {/* ══════════════════════════════ HERO ══════════════════════════════ */}
+      {/* 관리자 퀵 접속 버튼 (SuperAdmin 전용) */}
+      {isAdmin && (
+        <div className="admin-quick-access" style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          zIndex: 1000
+        }}>
+          <button 
+            onClick={() => navigate("/admin")}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: 'var(--primary-dark-teal, #0f766e)',
+              color: 'white',
+              borderRadius: '30px',
+              border: 'none',
+              fontWeight: '800',
+              fontSize: '0.85rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            <i className="fas fa-user-shield"></i>
+            시스템 관리자 모드
+          </button>
+        </div>
+      )}
+      {/* ══════════════════════════════ HERO ══════════════════════════════ */}    
       <section className="hero-s2" id="home">
         <div className="hero-blob-s2 blob-1-s2" />
         <div className="hero-blob-s2 blob-2-s2" />
@@ -339,7 +393,7 @@ const MainPage = () => {
                 간편한 예약부터 진료 후기까지, 모든 것을 한곳에서
               </p>
               <div className="hero-search-s2">
-                <div className="search-container-s2">
+                {/* <div className="search-container-s2">
                   <div className="search-field-s2">
                     <i className="fas fa-search" />
                     <input type="text" placeholder="증상이나 진료과를 검색하세요" />
@@ -347,7 +401,8 @@ const MainPage = () => {
                   <button className="btn-search-s2">
                     검색하기 <i className="fas fa-arrow-right" />
                   </button>
-                </div>
+                </div> */}
+                <DeptSearch2 />
                 <div className="search-tags-s2">
                   {["감기", "소아청소년과", "내과", "두통", "피부과"].map((t) => (
                     <span className="tag-s2" key={t}>

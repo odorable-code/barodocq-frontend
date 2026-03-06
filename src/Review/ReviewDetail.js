@@ -222,7 +222,7 @@ function ReviewDetail() {
                 {files.map((file) => (
                   <div key={file.rfNum} className="gallery-item">
                     <img
-                      src={`http://localhost:8080${file.rfPath}`}
+                      src={file.rfPath} 
                       alt="후기 이미지"
                     />
                   </div>

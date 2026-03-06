@@ -772,3 +772,29 @@
   .as-logo-text { font-size: 1.4rem; }
   .as-card-title { font-size: 1.2rem; }
 }
+/* ══════════════════════════════════════════════════
+   AuthLayout 적용 시 레이아웃 충돌 방지 패치
+   (Signup.css / UserSignup.css / Login.css와 동일)
+══════════════════════════════════════════════════ */
+
+/* ✅ as-page: AuthLayout이 배경·높이·패딩 담당 */
+.as-page {
+  min-height: auto;        /* 100vh → auto */
+  background: transparent; /* gradient → transparent */
+  padding: 0;              /* 3rem 1.5rem → 0 */
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* ✅ as-wrapper: AuthLayout.auth-body 안에서 꽉 차도록 */
+.as-wrapper {
+  width: 100%;
+  max-width: 580px;
+  padding: 2rem 0;         /* 페이지 자체 상하 여백만 유지 */
+}
+
+/* ✅ as-blob: fixed이므로 AuthLayout 밖에서도 보임 — 유지 */
+
+@media (max-width: 640px) {
+  .as-wrapper { padding: 1.5rem 0; }
+}

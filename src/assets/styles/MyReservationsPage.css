@@ -1,0 +1,621 @@
+/* ════════════════════════════════════════════════
+   MyReservationsPage.css — Mint Green + Teal Theme
+════════════════════════════════════════════════ */
+.mrp {
+  min-height: 100vh;
+  background: #f0fdfa;
+  font-family: "Pretendard", "Noto Sans KR", -apple-system, sans-serif;
+}
+
+/* ── 페이지 헤더 ── */
+.mrp-page-header {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  padding: 2.5rem 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.25);
+}
+.mrp-page-header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.mrp-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  text-decoration: none;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.mrp-back-btn:hover { background: rgba(255, 255, 255, 0.35); }
+.mrp-page-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mrp-page-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* ── 내부 레이아웃 ── */
+.mrp-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── 통계 카드 행 ── */
+.mrp-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.mrp-stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 12px rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.mrp-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15);
+}
+.mrp-stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sc-color) 15%, #fff);
+  color: var(--sc-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.mrp-stat-value {
+  font-size: 24px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+.mrp-stat-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin: 2px 0 0;
+}
+
+/* ── 필터 바 ── */
+.mrp-filter-bar {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 12px rgba(13, 148, 136, 0.07);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+}
+
+/* 탭 */
+.mrp-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mrp-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.mrp-tab:hover {
+  border-color: #14b8a6;
+  color: #14b8a6;
+  background: #f0fdfa;
+}
+.mrp-tab--active {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tab-color, #14b8a6) 15%, #fff),
+    color-mix(in srgb, var(--tab-color, #14b8a6) 8%, #fff)
+  );
+  border-color: var(--tab-color, #14b8a6);
+  color: var(--tab-color, #14b8a6);
+}
+.mrp-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+/* 검색 + 정렬 */
+.mrp-filter-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mrp-search-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.mrp-search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 13px;
+  pointer-events: none;
+}
+.mrp-search-input {
+  width: 100%;
+  padding: 10px 38px 10px 36px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #f8fafc;
+}
+.mrp-search-input:focus {
+  border-color: #14b8a6;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+.mrp-search-clear {
+  position: absolute;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #e2e8f0;
+  color: #94a3b8;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+.mrp-search-clear:hover { background: #fca5a5; color: #ef4444; }
+
+/* 정렬 드롭다운 */
+.mrp-sort-wrap { position: relative; flex-shrink: 0; }
+.mrp-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.mrp-sort-btn:hover {
+  border-color: #14b8a6;
+  color: #0d9488;
+  background: #f0fdfa;
+}
+.mrp-sort-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 200;
+  min-width: 120px;
+  animation: mrp-drop-in 0.18s ease;
+}
+@keyframes mrp-drop-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mrp-sort-option {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.mrp-sort-option:hover { background: #f0fdfa; color: #0d9488; }
+.mrp-sort-option--active { color: #14b8a6; background: #f0fdfa; font-weight: 800; }
+
+/* ── 결과 수 ── */
+.mrp-result-count {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin: 0;
+}
+.mrp-result-count strong { color: #0d9488; font-weight: 800; }
+
+/* ── 예약 목록 ── */
+.mrp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── 예약 카드 ── */
+.mrp-card {
+  background: #fff;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(13, 148, 136, 0.07);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+.mrp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(13, 148, 136, 0.16);
+}
+.mrp-card--cancelled {
+  opacity: 0.7;
+}
+
+/* 좌측 스트라이프 */
+.mrp-card-stripe {
+  width: 5px;
+  flex-shrink: 0;
+}
+.mrp-card-stripe--confirmed { background: linear-gradient(to bottom, #10b981, #34d399); }
+.mrp-card-stripe--pending   { background: linear-gradient(to bottom, #f59e0b, #fcd34d); }
+.mrp-card-stripe--cancelled { background: linear-gradient(to bottom, #e2e8f0, #cbd5e1); }
+
+/* 카드 내부 */
+.mrp-card-content {
+  flex: 1;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 상단 행 */
+.mrp-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mrp-card-hospital-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mrp-card-hosp-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(20, 184, 166, 0.3);
+}
+.mrp-card-hosp-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 3px;
+}
+.mrp-card-renum {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* 상태 뱃지 */
+.mrp-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mrp-card-status--confirmed { background: #d1fae5; color: #059669; }
+.mrp-card-status--pending   { background: #fef3c7; color: #d97706; }
+.mrp-card-status--cancelled { background: #f1f5f9; color: #94a3b8; }
+.mrp-card-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: mrp-dot-pulse 2s infinite;
+}
+.mrp-card-status--cancelled .mrp-card-status-dot { animation: none; }
+@keyframes mrp-dot-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* 태그 행 */
+.mrp-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mrp-card-dept {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #f0fdfa;
+  color: #0d9488;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+}
+.mrp-card-visit-type {
+  padding: 4px 10px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* 칩 행 */
+.mrp-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mrp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.mrp-chip--time {
+  background: #f0fdfa;
+  color: #0d9488;
+  border: 1px solid rgba(20, 184, 166, 0.18);
+}
+.mrp-chip--wait {
+  background: linear-gradient(135deg, rgba(20,184,166,0.1), rgba(13,148,136,0.07));
+  color: #0f766e;
+  border: 1px solid rgba(20, 184, 166, 0.22);
+}
+.mrp-chip--wait strong { font-weight: 800; color: #0d9488; }
+
+/* 메모 */
+.mrp-card-memo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #475569;
+}
+.mrp-card-memo svg { color: #94a3b8; font-size: 12px; flex-shrink: 0; }
+
+/* 구분선 */
+.mrp-card-sep {
+  height: 1px;
+  background: linear-gradient(
+    to right, transparent,
+    rgba(20, 184, 166, 0.15) 20%,
+    rgba(20, 184, 166, 0.15) 80%,
+    transparent
+  );
+}
+
+/* 버튼 행 */
+.mrp-card-btns {
+  display: flex;
+  gap: 8px;
+}
+.mrp-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+.mrp-btn--outline {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #64748b;
+}
+.mrp-btn--outline:hover {
+  border-color: #14b8a6;
+  color: #0d9488;
+  background: #f0fdfa;
+  transform: translateY(-1px);
+}
+.mrp-btn--red:hover {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+.mrp-btn--fill {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(20, 184, 166, 0.3);
+  flex: 1.5;
+}
+.mrp-btn--fill:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(20, 184, 166, 0.4);
+}
+
+/* ── 로딩 ── */
+.mrp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+.mrp-loading-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(20, 184, 166, 0.2);
+  border-top-color: #14b8a6;
+  border-radius: 50%;
+  animation: mrp-spin 0.9s linear infinite;
+}
+@keyframes mrp-spin { to { transform: rotate(360deg); } }
+
+/* ── 빈 상태 ── */
+.mrp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px;
+  gap: 12px;
+  text-align: center;
+}
+.mrp-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #14b8a6;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.2);
+  margin-bottom: 4px;
+}
+.mrp-empty-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+.mrp-empty-sub {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+.mrp-empty-btn {
+  margin-top: 8px;
+  padding: 11px 28px;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3);
+  transition: all 0.2s;
+}
+.mrp-empty-btn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
+}
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .mrp-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mrp-filter-bar { padding: 1rem; }
+  .mrp-inner { padding: 1.25rem 1rem 3rem; }
+  .mrp-card-content { padding: 1.25rem; }
+}
+@media (max-width: 480px) {
+  .mrp-stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .mrp-tabs { gap: 6px; }
+  .mrp-tab  { padding: 7px 12px; font-size: 12.5px; }
+  .mrp-card-btns { flex-wrap: wrap; }
+  .mrp-page-header { padding: 1.5rem 0 1.25rem; }
+}

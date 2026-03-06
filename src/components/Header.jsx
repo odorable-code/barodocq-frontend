@@ -3,6 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSocket } from "../WebSocketContext";
 import { useAuth } from "../AuthContext";
+import { authFetch } from "../utils/AuthFetch";
+import ReactDOM from "react-dom";
+import  {AutoCompleteResult} from "../pages/DeptSearch";
+import NotificationsModal from "./NotificationsModal";
+import { getNotifMeta } from "../constants/notifTypes";
 import {
   faHeart,
   faMagnifyingGlass,
@@ -10,7 +15,6 @@ import {
   faBell,
   faRightToBracket,
   faUserPlus,
-  faCalendarCheck,
   faPills,
   faHospital,
   faStethoscope,
@@ -31,110 +35,111 @@ import {
   faCircleDot,
   faTriangleExclamation,
   faRightFromBracket,
-  faMoon,
+  faChevronDown,
+  faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
-import Chat from "../Chat/Chat";
-/* ══════════════════════════════════════
-   상수 데이터
-══════════════════════════════════════ */
+import Logo from "./Logo";
+import ReservationDetailModal from "./ReservationDetailModal";
+import ReservationChangeModal from "./ReservationChangeModal";
+import ReservationCancelModal from "./ReservationCancelModal";
+
 const NAV_ITEMS = [
-  { path: "/pharmacy",  label: "약국 찾기",   icon: faPills },
-  { path: "/hospitals", label: "병원 찾기",   icon: faHospital },
-  { path: "/mypage",    label: "마이페이지",  icon: faUser },
-  { path: "/reviews",   label: "리뷰",        icon: faNotesMedical },
-  { path: "/community", label: "커뮤니티",    icon: faComments },
-  { path: "/qna",       label: "Q&A",         icon: faCircleQuestion },
+  { path: "/pharmacy", label: "약국 찾기", icon: faPills },
+  { path: "/hospitals", label: "병원 찾기", icon: faHospital },
+  { path: "/mypage", label: "마이페이지", icon: faUser },
+  { path: "/reviews", label: "리뷰", icon: faNotesMedical },
+  { path: "/qna", label: "Q&A", icon: faCircleQuestion },
 ];
 
-const RESERVATIONS = [
-  { id:1, hospital:"강남메디컬센터",  dept:"내과",        date:"2026-02-27", time:"14:30", status:"confirmed", doctor:"이서연", waitNum:3    },
-  { id:2, hospital:"서울아동병원",    dept:"소아청소년과", date:"2026-03-05", time:"10:00", status:"pending",   doctor:"김민수", waitNum:null },
-  { id:3, hospital:"스마일치과",      dept:"치과",        date:"2026-03-12", time:"16:00", status:"confirmed", doctor:"박준호", waitNum:7    },
-  { id:4, hospital:"밝은눈안과",      dept:"안과",        date:"2026-03-20", time:"11:00", status:"waiting",   doctor:"최지혜", waitNum:null },
-];
-
-const CHAT_ROOMS = [
-  { id:1, hospital:"강남메디컬센터", dept:"내과",        avatar:"강", lastMsg:"네, 가능합니다. 원하시는 시간을 말씀해 주세요.", time:"10:32", unread:1 },
-  { id:2, hospital:"서울아동병원",   dept:"소아청소년과",avatar:"서", lastMsg:"예약 확인 차 연락드립니다. 내일 10시 맞으신가요?", time:"09:15", unread:2 },
-  { id:3, hospital:"스마일치과",     dept:"치과",        avatar:"스", lastMsg:"감사합니다! 다음 방문 때 뵙겠습니다.",           time:"어제",  unread:0 },
-  { id:4, hospital:"밝은눈안과",     dept:"안과",        avatar:"밝", lastMsg:"진료 후기를 남겨주시면 감사하겠습니다.",         time:"월요일", unread:0 },
-  { id:5, hospital:"한강정형외과",   dept:"정형외과",    avatar:"한", lastMsg:"다음 방문 일정을 잡아드릴까요?",               time:"화요일", unread:0 },
-];
-
-const INIT_MESSAGES = {
-  1:[
-    { from:"hospital", text:"안녕하세요! 강남메디컬센터입니다. 무엇을 도와드릴까요? 😊", time:"10:20" },
-    { from:"user",     text:"안녕하세요, 내일 오후 2시 30분 예약인데 시간 변경이 가능할까요?",  time:"10:28" },
-    { from:"hospital", text:"네, 가능합니다. 원하시는 시간을 말씀해 주세요.",              time:"10:32" },
-  ],
-  2:[
-    { from:"hospital", text:"안녕하세요. 서울아동병원 예약팀입니다.",              time:"09:10" },
-    { from:"hospital", text:"3월 5일 오전 10:00 예약 확인 차 연락드립니다. 맞으신가요?", time:"09:15" },
-  ],
-  3:[
-    { from:"hospital", text:"안녕하세요! 스마일치과입니다. 지난번 치료는 불편하지 않으셨나요?", time:"어제 13:50" },
-    { from:"user",     text:"네, 덕분에 괜찮아졌어요. 감사합니다!",                          time:"어제 14:00" },
-    { from:"hospital", text:"감사합니다! 다음 방문 때 뵙겠습니다. 😄",                       time:"어제 14:05" },
-  ],
-  4:[ { from:"hospital", text:"안녕하세요. 밝은눈안과입니다. 진료 후기를 남겨주시면 감사하겠습니다.", time:"월요일" } ],
-  5:[ { from:"hospital", text:"안녕하세요! 한강정형외과입니다. 다음 방문 일정을 잡아드릴까요?",       time:"화요일" } ],
-};
-
-const HEALTH_REMINDERS = [
-  { id:1, icon:faPills,      title:"혈압약 복용",    sub:"오전 8:00",  done:true,  color:"#14b8a6", type:"pill"    },
-  { id:2, icon:faPills,      title:"비타민D 복용",   sub:"오후 1:00",  done:false, color:"#0d9488", type:"pill"    },
-  { id:3, icon:faSyringe,    title:"독감 예방접종",  sub:"D-14 남음",  done:false, color:"#f97316", type:"vaccine" },
-  { id:4, icon:faStethoscope,title:"정기 건강검진",  sub:"D-30 남음",  done:false, color:"#6366f1", type:"checkup" },
-  { id:5, icon:faMoon,       title:"수면 루틴 알림", sub:"오후 11:00", done:false, color:"#0f766e", type:"sleep"   },
-];
-
-/* ─────────────────────────────── */
 const Header = ({ onOpenReservation }) => {
   const { user, logout } = useAuth();
-  const location  = useLocation();
-  const navigate  = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [reservations, setReservations] = useState([]);
 
-  /* ── 기본 상태 ── */
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  /* ── 채팅 상태 ── */
-  const { activeChatRoom, setActiveChatRoom } = useSocket();
   const [chatInput, setChatInput] = useState("");
-  const [messages, setMessages] = useState(INIT_MESSAGES);
-  const [reminders, setReminders] = useState(HEALTH_REMINDERS);
+  const [modalType, setModalType] = useState(null);
+  const [modalReservation, setModalReservation] = useState(null);
+  const [prevModalType, setPrevModalType] = useState(null);
 
-  
+  const [showList, setShowList] = useState(false);
 
-  /* ── Refs ── */
+
+  const openModal = (type, reservation) => {
+    setPrevModalType(modalType);
+    setModalType(type);
+    setModalReservation(reservation);
+  };
+
+  const closeModal = () => {
+    if (prevModalType) {
+      setModalType(prevModalType);
+      setPrevModalType(null);
+    } else {
+      setModalType(null);
+      setModalReservation(null);
+    }
+  };
+
+  const closeAllModals = () => {
+    setModalType(null);
+    setModalReservation(null);
+    setPrevModalType(null);
+  };
+
+  const handleModalSuccess = async () => {
+    const res = await authFetch("/api/v1/reservations/my");
+    const data = await res.json();
+    setReservations(Array.isArray(data) ? data : []);
+    closeAllModals();
+  };
+
   const bellRef = useRef(null);
   const panelRef = useRef(null);
-  const { chatRef, chatEndRef } = useSocket();
-  
-  
-  /* ── 스크롤 감지 ── */
+
+  const {
+    chatRooms,
+    activeChatRoom,
+    setActiveChatRoom,
+    messages,
+    sendMessage: socketSendMessage,
+    totalUnread,
+    chatRef,
+    chatEndRef,
+    notifOpen,
+    setNotifOpen,
+    isAdmin,
+    sysNotifications,
+    setSysNotifications,
+  } = useSocket();
+
+  /* 스크롤 감지 */
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.pageYOffset > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /* 라우트 변경 시 패널 닫기 */
   useEffect(() => {
     setMobileOpen(false);
     setNotifOpen(false);
     setActiveChatRoom(null);
-  }, [location.pathname]);
+  }, [location.pathname, setNotifOpen, setActiveChatRoom]);
 
+  /* 패널 외부 클릭 시 닫기 */
   useEffect(() => {
     if (!notifOpen) return;
     const handler = (e) => {
-      const inBell  = bellRef.current?.contains(e.target);
+      if (modalType) return;
+      const inBell = bellRef.current?.contains(e.target);
       const inPanel = panelRef.current?.contains(e.target);
-      const inChat  = chatRef.current?.contains(e.target);
+      const inChat = chatRef.current?.contains(e.target);
       if (!inBell && !inPanel && !inChat) {
         setNotifOpen(false);
         setActiveChatRoom(null);
@@ -142,25 +147,100 @@ const Header = ({ onOpenReservation }) => {
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [notifOpen]);
+  }, [notifOpen, modalType, setNotifOpen, setActiveChatRoom, chatRef]);
 
+  /* 패널 열릴 때 예약 목록 fetch */
+  useEffect(() => {
+    if (!notifOpen || !user) return;
+    const fetchReservations = async () => {
+      try {
+        const res = await authFetch("/api/v1/reservations/my");
+        if (!res.ok) throw new Error("예약 데이터 응답 에러");
+        const data = await res.json();
+        setReservations(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("예약 목록 불러오기 실패:", err);
+      }
+    };
+    fetchReservations();
+  }, [notifOpen, user]);
+
+  /* 채팅 스크롤 */
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChatRoom]);
+  }, [messages, activeChatRoom, chatEndRef]);
 
+  /* 검색 */
   const handleSearch = useCallback(() => {
     const q = searchValue.trim();
-    if (q) { navigate(`/search?q=${encodeURIComponent(q)}`); setSearchValue(""); }
+    if (q) {
+      navigate(`/hospitals?q=${encodeURIComponent(q)}`);
+      setSearchValue("");
+    }
   }, [searchValue, navigate]);
 
-  /* ── 메시지 전송 ── */
+  /* 메시지 전송 */
+  const sendMessage = () => {
+    if (!chatInput.trim()) return;
+    socketSendMessage(chatInput);
+    setChatInput("");
+  };
 
-  const toggleReminder = (id) => setReminders(prev => prev.map(r => r.id===id ? {...r, done:!r.done} : r));
-  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path+"/");
-  const totalUnread = CHAT_ROOMS.reduce((s,r) => s+r.unread, 0);
+  /* 알림 클릭 — 읽음 처리 + 페이지 이동 */
+  const handleNotificationClick = async (notif) => {
+    if (!notif.ntIsRead) {
+      try {
+        const res = await authFetch(`/api/v1/notifications/${notif.ntNum}/read`, {
+          method: "PATCH",
+        });
+        if (res.ok) {
+          setSysNotifications((prev) =>
+            prev.map((n) =>
+              n.ntNum === notif.ntNum ? { ...n, ntIsRead: true } : n
+            )
+          );
+        }
+      } catch (err) {
+        console.error("알림 읽음 처리 실패:", err);
+      }
+    }
+    if (notif.ntUrl) {
+      navigate(notif.ntUrl);
+      setNotifOpen(false);
+    }
+  };
 
-  /* 프로필 이니셜 */
-  const initials = user?.name ? user.name.slice(0,1) : "U";
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
+
+  const initials = user?.name ? user.name.slice(0, 1) : "U";
+
+  const statusCls = (status) => {
+    switch (status) {
+      case "예약대기":   return "waiting";
+      case "예약확정":   return "confirmed";
+      case "예약취소":   return "cancelled";
+      case "예약거절":   return "rejected";
+      case "진료완료":   return "done";
+      default:           return "waiting";
+    }
+  };
+
+  /* ✅ 읽지 않은 시스템 알림 수 */
+  const unreadSysNotifCount = sysNotifications.filter((n) => !n.ntIsRead).length;
+
+  /* ✅ ntCreatedAt 날짜 포맷 헬퍼 */
+  const formatNotifDate = (raw) => {
+    if (!raw) return "방금";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return "방금";
+    return d.toLocaleString("ko-KR", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <header className={`hdr${isScrolled ? " hdr--scrolled" : ""}`}>
@@ -168,14 +248,8 @@ const Header = ({ onOpenReservation }) => {
       {/* ════ 상단 바 ════ */}
       <div className="hdr__top">
         <div className="hdr__inner">
+          <Logo size="md" to="/" />
 
-          {/* 로고 */}
-          <Link to="/" className="hdr__logo" aria-label="홈으로">
-            <span className="hdr__logo-icon"><FontAwesomeIcon icon={faHeart} /></span>
-            <span className="hdr__logo-text">바로닥큐<span className="hdr__logo-plus">+</span></span>
-          </Link>
-
-          {/* 검색바 */}
           <div className={`hdr__search${searchFocused ? " hdr__search--focused" : ""}`}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className="hdr__search-icon" />
             <input
@@ -183,10 +257,21 @@ const Header = ({ onOpenReservation }) => {
               className="hdr__search-input"
               placeholder="병원·약국·증상을 검색하세요"
               value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
-              onKeyPress={e => e.key==="Enter" && handleSearch()}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
+              onChange={(e) => {
+                setSearchValue(e.target.value)
+                setSearchFocused(true)
+              }}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              onFocus={() => {
+                setSearchFocused(true)
+                setShowList(true)
+              }}
+              onBlur={() => {
+                setSearchFocused(false);
+                setTimeout(() => {
+                  setShowList(false);
+                }, 200);
+              }}
             />
             {searchValue && (
               <button className="hdr__search-clear" onClick={() => setSearchValue("")}>
@@ -194,39 +279,49 @@ const Header = ({ onOpenReservation }) => {
               </button>
             )}
             <button className="hdr__search-btn" onClick={handleSearch}>검색</button>
+            <AutoCompleteResult 
+              styles={{
+                position : "absolute", left:0, right:0,
+                // background: "yellow", height: "100px",
+                top: "59px",
+                background: "white", 
+              }} 
+              searchTerm={searchValue} 
+              setSearchTerm={setSearchValue} 
+              showList={showList} 
+              setShowList={ setShowList} 
+            />
           </div>
-
-          {/* 우측 액션 */}
+          
           <div className="hdr__actions">
-
-            {/* ── 로그인 상태 ── */}
             {user && (
               <>
-                {/* 1. 알림 벨 */}
                 <div className="hdr__bell-wrap" ref={bellRef}>
                   <button
                     className={`hdr__icon-btn${notifOpen ? " hdr__icon-btn--active" : ""}`}
-                    onClick={() => { setNotifOpen(v => !v); if (notifOpen) setActiveChatRoom(null); }}
+                    onClick={() => {
+                      setNotifOpen((v) => !v);
+                      if (notifOpen) setActiveChatRoom(null);
+                    }}
                     aria-label="알림"
                   >
                     <FontAwesomeIcon icon={faBell} />
-                    {totalUnread > 0 && (
-                      <span className="hdr__notif-badge">{totalUnread}</span>
+                    {totalUnread + unreadSysNotifCount > 0 && (
+                      <span className="hdr__notif-badge">
+                        {totalUnread + unreadSysNotifCount}
+                      </span>
                     )}
                   </button>
                 </div>
 
-                {/* 구분선 */}
                 <div className="hdr__divider" />
 
-                {/* 2. 프로필 (마이페이지) */}
                 <Link to="/mypage" className="hdr__profile-chip">
                   <span className="hdr__profile-avatar">{initials}</span>
                   <span className="hdr__profile-name">{user.name}님</span>
                   <FontAwesomeIcon icon={faChevronDown} className="hdr__profile-chevron" />
                 </Link>
 
-                {/* 3. 로그아웃 */}
                 <button className="hdr__logout-btn" onClick={logout}>
                   <FontAwesomeIcon icon={faRightFromBracket} />
                   <span>로그아웃</span>
@@ -234,7 +329,6 @@ const Header = ({ onOpenReservation }) => {
               </>
             )}
 
-            {/* ── 비로그인 상태 ── */}
             {!user && (
               <>
                 <Link to="/login" className="hdr__btn hdr__btn--ghost">
@@ -248,10 +342,9 @@ const Header = ({ onOpenReservation }) => {
               </>
             )}
 
-            {/* 햄버거 */}
             <button
               className={`hdr__hamburger${mobileOpen ? " hdr__hamburger--open" : ""}`}
-              onClick={() => setMobileOpen(v => !v)}
+              onClick={() => setMobileOpen((v) => !v)}
               aria-label="메뉴"
             >
               <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars} />
@@ -263,10 +356,14 @@ const Header = ({ onOpenReservation }) => {
       {/* ════ 네비게이션 ════ */}
       <nav className={`hdr__nav${mobileOpen ? " hdr__nav--open" : ""}`}>
         <div className="hdr__nav-inner">
+          {/* <DeptSearch4 /> */}
           <ul className="hdr__nav-list">
             {NAV_ITEMS.map(({ path, label, icon }) => (
               <li key={path} className="hdr__nav-item">
-                <Link to={path} className={`hdr__nav-link${isActive(path) ? " hdr__nav-link--active" : ""}`}>
+                <Link
+                  to={path}
+                  className={`hdr__nav-link${isActive(path) ? " hdr__nav-link--active" : ""}`}
+                >
                   <FontAwesomeIcon icon={icon} className="hdr__nav-icon" />
                   <span>{label}</span>
                 </Link>
@@ -278,47 +375,110 @@ const Header = ({ onOpenReservation }) => {
 
       {/* ════ 딤 오버레이 ════ */}
       {notifOpen && (
-        <div className="hdr__overlay" onClick={() => { setNotifOpen(false); setActiveChatRoom(null); }} />
+        <div
+          className="hdr__overlay"
+          onClick={() => { setNotifOpen(false); setActiveChatRoom(null); }}
+        />
       )}
 
       {/* ════ 알림 3컬럼 패널 ════ */}
       {notifOpen && (
         <div className="hdr__np" ref={panelRef}>
 
-          {/* Col 1 : 예약 현황 */}
+          {/* ── Col 1 : 예약 현황 ── */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
-              <FontAwesomeIcon icon={faCalendarDays} className="hdr__np-head-icon" style={{ color:"#14b8a6" }} />
+              <FontAwesomeIcon icon={faCalendarDays} className="hdr__np-head-icon" style={{ color: "#14b8a6" }} />
               <span>내 예약 현황</span>
-              <span className="hdr__np-head-badge">{RESERVATIONS.length}</span>
+              <span className="hdr__np-head-badge">{reservations.length}</span>
             </div>
+
             <div className="hdr__np-body">
-              {RESERVATIONS.map(r => (
-                <div key={r.id} className="hdr__rv-card">
-                  <div className="hdr__rv-top">
-                    <span className="hdr__rv-hospital">{r.hospital}</span>
-                    <span className={`hdr__rv-status hdr__rv-status--${r.status}`}>
-                      {r.status==="confirmed" ? "확정" : r.status==="pending" ? "대기중" : "접수중"}
-                    </span>
-                  </div>
-                  <div className="hdr__rv-dept">{r.dept} · {r.doctor} 선생님</div>
-                  <div className="hdr__rv-time">
-                    <FontAwesomeIcon icon={faClock} /><span>{r.date} {r.time}</span>
-                  </div>
-                  {r.waitNum !== null && (
-                    <div className="hdr__rv-wait">
-                      <FontAwesomeIcon icon={faCircleDot} style={{ color:"#14b8a6" }} />
-                      <span>현재 대기 <strong>{r.waitNum}명</strong></span>
-                    </div>
-                  )}
-                  <div className="hdr__rv-btns">
-                    <button className="hdr__rv-btn hdr__rv-btn--outline">변경</button>
-                    <button className="hdr__rv-btn hdr__rv-btn--outline hdr__rv-btn--red">취소</button>
-                    <button className="hdr__rv-btn hdr__rv-btn--fill">상세보기</button>
-                  </div>
+              {reservations.length === 0 ? (
+                <div className="hdr__rv-empty">
+                  <div className="hdr__rv-empty-icon"><FontAwesomeIcon icon={faCalendarDays} /></div>
+                  <p className="hdr__rv-empty-title">예약 내역이 없어요</p>
+                  <p className="hdr__rv-empty-sub">병원 찾기에서 예약해보세요</p>
                 </div>
-              ))}
+              ) : (
+                reservations.map((r) => (
+                  <div key={r.reNum} className="hdr__rv-card">
+                    <div className={`hdr__rv-stripe hdr__rv-stripe--${statusCls(r.reStatus)}`} />
+                    <div className="hdr__rv-content">
+                      <div className="hdr__rv-top">
+                        <div className="hdr__rv-hospital-wrap">
+                          <div className="hdr__rv-hosp-icon"><FontAwesomeIcon icon={faHospital} /></div>
+                          <div className="hdr__rv-hospital-info">
+                            <span className="hdr__rv-hospital">{r.hoName ?? `병원 #${r.hoNum}`}</span>
+                            <span className="hdr__rv-renum">예약번호 {r.reNum}</span>
+                          </div>
+                        </div>
+                        <span className={`hdr__rv-status hdr__rv-status--${statusCls(r.reStatus)}`}>
+                          <span className="hdr__rv-status-dot" />
+                          {r.reStatus}
+                        </span>
+                      </div>
+
+                      <div className="hdr__rv-tags">
+                        <div className="hdr__rv-dept">
+                          <FontAwesomeIcon icon={faStethoscope} />
+                          <span>{r.deptName ?? `진료과 #${r.deptNum}`}</span>
+                        </div>
+                        <div className="hdr__rv-visit-type">{r.reVisitType}</div>
+                      </div>
+
+                      <div className="hdr__rv-meta-row">
+                        <div className="hdr__rv-chip hdr__rv-chip--time">
+                          <FontAwesomeIcon icon={faCalendarDays} />
+                          <span>{r.reDate}</span>
+                        </div>
+                        <div className="hdr__rv-chip hdr__rv-chip--time">
+                          <FontAwesomeIcon icon={faClock} />
+                          <span>{r.reTime?.slice(0, 5)}</span>
+                        </div>
+                        {r.waitNum !== null && (
+                          <div className="hdr__rv-chip hdr__rv-chip--wait">
+                            <FontAwesomeIcon icon={faCircleDot} />
+                            <span>대기 <strong>{r.waitNum}명</strong></span>
+                          </div>
+                        )}
+                      </div>
+
+                      {r.reMemo && (
+                        <div className="hdr__rv-memo">
+                          <FontAwesomeIcon icon={faNotesMedical} />
+                          <span>{r.reMemo}</span>
+                        </div>
+                      )}
+
+                      <div className="hdr__rv-sep" />
+
+                      <div className="hdr__rv-btns">
+                        {r.reStatus !== "예약취소" && (
+                          <>
+                            <button
+                              className="hdr__rv-btn hdr__rv-btn--outline"
+                              onClick={(e) => { e.stopPropagation(); openModal("change", r); }}
+                            >변경</button>
+                            <button
+                              className="hdr__rv-btn hdr__rv-btn--outline hdr__rv-btn--red"
+                              onClick={(e) => { e.stopPropagation(); openModal("cancel", r); }}
+                            >취소</button>
+                          </>
+                        )}
+                        <button
+                          className="hdr__rv-btn hdr__rv-btn--fill"
+                          onClick={(e) => { e.stopPropagation(); openModal("detail", r); }}
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} />상세보기
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
+
             <Link to="/mypage/reservations" className="hdr__np-footer-link">
               전체 예약 보기 <FontAwesomeIcon icon={faChevronRight} />
             </Link>
@@ -326,129 +486,321 @@ const Header = ({ onOpenReservation }) => {
 
           <div className="hdr__np-divider" />
 
-          {/* Col 2 : 병원 채팅 */}
+          {/* ── Col 2 : 병원 채팅 ── */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
-              <FontAwesomeIcon icon={faComments} className="hdr__np-head-icon" style={{ color:"#0d9488" }} />
+              <FontAwesomeIcon icon={faComments} className="hdr__np-head-icon" style={{ color: "#0d9488" }} />
               <span>병원 채팅</span>
-              {totalUnread > 0 && <span className="hdr__np-head-badge hdr__np-head-badge--red">{totalUnread}</span>}
+              {totalUnread > 0 && (
+                <span className="hdr__np-head-badge hdr__np-head-badge--red">{totalUnread}</span>
+              )}
             </div>
+
             <div className="hdr__np-body">
-              {CHAT_ROOMS.map(room => (
-                <div
-                  key={room.id}
-                  className={`hdr__cr-item${activeChatRoom?.id===room.id ? " hdr__cr-item--active" : ""}`}
-                  onClick={() => setActiveChatRoom(room)}
-                >
-                  <div className="hdr__cr-avatar">{room.avatar}</div>
-                  <div className="hdr__cr-info">
-                    <div className="hdr__cr-top">
-                      <span className="hdr__cr-name">{room.hospital}</span>
-                      <span className="hdr__cr-time">{room.time}</span>
-                    </div>
-                    <div className="hdr__cr-bottom">
-                      <span className="hdr__cr-last">{room.lastMsg}</span>
-                      {room.unread > 0 && <span className="hdr__cr-unread">{room.unread}</span>}
-                    </div>
-                    <span className="hdr__cr-dept">{room.dept}</span>
-                  </div>
+              {chatRooms.length === 0 ? (
+                <div className="hdr__cr-empty">
+                  <p>아직 채팅방이 없어요</p>
+                  <p>병원 찾기에서 1:1 대화를 시작해보세요</p>
                 </div>
-              ))}
+              ) : (
+                chatRooms.map((room) => {
+                  const displayName = isAdmin
+                    ? room.patientName?.trim()
+                      ? room.patientName
+                      : room.patientId ? `환자 ${room.patientId}` : "알수없음"
+                    : room.hospitalName;
+                  const avatarChar = displayName.charAt(0).toUpperCase();
+
+                  return (
+                    <div
+                      key={room.id}
+                      className={`hdr__cr-item${activeChatRoom?.id === room.id ? " hdr__cr-item--active" : ""}`}
+                      onClick={() => setActiveChatRoom(room)}
+                    >
+                      <div className="hdr__cr-avatar">{isAdmin ? avatarChar : room.avatar}</div>
+                      <div className="hdr__cr-info">
+                        <div className="hdr__cr-top">
+                          <span className="hdr__cr-name">{displayName}</span>
+                          <span className="hdr__cr-time">{room.lastTime}</span>
+                        </div>
+                        <div className="hdr__cr-bottom">
+                          <span className="hdr__cr-last">{room.lastMsg || "대화를 시작해보세요"}</span>
+                          {room.unread > 0 && <span className="hdr__cr-unread">{room.unread}</span>}
+                        </div>
+                        <span className="hdr__cr-dept">{room.dept}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
 
           <div className="hdr__np-divider" />
 
-          {/* Col 3 : 건강 리마인더 */}
+          {/* ── Col 3 : 시스템 알림 ── */}
           <div className="hdr__np-col">
             <div className="hdr__np-head">
-              <FontAwesomeIcon icon={faPills} className="hdr__np-head-icon" style={{ color:"#0f766e" }} />
-              <span>건강 리마인더</span>
-              <span className="hdr__np-head-badge hdr__np-head-badge--green">
-                {reminders.filter(r=>r.done).length}/{reminders.length}
-              </span>
+              <FontAwesomeIcon icon={faBell} className="hdr__np-head-icon" style={{ color: "#10b981" }} />
+              <span>시스템 알림</span>
+              {unreadSysNotifCount > 0 && (
+                <span className="hdr__np-head-badge" style={{ background: "#10b981", color: "#fff" }}>
+                  {unreadSysNotifCount}
+                </span>
+              )}
             </div>
+
             <div className="hdr__np-body">
-              <div className="hdr__hl-progress-wrap">
-                <div className="hdr__hl-progress-label">
-                  <span>오늘의 건강 미션</span>
-                  <strong>{Math.round((reminders.filter(r=>r.done).length/reminders.length)*100)}%</strong>
+              {sysNotifications.length === 0 ? (
+                <div className="hdr__rv-empty">
+                  <div className="hdr__rv-empty-icon"><FontAwesomeIcon icon={faBell} /></div>
+                  <p className="hdr__rv-empty-title">새로운 알림이 없어요</p>
                 </div>
-                <div className="hdr__hl-progress-bar">
-                  <div className="hdr__hl-progress-fill" style={{ width:`${(reminders.filter(r=>r.done).length/reminders.length)*100}%` }} />
-                </div>
-              </div>
-              {reminders.map(r => (
-                <div key={r.id} className={`hdr__hl-item${r.done ? " hdr__hl-item--done" : ""}`} onClick={() => toggleReminder(r.id)}>
-                  <div className="hdr__hl-icon" style={{ background:r.color+"22", color:r.color }}>
-                    <FontAwesomeIcon icon={r.icon} />
-                  </div>
-                  <div className="hdr__hl-info">
-                    <span className="hdr__hl-title">{r.title}</span>
-                    <span className="hdr__hl-sub">{r.sub}</span>
-                  </div>
-                  <div className={`hdr__hl-check${r.done ? " hdr__hl-check--done" : ""}`}>
-                    {r.done ? <FontAwesomeIcon icon={faCheckCircle} /> : <span className="hdr__hl-check-empty" />}
-                  </div>
-                </div>
-              ))}
-              <div className="hdr__hl-alert">
-                <FontAwesomeIcon icon={faTriangleExclamation} style={{ color:"#f97316" }} />
-                <div>
-                  <p className="hdr__hl-alert-title">A형간염 미접종</p>
-                  <p className="hdr__hl-alert-sub">예방접종을 아직 맞지 않으셨어요</p>
-                </div>
-                <button className="hdr__hl-alert-btn">예약</button>
-              </div>
+              ) : (
+                sysNotifications.map((notif) => {
+                  // ✅ ntdNum으로 아이콘·색상·라벨 결정
+                  const meta = getNotifMeta(notif.ntdNum);
+
+                  return (
+                    <div
+                      key={notif.ntNum}
+                      onClick={() => handleNotificationClick(notif)}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "0.75rem",
+                        padding: "0.85rem 1rem",
+                        borderBottom: "1px solid #f3f4f6",
+                        cursor: "pointer",
+                        opacity: notif.ntIsRead ? 0.55 : 1,
+                        background: notif.ntIsRead ? "transparent" : "#fafffe",
+                        transition: "background 0.15s",
+                      }}
+                    >
+                      {/* ✅ ntdNum별 아이콘 */}
+                      <div
+                        style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          background: meta.bg,
+                          color: meta.color,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={meta.icon} />
+                      </div>
+
+                      {/* 텍스트 영역 */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* ✅ 유형 라벨 뱃지 */}
+                        <span
+                          style={{
+                            display: "inline-block",
+                            fontSize: "0.68rem",
+                            fontWeight: 700,
+                            color: meta.color,
+                            background: meta.bg,
+                            borderRadius: "4px",
+                            padding: "1px 7px",
+                            marginBottom: "5px",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {meta.label}
+                        </span>
+
+                        {/* 알림 내용 */}
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.865rem",
+                            lineHeight: "1.45",
+                            color: "#111827",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {notif.ntFinalContent}
+                        </p>
+
+                        {/* 날짜 */}
+                        <span
+                          style={{
+                            display: "block",
+                            fontSize: "0.74rem",
+                            color: "#9ca3af",
+                            marginTop: "5px",
+                          }}
+                        >
+                          {formatNotifDate(notif.ntCreatedAt)}
+                        </span>
+                      </div>
+
+                      {/* ✅ 읽지 않은 알림 표시 점 */}
+                      {!notif.ntIsRead && (
+                        <span
+                          style={{
+                            width: "8px",
+                            height: "8px",
+                            borderRadius: "50%",
+                            background: meta.color,
+                            flexShrink: 0,
+                            marginTop: "6px",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
-            <Link to="/mypage/health" className="hdr__np-footer-link">
-              건강 관리 보기 <FontAwesomeIcon icon={faChevronRight} />
-            </Link>
+
+            <button 
+              className="hdr__np-footer-link" 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' }}
+              onClick={() => {
+                setNotifOpen(false); // 패널 닫기
+                setModalType("notifications"); // 모달 열기
+              }}
+            >
+              전체 알림 보기 <FontAwesomeIcon icon={faChevronRight} />
+            </button>
           </div>
         </div>
       )}
 
-      {/* ════ 카톡식 채팅창 ════ */}
+      {/* ════ 채팅창 ════ */}
       {notifOpen && activeChatRoom && (
         <div className="hdr__cw" ref={chatRef}>
-          {/* <div className="hdr__cw-head">
+          <div className="hdr__cw-head">
             <button className="hdr__cw-back" onClick={() => setActiveChatRoom(null)}>
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
-            <div className="hdr__cw-avatar">{activeChatRoom.avatar}</div>
+            <div className="hdr__cw-avatar">
+              {isAdmin
+                ? (activeChatRoom.patientName || activeChatRoom.patientId || "?")
+                    .toString().substring(0, 1).toUpperCase()
+                : activeChatRoom.avatar}
+            </div>
             <div className="hdr__cw-hinfo">
-              <span className="hdr__cw-hname">{activeChatRoom.hospital}</span>
+              <span className="hdr__cw-hname">
+                {isAdmin
+                  ? activeChatRoom.patientName || `환자 ${activeChatRoom.patientId}`
+                  : activeChatRoom.hospitalName}
+              </span>
               <span className="hdr__cw-hdept">{activeChatRoom.dept}</span>
             </div>
-            <button className="hdr__cw-more"><FontAwesomeIcon icon={faEllipsisVertical} /></button>
+            <button className="hdr__cw-more">
+              <FontAwesomeIcon icon={faEllipsisVertical} />
+            </button>
           </div>
+
           <div className="hdr__cw-body">
-            {(messages[activeChatRoom.id]||[]).map((msg,i) => (
-              <div key={i} className={`hdr__cw-msg hdr__cw-msg--${msg.from}`}>
-                {msg.from==="hospital" && <div className="hdr__cw-msg-avatar">{activeChatRoom.avatar}</div>}
-                <div className="hdr__cw-msg-wrap">
-                  <div className="hdr__cw-bubble">{msg.text}</div>
-                  <span className="hdr__cw-time">{msg.time}</span>
+            {(messages[activeChatRoom.id] || []).map((msg, i) => {
+              const isFromHospital = msg.from?.startsWith("hospital");
+              const isMine = isAdmin ? isFromHospital : !isFromHospital;
+
+              return (
+                <div
+                  key={msg.id || i}
+                  className={`hdr__cw-msg hdr__cw-msg--${isMine ? "user" : "hospital"}`}
+                >
+                  {!isMine && (
+                    <div className="hdr__cw-msg-avatar">
+                      {isAdmin
+                        ? activeChatRoom.patientName?.substring(0, 1)
+                        : activeChatRoom.avatar}
+                    </div>
+                  )}
+                  <div className="hdr__cw-msg-wrap">
+                    <div
+                      className="hdr__cw-bubble"
+                      style={
+                        !isMine
+                          ? { backgroundColor: "#ffffff", border: "1px solid #d1d5db", color: "#111827" }
+                          : {}
+                      }
+                    >
+                      {msg.text}
+                    </div>
+                    <span className="hdr__cw-time">
+                      {msg.timestamp
+                        ? new Date(msg.timestamp).toLocaleTimeString("ko-KR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : msg.time || ""}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={chatEndRef} />
           </div>
+
           <div className="hdr__cw-input-wrap">
             <input
               type="text"
               className="hdr__cw-input"
               placeholder="메시지를 입력하세요..."
               value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
-              onKeyPress={e => e.key==="Enter" && sendMessage()}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
             />
-            <button className={`hdr__cw-send${chatInput.trim() ? " hdr__cw-send--active" : ""}`} onClick={sendMessage}>
+            <button
+              className={`hdr__cw-send${chatInput.trim() ? " hdr__cw-send--active" : ""}`}
+              onClick={sendMessage}
+            >
               <FontAwesomeIcon icon={faPaperPlane} />
             </button>
-          </div> */}
+          </div>
         </div>
       )}
+
+      {modalType === "notifications" &&
+        ReactDOM.createPortal(
+          <NotificationsModal
+            isOpen={true}
+            onClose={closeModal}
+            notifications={sysNotifications}
+            setNotifications={setSysNotifications}
+            userNum={user?.num} 
+          />,
+          document.body
+        )}
+      {/* ════ 예약 모달들 ════ */}
+      {modalType === "detail" &&
+        ReactDOM.createPortal(
+          <ReservationDetailModal
+            reservation={modalReservation}
+            onClose={closeModal}
+            onChangePage={(rv) => openModal("change", rv)}
+            onCancelPage={(rv) => openModal("cancel", rv)}
+          />,
+          document.body
+        )}
+      {modalType === "change" &&
+        ReactDOM.createPortal(
+          <ReservationChangeModal
+            reservation={modalReservation}
+            onClose={closeModal}
+            onSuccess={handleModalSuccess}
+          />,
+          document.body
+        )}
+      {modalType === "cancel" &&
+        ReactDOM.createPortal(
+          <ReservationCancelModal
+            reservation={modalReservation}
+            onClose={closeModal}
+            onSuccess={handleModalSuccess}
+          />,
+          document.body
+        )}
     </header>
   );
 };
