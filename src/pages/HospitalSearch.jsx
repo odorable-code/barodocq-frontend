@@ -339,23 +339,30 @@ export default function HospitalSearch() {
   }, [q]);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setGeoError("이 브라우저는 위치 기능을 지원하지 않습니다.");
-      setUserPos(DEFAULT_CENTER);
-      return;
-    }
+  if (!navigator.geolocation) {
+    setGeoError("이 브라우저는 위치 기능을 지원하지 않습니다.");
+    setUserPos(DEFAULT_CENTER);
+    return;
+  }
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      },
-      (err) => {
-        setGeoError(err?.message || "위치 정보를 가져오지 못했어요.");
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+    },
+    (err) => {
+      // ✅ 위치 권한 거부 → 메시지 안 띄움
+      if (err.code === err.PERMISSION_DENIED) {
         setUserPos(DEFAULT_CENTER);
-      },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60_000 },
-    );
-  }, []);
+        return;
+      }
+
+      // ✅ 다른 에러만 표시
+      setGeoError("위치 정보를 가져오지 못했어요.");
+      setUserPos(DEFAULT_CENTER);
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+  );
+}, []);
 
   const handleInquiry = async (hospital) => {
   if (!requireLogin()) return;
