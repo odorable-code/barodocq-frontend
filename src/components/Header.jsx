@@ -5,7 +5,7 @@ import { useSocket } from "../WebSocketContext";
 import { useAuth } from "../AuthContext";
 import { authFetch } from "../utils/AuthFetch";
 import ReactDOM from "react-dom";
-import DeptSearch from "../pages/DeptSearch";
+import  {AutoCompleteResult} from "../pages/DeptSearch";
 import NotificationsModal from "./NotificationsModal";
 import { getNotifMeta } from "../constants/notifTypes";
 import {
@@ -66,6 +66,9 @@ const Header = ({ onOpenReservation }) => {
   const [modalType, setModalType] = useState(null);
   const [modalReservation, setModalReservation] = useState(null);
   const [prevModalType, setPrevModalType] = useState(null);
+
+  const [showList, setShowList] = useState(false);
+
 
   const openModal = (type, reservation) => {
     setPrevModalType(modalType);
@@ -254,10 +257,21 @@ const Header = ({ onOpenReservation }) => {
               className="hdr__search-input"
               placeholder="병원·약국·증상을 검색하세요"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                setSearchValue(e.target.value)
+                setSearchFocused(true)
+              }}
               onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
+              onFocus={() => {
+                setSearchFocused(true)
+                setShowList(true)
+              }}
+              onBlur={() => {
+                setSearchFocused(false);
+                setTimeout(() => {
+                  setShowList(false);
+                }, 200);
+              }}
             />
             {searchValue && (
               <button className="hdr__search-clear" onClick={() => setSearchValue("")}>
@@ -265,8 +279,20 @@ const Header = ({ onOpenReservation }) => {
               </button>
             )}
             <button className="hdr__search-btn" onClick={handleSearch}>검색</button>
+            <AutoCompleteResult 
+              styles={{
+                position : "absolute", left:0, right:0,
+                // background: "yellow", height: "100px",
+                top: "59px",
+                background: "white", 
+              }} 
+              searchTerm={searchValue} 
+              setSearchTerm={setSearchValue} 
+              showList={showList} 
+              setShowList={ setShowList} 
+            />
           </div>
-
+          
           <div className="hdr__actions">
             {user && (
               <>
@@ -330,6 +356,7 @@ const Header = ({ onOpenReservation }) => {
       {/* ════ 네비게이션 ════ */}
       <nav className={`hdr__nav${mobileOpen ? " hdr__nav--open" : ""}`}>
         <div className="hdr__nav-inner">
+          {/* <DeptSearch4 /> */}
           <ul className="hdr__nav-list">
             {NAV_ITEMS.map(({ path, label, icon }) => (
               <li key={path} className="hdr__nav-item">
