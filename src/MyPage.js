@@ -4,6 +4,7 @@ import { useAuth } from "./AuthContext";
 import { authFetch } from "./utils/AuthFetch";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "./WebSocketContext";
+import NotificationsModal from "./components/NotificationsModal";
 
 /* ─────────────────────────────────────────
    데이터 상수
@@ -276,70 +277,6 @@ const ScrapAllModal = ({ isOpen, onClose, scraps }) => (
 );
 
 /* 알림 */
-const NotificationsModal = ({
-  isOpen,
-  onClose,
-  notifications,
-  setNotifications,
-}) => {
-  const markAll = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, ntIsRead: true })));
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="알림"
-      size="md"
-      icon="bell"
-      iconBg="linear-gradient(135deg,#14b8a6,#0d9488)"
-    >
-      <div className="mp-notif-header">
-        <span className="mp-notif-count">
-          {notifications.filter((n) => !n.ntIsRead).length}개 읽지 않음
-        </span>
-        <button className="mp-text-btn" onClick={markAll}>
-          모두 읽음
-        </button>
-      </div>
-      <div className="mp-list">
-        {/* ✅ 알림이 없을 때 처리 */}
-        {notifications.length === 0 ? (
-          <div className="mp-empty">
-            <i className="fas fa-bell-slash" />
-            <p>새로운 알림이 없습니다.</p>
-          </div>
-        ) : (
-          notifications.map((n) => (
-            <div
-              key={n.ntNum}
-              className={`mp-list-item mp-notif-item ${n.ntIsRead ? "read" : ""}`}
-              onClick={() =>
-                setNotifications((prev) =>
-                  prev.map((p) =>
-                    p.ntNum === n.ntNum ? { ...p, ntIsRead: true } : p,
-                  ),
-                )
-              }
-            >
-              <div
-                className="mp-list-icon"
-                style={{ background: "#14b8a622", color: "#14b8a6" }}
-              >
-                <i className={`fas fa-bell`} />
-              </div>
-              <div className="mp-list-info">
-                <strong>{n.ntFinalContent}</strong>
-                {/* <span>{n.ntFinalContent}</span> */}
-                <span className="mp-notif-time">{n.ntCreatedAt}</span>
-              </div>
-              {!n.ntIsRead && <div className="mp-notif-dot" />}
-            </div>
-          ))
-        )}
-      </div>
-    </Modal>
-  );
-};
 
 /* 내 Q&A */
 const QnaModal = ({ isOpen, onClose, myQNA }) => {
@@ -1597,6 +1534,7 @@ const MyPage = () => {
         onClose={closeModal}
         notifications={notifications}
         setNotifications={setNotifications}
+        userNum={user?.num} 
       />
       <QnaModal isOpen={modal === "qna"} onClose={closeModal} myQNA={myQNA} />
       <ReviewsModal

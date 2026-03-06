@@ -741,6 +741,7 @@ const Header = ({ onOpenReservation }) => {
             onClose={closeModal}
             notifications={sysNotifications}
             setNotifications={setSysNotifications}
+            userNum={user?.num} 
           />,
           document.body
         )}
