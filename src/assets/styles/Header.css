@@ -465,7 +465,7 @@
   -webkit-backdrop-filter: var(--hdr-blur);
   backdrop-filter: var(--hdr-blur);
   border-bottom: 1px solid var(--hdr-border);
-  overflow: hidden;
+  overflow: visible;
   transition: background var(--hdr-trans);
 }
 .hdr--scrolled .hdr__nav {

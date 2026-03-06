@@ -5,7 +5,7 @@ import { useSocket } from "../WebSocketContext";
 import { useAuth } from "../AuthContext";
 import { authFetch } from "../utils/AuthFetch";
 import ReactDOM from "react-dom";
-import DeptSearch from "../pages/DeptSearch";
+import DeptSearch, { DeptSearch4 } from "../pages/DeptSearch";
 import {
   faHeart,
   faMagnifyingGlass,
@@ -276,7 +276,7 @@ const Header = ({ onOpenReservation }) => {
       <div className="hdr__top">
         <div className="hdr__inner">
           <Logo size="md" to="/" />
-          <div
+          {/* <div
             className={`hdr__search${searchFocused ? " hdr__search--focused" : ""}`}
           >
             <FontAwesomeIcon
@@ -304,7 +304,8 @@ const Header = ({ onOpenReservation }) => {
             <button className="hdr__search-btn" onClick={handleSearch}>
               검색
             </button>
-          </div>
+          </div> */}
+          <DeptSearch4 />
           <div className="hdr__actions">
             {user && (
               <>
@@ -372,6 +373,7 @@ const Header = ({ onOpenReservation }) => {
       {/* ════ 네비게이션 ════ */}
       <nav className={`hdr__nav${mobileOpen ? " hdr__nav--open" : ""}`}>
         <div className="hdr__nav-inner">
+          {/* <DeptSearch4 /> */}
           <ul className="hdr__nav-list">
             {NAV_ITEMS.map(({ path, label, icon }) => (
               <li key={path} className="hdr__nav-item">

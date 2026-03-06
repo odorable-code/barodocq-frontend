@@ -26,7 +26,7 @@ import PharmacySearch        from "./pages/PhamacySearch";
 import Chat                  from "./Chat/Chat";
 import ChatList              from "./Chat/ChatList";
 import MyReservationsPage    from "./pages/MyReservationsPage";
-import {DeptSearch}            from "./pages/DeptSearch";
+import {DeptSearch2, DeptSearch4}            from "./pages/DeptSearch";
 
 /* ── 인증 / 소켓 Provider ── */
 import { AuthProvider }      from "./AuthContext";
@@ -143,7 +143,8 @@ function App() {
               <Route path="main"                    element={<Main />} />
               <Route path="chat"                    element={<Chat />} />
               <Route path="chat/list"               element={<ChatList />} />
-              <Route path="deptsearch"              element={<DeptSearch />} />
+              <Route path="deptsearch"              element={<DeptSearch2 />} />
+              <Route path="deptsearch"              element={<DeptSearch4 />} />
               {/* ❌ 여기서 auth 라우트 중복 제거됨 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
