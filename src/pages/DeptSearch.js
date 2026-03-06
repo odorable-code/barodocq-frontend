@@ -37,6 +37,12 @@ const itemStyle = {
   backgroundColor: "white",
 };
 
+function search(searchTerm) {
+
+  return DEPARTMENTS.filter((dept) =>
+    dept.includes(searchTerm)
+  );
+}
 function DeptSearch() {
   const [searchTerm, setSearchTerm] = useState(""); 
   const [showList, setShowList] = useState(false); 
@@ -441,7 +447,8 @@ function DeptSearch4() {
       </form>
 
       {/* 검색 결과 리스트 */}
-      {showList && searchTerm && (
+      <AutoCompleteResult searchTerm={null} />
+      {/* {showList && searchTerm && (
         <div className="custom-scrollbar" style={{
           background: "white", 
           position: "absolute", 
@@ -479,9 +486,62 @@ function DeptSearch4() {
             )}
           </ul>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
 
-export { DeptSearch, DeptSearch2, DeptSearch4 };
+function AutoCompleteResult({styles, searchTerm, setSearchTerm, showList, setShowList }) {
+  // const [searchTerm, setSearchTerm] = useState(search);
+  // const [showList, setShowList] = useState(true);
+  const filteredDepts = DEPARTMENTS.filter((dept) =>
+    dept.includes(searchTerm)
+  );
+  console.log(showList, searchTerm);
+  return (
+    <div style={styles}>
+      {showList && searchTerm && (
+        <div className="custom-scrollbar" style={ {
+          background: "white", 
+          // position: "absolute", 
+          // top: "100%", 
+          // left: 0, 
+          // right: 0, 
+          zIndex: 1000, 
+          overflow: "auto", 
+          maxHeight: "250px",
+          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+          borderRadius: "0 0 15px 15px",
+          // border: "1px solid #14b8a6",
+          borderTop: "none"
+        }}>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {filteredDepts.length > 0 ? (
+              filteredDepts.map((dept, index) => (
+                <li
+                  key={dept}
+                  onClick={() => {
+                    console.log("검색어 선택:", dept);
+                    setSearchTerm(dept);
+                    setShowList(false);
+                  }}
+                  style={{
+                    padding: "10px 15px", 
+                    boxSizing: "border-box",
+                    borderBottom: index === filteredDepts.length - 1 ? "none" : "0.5px solid #eee"
+                  }}
+                >
+                  {dept} 
+                </li>
+              ))
+            ) : (
+              <li style={{ padding: "10px", color: "#999" }}>검색 결과가 없습니다.</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export { DeptSearch, DeptSearch2, DeptSearch4 , search, AutoCompleteResult};

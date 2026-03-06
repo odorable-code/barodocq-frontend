@@ -7,6 +7,7 @@ import RegionSelect from "../components/RegionSelect";
 import HospitalDeptSelect from "../components/HospitalDeptSelect";
 import ReservationModal from "../components/ReservationModal";
 import { useSocket } from "../WebSocketContext";
+import { AutoCompleteResult } from "./DeptSearch";
 
 
 /* ─────────────────────────────────────────
@@ -320,6 +321,9 @@ export default function HospitalSearch() {
   const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 }; // 서울시청
   const [userPos, setUserPos] = useState(DEFAULT_CENTER);
   const [geoError, setGeoError] = useState("");
+
+  //자동 검색창 닫힘 여부
+  const [showList, setShowList] = useState(false);
 
   // 로그인 감지
   const isLoggedIn = () => {
@@ -774,6 +778,13 @@ export default function HospitalSearch() {
                 placeholder="병원명, 진료과, 증상으로 검색하세요"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowList(true)}
+                onBlur={() => {
+                
+                  setTimeout(() => {
+                    setShowList(false);
+                  }, 200);
+              }}
               />
               {searchQuery && (
                 <button
@@ -787,6 +798,20 @@ export default function HospitalSearch() {
               <button className="hsp-search-submit" type="button">
                 검색 <i className="fas fa-arrow-right" />
               </button>
+              <AutoCompleteResult 
+                styles={{
+                  position : "absolute", left:0, right:0,
+                  // background: "yellow", height: "100px",
+                  top: "66px",
+                  background: "white", 
+                  borderRadius: "15px",
+                  opacity: "10"
+                }} 
+                searchTerm={searchQuery} 
+                setSearchTerm={setSearchQuery} 
+                showList={showList} 
+                setShowList={ setShowList} 
+              />
             </div>
 
             {/* 퀵 액션 버튼 */}

@@ -58,6 +58,8 @@
    TOP BAR
 ══════════════════════════════ */
 .hdr__top {
+  position: relative;
+  z-index: 10;
   height: var(--hdr-h-top);
   background: var(--hdr-bg-top);
   -webkit-backdrop-filter: var(--hdr-blur);
@@ -144,6 +146,7 @@
     border-color var(--hdr-trans),
     box-shadow var(--hdr-trans),
     background var(--hdr-trans);
+  position: relative;
 }
 .hdr__search--focused {
   background: #fff;
