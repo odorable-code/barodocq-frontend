@@ -64,7 +64,7 @@ function UserSignup() {
     }
 
     try {
-      const response = await fetch(`/api/v1/check-id?userId=${userId}`);
+      const response = await fetch(`http://3.38.49.151:8080/api/v1/check-id?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
         if (data.isDuplicate) {
@@ -146,7 +146,7 @@ function UserSignup() {
     };
 
     try {
-      const response = await fetch("/api/v1/auth/signup", {
+      const response = await fetch("http://3.38.49.151:8080/api/v1/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
