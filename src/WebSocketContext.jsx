@@ -10,7 +10,7 @@ import SockJS from "sockjs-client";
 import { useAuth } from "./AuthContext";
 import UseNotification from "./hooks/UseNotification";
 
-const API = "http://localhost:8080";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8080";
 export const SocketContext = createContext(null);
 
 export function WebSocketProvider({ children }) {

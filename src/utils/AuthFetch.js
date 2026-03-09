@@ -3,7 +3,7 @@
  */
 
 // 1. 백엔드 서버의 실제 주소 설정 (포트 번호 8080 확인)
-const BASE_URL = "http://3.38.49.151:8080";
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 let isRedirecting = false; // 🔑 전역 플래그: 리다이렉트 중복 방지
 
