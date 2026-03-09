@@ -19,9 +19,10 @@ jobs:
           node-version: '18' # 사용 중인 노드 버전에 맞게 수정하셔도 됩니다.
 
       - name: 3. 패키지 설치 및 빌드하기
+        env:
+          CI: false
         run: |
           npm install
-          CI=false npm run build
           npm run build
 
       - name: 4. EC2로 빌드 폴더 전송하기
