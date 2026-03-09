@@ -21,6 +21,7 @@ jobs:
       - name: 3. 패키지 설치 및 빌드하기
         run: |
           npm install
+          CI=false npm run build
           npm run build
 
       - name: 4. EC2로 빌드 폴더 전송하기
