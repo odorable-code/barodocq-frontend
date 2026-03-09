@@ -2,11 +2,17 @@
  * 서버에 요청할 때 header에 토큰 정보를 자동으로 추가해주는 함수
  */
 
+// 1. 백엔드 서버의 실제 주소 설정 (포트 번호 8080 확인)
+const BASE_URL = "http://3.38.49.151:8080";
+
 let isRedirecting = false; // 🔑 전역 플래그: 리다이렉트 중복 방지
 
 export async function authFetch(url, options = {}, retry = true) {
   const accessToken = localStorage.getItem("accessToken");
   const isFormData = options.body instanceof FormData;
+
+  // 2. 전달받은 url이 이미 http로 시작하지 않는 경우 BASE_URL을 붙여서 풀 주소를 만듭니다.
+  const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
 
   const headers = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
@@ -16,7 +22,8 @@ export async function authFetch(url, options = {}, retry = true) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  const resp = await fetch(url, {
+  // 3. fetch 호출 시 가공된 fullUrl을 사용합니다.
+  const resp = await fetch(fullUrl, {
     ...options,
     headers,
     credentials: "include",
@@ -29,7 +36,6 @@ export async function authFetch(url, options = {}, retry = true) {
   // ✅ 403 처리 — /auth/ 경로는 alert 안 띄움
   // ─────────────────────────────────────────
   if (resp.status === 403) {
-    // /auth/me, /auth/login 등 인증 관련 요청은 조용히 throw
     if (url.includes("/auth/")) {
       throw new Error("403");
     }
@@ -43,13 +49,12 @@ export async function authFetch(url, options = {}, retry = true) {
   if (resp.status === 401 && retry) {
     const currentPath = window.location.pathname;
 
-    // ✅ 정확한 공개 페이지 목록
     const isPublicPage =
       currentPath === "/" ||
       currentPath === "/login" ||
       currentPath === "/signup" ||
       currentPath === "/user/signup" ||
-      currentPath === "/admin/signup" || // 병원 회원가입만 공개
+      currentPath === "/admin/signup" ||
       currentPath === "/find/id" ||
       currentPath === "/found/id" ||
       currentPath === "/resetPw" ;
@@ -64,13 +69,13 @@ export async function authFetch(url, options = {}, retry = true) {
 
     // ── refresh 토큰으로 재발급 시도 ──
     try {
-      const refresh = await fetch("/api/v1/auth/refresh", {
+      // 4. 리프레시 요청도 백엔드 주소로 가도록 수정
+      const refresh = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
         method: "POST",
         credentials: "include",
       });
 
       if (!refresh.ok) {
-        // refresh 실패 → 로그아웃 처리 후 리다이렉트
         handleSessionExpired();
         throw new Error("로그인 만료");
       }
@@ -83,11 +88,10 @@ export async function authFetch(url, options = {}, retry = true) {
         throw new Error("로그인 만료");
       }
 
-      // 새 토큰 저장 후 원래 요청 재시도
       localStorage.setItem("accessToken", newToken);
-      return authFetch(url, options, false); // retry = false 로 재귀 1회만
+      // 재시도 시에도 원래의 url을 넘기면 위에서 다시 fullUrl로 변환됩니다.
+      return authFetch(url, options, false); 
     } catch (err) {
-      // refresh 요청 자체가 네트워크 에러인 경우
       if (err.message !== "로그인 만료") {
         handleSessionExpired();
       }
@@ -95,7 +99,6 @@ export async function authFetch(url, options = {}, retry = true) {
     }
   }
 
-  // retry = false 상태에서 401 → 루프 없이 종료
   throw new Error(`요청 실패: ${resp.status}`);
 }
 
@@ -103,18 +106,16 @@ export async function authFetch(url, options = {}, retry = true) {
 // ✅ 세션 만료 처리 함수 (중복 실행 방지 포함)
 // ─────────────────────────────────────────
 function handleSessionExpired() {
-  if (isRedirecting) return; // 이미 처리 중이면 무시
+  if (isRedirecting) return;
   isRedirecting = true;
 
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNum");
 
   if (window.location.pathname !== '/login') {
-    //alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-    //window.location.href = "/login";
+    // 필요 시 알림 및 리다이렉트 로직 활성화
   }
 
-  // 페이지 이동 완료 후 플래그 리셋
   setTimeout(() => {
     isRedirecting = false;
   }, 3000);
