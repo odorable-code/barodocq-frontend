@@ -1,0 +1,42 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. 내 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: 2. Node.js 설치하기
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # 사용 중인 노드 버전에 맞게 수정하셔도 됩니다.
+
+      - name: 3. 패키지 설치 및 빌드하기
+        run: |
+          npm install
+          npm run build
+
+      - name: 4. EC2로 빌드 폴더 전송하기
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/"
+          target: "/home/ec2-user/"
+
+      - name: 5. EC2 서버에서 PM2 재시작하기
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            pm2 restart react-frontend

@@ -35,7 +35,6 @@ import {
   faCircleDot,
   faTriangleExclamation,
   faRightFromBracket,
-  faChevronDown,
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/styles/Header.css";
