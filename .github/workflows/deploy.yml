@@ -21,6 +21,8 @@ jobs:
       - name: 3. 패키지 설치 및 빌드하기
         env:
           CI: false
+          # 💡 여기에 추가! 깃허브 로봇이 빌드할 때 이 값을 주입합니다.
+          REACT_APP_API_URL: http://3.38.49.151:8080 
         run: |
           npm install
           npm run build
