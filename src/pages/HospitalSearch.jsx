@@ -9,6 +9,11 @@ import ReservationModal from "../components/ReservationModal";
 import { useSocket } from "../WebSocketContext";
 import { AutoCompleteResult } from "./DeptSearch";
 
+/* ─────────────────────────────────────────
+   [리뷰 1, 2] 목적 및 핵심 기능
+   - 병원을 조회하고 탐색한 뒤, 원하는 병원에 예약하기 위해 필요한 컴포넌트
+   - 병원명, 지역, 진료과, 태그 필터링 / 위치 기반 가까운 병원 조회 / 자주 가는 병원 찜하기 기능 제공
+───────────────────────────────────────── */
 
 /* ─────────────────────────────────────────
    필터 태그
@@ -329,7 +334,8 @@ export default function HospitalSearch() {
   const isLoggedIn = () => {
     return Boolean(localStorage.getItem("accessToken"));
   };
-  // 로그인 안되어있으면 알럿
+  
+  // [리뷰 5] 인증(Token) 상태 의존성: 찜하기, 1:1 문의, 예약하기 등의 주요 액션은 localStorage 내 accessToken 로그인 상태를 확인한 뒤 실행됨
   const requireLogin = () => {
     if (!isLoggedIn()) {
       alert("로그인 후 이용해주세요");
@@ -343,6 +349,7 @@ export default function HospitalSearch() {
   }, [q]);
 
   useEffect(() => {
+  // [리뷰 5] HTTPS 환경 필수: 사용자 주변 병원을 찾기 위해 사용하는 브라우저의 Geolocation API는 보안 정책상 HTTPS 환경(또는 localhost)에서만 정상 작동함
   if (!navigator.geolocation) {
     setGeoError("이 브라우저는 위치 기능을 지원하지 않습니다.");
     setUserPos(DEFAULT_CENTER);
@@ -390,7 +397,9 @@ export default function HospitalSearch() {
     );
   };
 
-  // ✅ 찜 토글 (낙관적 업데이트 + 실패 롤백)
+  // ✅ 찜 토글 
+  // [리뷰 6] 낙관적 업데이트: 찜하기 하트를 누르면 서버 결과를 기다리지 않고 하트 색상부터 먼저 바꿔줌. (나중에 서버 저장이 실패하면 그때 원래대로 되돌림.)
+  // 이를 통해 사용자들은 빠른 인터페이스 반응을 통해 답답함을 느끼지 않게 됨.
   const toggleBookmark = async (hospitalId) => {
     if (!requireLogin()) return;
     if (bookmarkingRef.current.has(hospitalId)) return;
@@ -451,7 +460,6 @@ export default function HospitalSearch() {
       try {
         const list = await fetchHospitals(queryParams);
 
-        // ✅ 여기서 찍으면 됨 (프론트에서 서버 응답 확인)
         console.log("hospital raw list length:", list?.length);
         console.log("hoNum sample:", (list ?? []).slice(0, 20).map((x) => x.hoNum));
         console.log(
@@ -465,11 +473,15 @@ export default function HospitalSearch() {
         // 🔥 서버에서 받아온 찜 목록 임시 저장
         const initialBookmarks = new Set();
 
+        // [리뷰 6] 지저분한 데이터 한 번 청소하고 쓰기:
+        // 백엔드에서 받아온 데이터(시간, 요일, 콤마로 이어져 있는 진료과목 등)는 화면을 그리기 전에 미리 한 번 다듬어서 정리된 목록으로 만드는 작업을 먼저 거침.
         for (let i = 0; i < list.length; i++) {
           const r = list[i];
+          // 1. 이름 통일 (스네이크 케이스 vs 카멜 케이스 혼재 해결)
           const id = r.hoNum ?? r.ho_num ?? i + 1;
 
           // ✅ 서버 찜 여부
+          // 2. 불규칙한 참/거짓 값 통일 ('Y', 1, true 등 엉망인 데이터를 완벽한 Boolean으로 변환)
           const isScrappedFromServer = ynToBool(
             r.isScrapped ?? r.scrapped ?? r.bookmarked,
           );
@@ -486,18 +498,18 @@ export default function HospitalSearch() {
               ynToBool(r.hoReservableYn ?? r.ho_reservable_yn) === true;
             const parking = ynToBool(r.hoParking ?? r.ho_parking) === true;
 
-            // ✅ 핵심: deptNames(콤마 문자열) → 배열로 변환해서 태그로 사용
+            // 3. 문자열 쪼개기 (콤마로 대충 붙어있는 "내과, 소아과" 문자열을 예쁜 배열 ['내과', '소아과']로 변환)
             const deptNamesArr = String(r.deptNames ?? "")
               .split(",")
               .map((s) => s.trim())
               .filter(Boolean);
-
+            // (사진이 없으면 엑스박스 뜨지 않게 기본 이미지로 채워넣기)
             const photo = r.hoPhoto ?? r.ho_photo;
             const thumbnail =
               photo && String(photo).trim()
                 ? photo
                 : "https://via.placeholder.com/400x250/0ea5e9/ffffff?text=Hospital";
-
+            // 4. 최종 완성본 조립
             byId.set(id, {
               id,
               name: r.hoName ?? r.ho_name ?? "병원명",
@@ -642,6 +654,7 @@ export default function HospitalSearch() {
   }, [queryParams, userPos]);
 
   // ✅ 프론트 필터
+  // [리뷰 4] 핵심 로직 플로우: 검색바 또는 지역, 진료과 및 태그들을 선택해 조건에 맞게 필터링 및 정렬 진행
   const filteredHospitals = useMemo(() => {
     let list = hospitals;
 
@@ -715,6 +728,8 @@ export default function HospitalSearch() {
     if (!el) return;
     if (!hasMore) return;
 
+    // [리뷰 3] 이 페이지에서 풀어야 했던 주요 문제들: 대량 데이터의 DOM 렌더링 과부하 방지.
+    // IntersectionObserver를 활용한 무한 스크롤(Infinite Scroll)을 도입해 한 번에 노출되는 카드 수를 제한.
     const obs = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
