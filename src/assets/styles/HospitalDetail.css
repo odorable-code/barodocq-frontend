@@ -224,7 +224,9 @@
 .hd2__strip-item {
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
+  /* 요소들 사이의 간격을 0.4rem만큼 준다. display:flex 또는 display:grid일 때만 적용됨.
+  margin-right와 달리 마지막 요소에는 여백이 생기지 않는 장점이 있다. */
+  gap: .4rem; 
 }
 .hd2__strip-item > i { color: var(--primary-mint); font-size: .82rem; }
 .hd2__strip-sep {

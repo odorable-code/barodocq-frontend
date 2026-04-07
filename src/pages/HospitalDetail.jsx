@@ -92,7 +92,7 @@ const buildWeeklyLines = (hoursArr) => {
 };
 
 /* ── 별점 컴포넌트 ── */
-function Stars({ score = 0 }) {
+function Stars({ score = 0 }) { // { score : 0 }이 아닌 이유. 이 함수로 들어온 첫 번째 인자에서 score를 쏙 빼서 변수로 쓰고, score에 값이 없으면 0을 넣는다(할당 연산자 '=')
   return (
     <span className="hd2__stars">
       {Array.from({ length: 5 }, (_, i) => {
@@ -312,16 +312,18 @@ export default function HospitalDetail() {
               <i className="fas fa-hospital" />
             </div>
             <div className="hd2__hero-text">
+              {/* summary.deptName가 있는지 확인해보고 없으면 span 태그를 그려줘 */}
               {summary?.deptName && (
                 <span className="hd2__hero-dept">
                   <i className="fas fa-stethoscope" /> {summary.deptName}
                 </span>
-              )}
+              )} 
               <h1 className="hd2__hero-name">
                 {summary?.hoName ?? "병원명 없음"}
               </h1>
               <div className="hd2__hero-rating">
                 <Stars score={summary?.rvRating ?? 0} />
+                {/* summary?.rvRating에 값이 있으면 그대로, 없으면 0으로 하고 Number을 통해 무조건 숫자로 값을 바꾼 후 toFixed를 통해 소수점 1번째 자리까지 보여준다. */}
                 <strong className="hd2__hero-score">
                   {Number(summary?.rvRating ?? 0).toFixed(1)}
                 </strong>
@@ -369,6 +371,7 @@ export default function HospitalDetail() {
             <span className="hd2__strip-sep" />
             <span className="hd2__strip-item">
               <i className="fas fa-phone" />
+              {/* href="tel:전화번호" 형식이면 브라우저가 전화 연결 링크로 인식함 */}
               <a href={`tel:${summary.hoPhone}`} className="hd2__strip-tel">
                 {summary.hoPhone}
               </a>
